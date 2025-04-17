@@ -1,12 +1,12 @@
 package com.example.cookey;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
+//import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.util.Log;
+//import android.content.ContentValues;
+//import android.database.Cursor;
+//import android.util.Log;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
