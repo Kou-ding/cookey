@@ -11,10 +11,10 @@
         android:label="@string/title_MyRecipes"
         tools:layout="@layout/fragment_my_recipes" />
     <fragment
-        android:id="@+id/navigation_MyList"
-        android:name="com.example.cookey.ui.MyList.MyListFragment"
-        android:label="@string/title_MyList"
-        tools:layout="@layout/fragment_my_list" />
+        android:id="@+id/navigation_MyIngredients"
+        android:name="com.example.cookey.ui.MyIngredients.MyIngredientsFragment"
+        android:label="@string/title_MyIngredients"
+        tools:layout="@layout/fragment_my_ingredients" />
     <fragment
         android:id="@+id/navigation_AI"
         android:name="com.example.cookey.ui.Ai.AIFragment"

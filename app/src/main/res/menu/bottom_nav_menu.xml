@@ -6,9 +6,9 @@
         android:title="@string/title_MyRecipes" />
 
     <item
-        android:id="@+id/navigation_MyList"
+        android:id="@+id/navigation_MyIngredients"
         android:icon="@drawable/grocery_24px"
-        android:title="@string/title_MyList" />
+        android:title="@string/title_MyIngredients" />
     <item
         android:id="@+id/navigation_AI"
         android:icon="@drawable/wand_shine_24px"

@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         BottomNavigationView navView = findViewById(R.id.bottom_navigation);
-        AppBarConfiguration appBarConfiguration= new AppBarConfiguration.Builder(R.id.navigation_MyRecipes,R.id.navigation_MyList,R.id.navigation_AI,R.id.navigation_MyShoppingList,R.id.navigation_Settings).build();
+        AppBarConfiguration appBarConfiguration= new AppBarConfiguration.Builder(R.id.navigation_MyRecipes,R.id.navigation_MyIngredients,R.id.navigation_AI,R.id.navigation_MyShoppingList,R.id.navigation_Settings).build();
 
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);

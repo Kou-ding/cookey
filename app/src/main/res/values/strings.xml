@@ -4,7 +4,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_MyRecipes">MyRecipes</string>
-    <string name="title_MyList">MyList</string>
+    <string name="title_MyIngredients">MyIngredients</string>
     <string name="title_AI">AI</string>
     <string name="title_MyShoppingList">MyShoppingList</string>
     <string name="title_Settings">Settings</string>
