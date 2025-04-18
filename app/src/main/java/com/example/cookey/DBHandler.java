@@ -33,9 +33,9 @@ public class DBHandler extends SQLiteOpenHelper {
                 "  numberOfStep INTEGER      ,\n" +
                 "PRIMARY KEY(idSteps));\n" +
                 "\n" +
-                "CREATE TABLE ShopingList (\n" +
-                "  idShopingList INTEGER  NOT NULL    ,\n" +
-                "PRIMARY KEY(idShopingList));\n" +
+                "CREATE TABLE ShoppingList (\n" +
+                "  idShoppingList INTEGER  NOT NULL    ,\n" +
+                "PRIMARY KEY(idShoppingList));\n" +
                 "\n" +
                 "CREATE TABLE AIRecipe (\n" +
                 "  idAIRecipe INTEGER  NOT NULL  ,\n" +
@@ -70,43 +70,43 @@ public class DBHandler extends SQLiteOpenHelper {
                 "CREATE INDEX Recipe_has_Tags_FKIndex2 ON Recipe_has_Tags (Tags_idTags);\n" +
                 "\n" +
                 "CREATE TABLE Ingredient (\n" +
-                "  idIngrediant INTEGER  NOT NULL  ,\n" +
-                "  MyList_idMyList INTEGER  NOT NULL  ,\n" +
-                "  ShopingList_idShopingList INTEGER  NOT NULL  ,\n" +
+                "  idIngredient INTEGER  NOT NULL  ,\n" +
+                "  MyIngredients_idMyIngredients INTEGER  NOT NULL  ,\n" +
+                "  ShoppingList_idShoppingList INTEGER  NOT NULL  ,\n" +
                 "  name VARCHAR    ,\n" +
                 "  quantity FLOAT    ,\n" +
                 "  measurement VARCHAR    ,\n" +
                 "  expirationTime DATE    ,\n" +
                 "  boughtTime DATE      ,\n" +
-                "PRIMARY KEY(idIngrediant)    ,\n" +
-                "  FOREIGN KEY(ShopingList_idShopingList)\n" +
-                "    REFERENCES ShopingList(idShopingList)\n" +
+                "PRIMARY KEY(idIngredient)    ,\n" +
+                "  FOREIGN KEY(ShoppingList_idShoppingList)\n" +
+                "    REFERENCES ShoppingList(idShoppingList)\n" +
                 "      ON DELETE NO ACTION\n" +
                 "      ON UPDATE NO ACTION,\n" +
-                "  FOREIGN KEY(MyList_idMyList)\n" +
-                "    REFERENCES MyList(idMyList)\n" +
+                "  FOREIGN KEY(MyIngredients_idMyIngredients)\n" +
+                "    REFERENCES MyIngredients(idMyIngredients)\n" +
                 "      ON DELETE NO ACTION\n" +
                 "      ON UPDATE NO ACTION);\n" +
                 "\n" +
-                "CREATE INDEX Ingredient_FKIndex1 ON Ingredient (ShopingList_idShopingList);\n" +
-                "CREATE INDEX Ingredient_FKIndex2 ON Ingredient (MyList_idMyList);\n" +
+                "CREATE INDEX Ingredient_FKIndex1 ON Ingredient (ShoppingList_idShoppingList);\n" +
+                "CREATE INDEX Ingredient_FKIndex2 ON Ingredient (MyIngredients_idMyIngredients);\n" +
                 "\n" +
                 "CREATE TABLE Recipe_has_Ingredient (\n" +
                 "  Recipe_idRecipe INTEGER  NOT NULL  ,\n" +
-                "  Ingredient_idIngrediant INTEGER  NOT NULL    ,\n" +
-                "PRIMARY KEY(Recipe_idRecipe, Ingredient_idIngrediant)    ,\n" +
+                "  Ingredient_idIngredient INTEGER  NOT NULL    ,\n" +
+                "PRIMARY KEY(Recipe_idRecipe, Ingredient_idIngredient)    ,\n" +
                 "  FOREIGN KEY(Recipe_idRecipe)\n" +
                 "    REFERENCES Recipe(idRecipe)\n" +
                 "      ON DELETE NO ACTION\n" +
                 "      ON UPDATE NO ACTION,\n" +
-                "  FOREIGN KEY(Ingredient_idIngrediant)\n" +
-                "    REFERENCES Ingredient(idIngrediant)\n" +
+                "  FOREIGN KEY(Ingredient_idIngredient)\n" +
+                "    REFERENCES Ingredient(idIngredient)\n" +
                 "      ON DELETE NO ACTION\n" +
                 "      ON UPDATE NO ACTION);\n" +
                 "\n" +
                 "\n" +
                 "CREATE INDEX Recipe_has_Ingredient_FKIndex1 ON Recipe_has_Ingredient (Recipe_idRecipe);\n" +
-                "CREATE INDEX Recipe_has_Ingredient_FKIndex2 ON Recipe_has_Ingredient (Ingredient_idIngrediant);\n" +
+                "CREATE INDEX Recipe_has_Ingredient_FKIndex2 ON Recipe_has_Ingredient (Ingredient_idIngredient);\n" +
                 "\n" +
                 "CREATE TABLE Recipe_has_Steps (\n" +
                 "  Recipe_idRecipe INTEGER  NOT NULL  ,\n" +
