@@ -20,12 +20,11 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorSecondary"
+            android:background="@color/colorPrimary"
             android:hint="@string/ai_prompt"
-            app:hintTextColor="@color/colorBackground"
-            app:hintFocusedTextColor="@color/colorBackground"
             android:textAlignment="viewStart"
             android:visibility="visible"
+            app:hintTextColor="@color/darkBrownCookie"
             tools:visibility="visible" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -50,7 +49,9 @@
         android:layout_height="57dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/lightBrownCookie"
         app:icon="@drawable/chef_hat_24px"
+        app:iconTint="@color/darkBrownCookie"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 

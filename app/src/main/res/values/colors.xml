@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary Color (Black) -->
-    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimary">#E6CEA0</color>
 
     <!-- Secondary Color (Cookie Dough Light Brown) -->
-    <color name="colorSecondary">#D1B090</color>
+    <color name="colorSecondary">#4D3E3C</color>
 
     <!-- Text and Background Colors -->
-    <color name="colorBackground">#FFFFFF</color>
-    <color name="colorTextPrimary">#000000</color>
-    <color name="colorTextSecondary">#D1B090</color>
+    <color name="colorBackground">#000000</color>
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSecondary">#565051</color>
+
+    <!-- Cookie Colors -->
+    <color name="lightBrownCookie">#E6CEA0</color>
+    <color name="darkBrownCookie">#4D3E3C</color>
+    <color name="chocolate">#3D2622</color>
+    <color name="pastelChocolate">#A7796D</color>
+    <color name="pastelTaupe">#75655A</color>
+    <color name="vampireGray">#565051</color>
 </resources>
