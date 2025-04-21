@@ -10,34 +10,31 @@
         android:layout_width="0dp"
         android:layout_height="130dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="288dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
             android:hint="@string/ai_prompt"
             android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:visibility="visible"
-            app:hintTextColor="@color/darkBrownCookie"
             tools:visibility="visible" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="310dp"
+        android:layout_height="239dp"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="50dp"
-        android:layout_marginBottom="24dp"
         android:contentDescription="@string/chef_hat_logo"
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -45,14 +42,40 @@
 
     <Button
         android:id="@+id/generate_ai_recipe"
-        android:layout_width="57dp"
-        android:layout_height="57dp"
+        android:layout_width="110dp"
+        android:layout_height="52dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
-        android:backgroundTint="@color/lightBrownCookie"
+        android:text="@string/cook"
+        android:textAlignment="center"
         app:icon="@drawable/chef_hat_24px"
-        app:iconTint="@color/darkBrownCookie"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
+    <LinearLayout
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/generate_ai_recipe"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+        <Button
+            android:id="@+id/expandButton"
+            android:layout_width="224dp"
+            android:layout_height="52dp"
+            android:text="@string/add_ingredients"
+            app:icon="@drawable/keyboard_arrow_down_24dp_e3e3e3_fill0_wght400_grad0_opsz24" />
+
+        <LinearLayout
+            android:id="@+id/checkboxContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <!-- Checkboxes will be added here dynamically -->
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

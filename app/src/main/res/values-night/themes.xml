@@ -1,19 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Cookey" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Cookey" parent="Theme.MaterialComponents.DayNight">
+
+        <!-- Background color -->
+        <item name="colorBackgroundFloating">@color/black</item>
+
         <!-- Primary brand color (Black) -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimary</item>
-        <item name="colorOnPrimary">@color/colorBackground</item>
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryVariant">#282828</item>
+        <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color (Cookie Dough Light Brown) -->
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSecondaryVariant">@color/colorSecondary</item>
-        <item name="colorOnSecondary">@color/colorBackground</item>
+        <item name="colorSecondary">@color/lightBrownCookie</item>
+        <item name="colorSecondaryVariant">@color/pastelChocolate</item>
+        <item name="colorOnSecondary">@color/darkBrownCookie</item>
 
         <!-- Status bar color -->
-        <item name="android:statusBarColor">@color/colorBackground</item>
+        <item name="android:statusBarColor">@color/black</item>
 
         <!-- Customize your theme here -->
     </style>
+
 </resources>

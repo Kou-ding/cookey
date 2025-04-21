@@ -4,15 +4,16 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_MyRecipes">MyRecipes</string>
-    <string name="title_MyIngredients">MyIngredients</string>
+    <string name="title_MyRecipes">Συνταγές</string>
+    <string name="title_MyIngredients">Υλικά</string>
     <string name="title_AI">AI</string>
-    <string name="title_MyShoppingList">MyShoppingList</string>
-    <string name="title_Settings">Settings</string>
+    <string name="title_MyShoppingList">Ψώνια</string>
+    <string name="title_Settings">Ρυθμίσεις</string>
     <string name="title_Search"> </string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="ai_prompt">What would you like to cook today?</string>
+    <string name="ai_prompt">Τι θα ήθελες να μαγειρέψεις σήμερα;</string>
     <string name="chef_hat_logo">Chef Hat logo</string>
+    <string name="ai_recipe">AI συνταγή</string>
     <string name="cook">Cook</string>
     <string name="add_ingredients">Add Ingredients</string>
 </resources>

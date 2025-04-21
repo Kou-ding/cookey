@@ -1,6 +1,7 @@
 package com.example.cookey;
 
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -16,6 +17,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Make Dark theme the default theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         BottomNavigationView navView = findViewById(R.id.bottom_navigation);
@@ -31,4 +36,5 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHandler.getWritableDatabase(); // this triggers onCreate if DB doesn't exist
 
     }
+
 }

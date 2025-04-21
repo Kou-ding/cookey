@@ -1,5 +1,6 @@
 package com.example.cookey;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 //import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -16,99 +17,108 @@ public class DBHandler extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query = "CREATE TABLE Recipe (\n" +
-                "  idRecipe INTEGER  NOT NULL,\n" +
-                "  name VARCHAR,\n" +
-                "  timeToMake INTEGER,\n" +
-                "  country INTEGER,\n" +
-                "  mealNumber INTEGER,\n" +
-                "  difficulty ENUM,\n" +
-                "  photo BLOB,\n" +
-                "  favourites BOOL,\n" +
-                "PRIMARY KEY(idRecipe));\n" +
-                "CREATE TABLE Steps (\n" +
-                "  idSteps INTEGER  NOT NULL,\n" +
-                "  text VARCHAR,\n" +
-                "  numberOfStep INTEGER,\n" +
-                "PRIMARY KEY(idSteps));\n" +
-                "CREATE TABLE ShoppingList (\n" +
-                "  idShoppingList INTEGER  NOT NULL,\n" +
-                "PRIMARY KEY(idShoppingList));\n" +
-                "CREATE TABLE AIRecipe (\n" +
-                "  idAIRecipe INTEGER  NOT NULL,\n" +
-                "  AIRecipeText VARCHAR,\n" +
-                "PRIMARY KEY(idAIRecipe));\n" +
-                "CREATE TABLE Tags (\n" +
-                "  idTags INTEGER  NOT NULL,\n" +
-                "  name VARCHAR,\n" +
-                "PRIMARY KEY(idTags));\n" +
-                "CREATE TABLE MyIngredients (\n" +
-                "  idMyIngredients INTEGER  NOT NULL,\n" +
-                "PRIMARY KEY(idMyIngredients));\n" +
-                "CREATE TABLE Recipe_has_Tags (\n" +
-                "  Recipe_idRecipe INTEGER  NOT NULL,\n" +
-                "  Tags_idTags INTEGER  NOT NULL,\n" +
-                "PRIMARY KEY(Recipe_idRecipe, Tags_idTags),\n" +
-                "  FOREIGN KEY(Recipe_idRecipe)\n" +
-                "    REFERENCES Recipe(idRecipe)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION,\n" +
-                "  FOREIGN KEY(Tags_idTags)\n" +
-                "    REFERENCES Tags(idTags)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION);\n" +
-                "CREATE INDEX Recipe_has_Tags_FKIndex1 ON Recipe_has_Tags (Recipe_idRecipe);\n" +
-                "CREATE INDEX Recipe_has_Tags_FKIndex2 ON Recipe_has_Tags (Tags_idTags);\n" +
-                "CREATE TABLE Ingredient (\n" +
-                "  idIngredient INTEGER  NOT NULL,\n" +
-                "  MyIngredients_idMyIngredients INTEGER  NOT NULL,\n" +
-                "  ShoppingList_idShoppingList INTEGER  NOT NULL,\n" +
-                "  name VARCHAR,\n" +
-                "  quantity FLOAT,\n" +
-                "  measurement VARCHAR,\n" +
-                "  expirationTime DATE,\n" +
-                "  boughtTime DATE,\n" +
-                "PRIMARY KEY(idIngredient),\n" +
-                "  FOREIGN KEY(ShoppingList_idShoppingList)\n" +
-                "    REFERENCES ShoppingList(idShoppingList)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION,\n" +
-                "  FOREIGN KEY(MyIngredients_idMyIngredients)\n" +
-                "    REFERENCES MyIngredients(idMyIngredients)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION);\n" +
-                "CREATE INDEX Ingredient_FKIndex1 ON Ingredient (ShoppingList_idShoppingList);\n" +
-                "CREATE INDEX Ingredient_FKIndex2 ON Ingredient (MyIngredients_idMyIngredients);\n" +
-                "CREATE TABLE Recipe_has_Ingredient (\n" +
-                "  Recipe_idRecipe INTEGER  NOT NULL  ,\n" +
-                "  Ingredient_idIngredient INTEGER  NOT NULL,\n" +
-                "PRIMARY KEY(Recipe_idRecipe, Ingredient_idIngredient),\n" +
-                "  FOREIGN KEY(Recipe_idRecipe)\n" +
-                "    REFERENCES Recipe(idRecipe)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION,\n" +
-                "  FOREIGN KEY(Ingredient_idIngredient)\n" +
-                "    REFERENCES Ingredient(idIngredient)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION);\n" +
-                "CREATE INDEX Recipe_has_Ingredient_FKIndex1 ON Recipe_has_Ingredient (Recipe_idRecipe);\n" +
-                "CREATE INDEX Recipe_has_Ingredient_FKIndex2 ON Recipe_has_Ingredient (Ingredient_idIngredient);\n" +
-                "CREATE TABLE Recipe_has_Steps (\n" +
-                "  Recipe_idRecipe INTEGER  NOT NULL  ,\n" +
-                "  Steps_idSteps INTEGER  NOT NULL    ,\n" +
-                "PRIMARY KEY(Recipe_idRecipe, Steps_idSteps)    ,\n" +
-                "  FOREIGN KEY(Recipe_idRecipe)\n" +
-                "    REFERENCES Recipe(idRecipe)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION,\n" +
-                "  FOREIGN KEY(Steps_idSteps)\n" +
-                "    REFERENCES Steps(idSteps)\n" +
-                "      ON DELETE NO ACTION\n" +
-                "      ON UPDATE NO ACTION);\n" +
-                "CREATE INDEX Recipe_has_Steps_FKIndex1 ON Recipe_has_Steps (Recipe_idRecipe);\n" +
-                "CREATE INDEX Recipe_has_Steps_FKIndex2 ON Recipe_has_Steps (Steps_idSteps);\n";
+        String DATABASE_CREATE_SCRIPT =
+                "CREATE TABLE Recipe (\n" +
+                        "  idRecipe INTEGER NOT NULL,\n" +
+                        "  name VARCHAR,\n" +
+                        "  timeToMake INTEGER,\n" +
+                        "  country INTEGER,\n" +
+                        "  mealNumber INTEGER,\n" +
+                        "  difficulty ENUM,\n" +
+                        "  photo BLOB,\n" +
+                        "  favourites BOOL,\n" +
+                        "  PRIMARY KEY(idRecipe)\n" +
+                        ");\n\n" +
+
+                        "CREATE TABLE Steps (\n" +
+                        "  idSteps INTEGER NOT NULL,\n" +
+                        "  text VARCHAR,\n" +
+                        "  numberOfStep INTEGER,\n" +
+                        "  PRIMARY KEY(idSteps)\n" +
+                        ");\n\n" +
+
+                        "CREATE TABLE Tags (\n" +
+                        "  idTags INTEGER NOT NULL,\n" +
+                        "  name VARCHAR,\n" +
+                        "  PRIMARY KEY(idTags)\n" +
+                        ");\n\n" +
+
+                        "CREATE TABLE Recipe_has_Tags (\n" +
+                        "  Recipe_idRecipe INTEGER NOT NULL,\n" +
+                        "  Tags_idTags INTEGER NOT NULL,\n" +
+                        "  PRIMARY KEY(Recipe_idRecipe, Tags_idTags),\n" +
+                        "  FOREIGN KEY(Recipe_idRecipe)\n" +
+                        "    REFERENCES Recipe(idRecipe)\n" +
+                        "      ON DELETE NO ACTION\n" +
+                        "      ON UPDATE NO ACTION,\n" +
+                        "  FOREIGN KEY(Tags_idTags)\n" +
+                        "    REFERENCES Tags(idTags)\n" +
+                        "      ON DELETE NO ACTION\n" +
+                        "      ON UPDATE NO ACTION\n" +
+                        ");\n\n" +
+
+                        "CREATE INDEX Recipe_has_Tags_FKIndex1 ON Recipe_has_Tags (Recipe_idRecipe);\n" +
+                        "CREATE INDEX Recipe_has_Tags_FKIndex2 ON Recipe_has_Tags (Tags_idTags);\n\n" +
+
+                        "CREATE TABLE Recipe_has_Ingredient (\n" +
+                        "  Recipe_idRecipe INTEGER NOT NULL,\n" +
+                        "  Ingredient_ingredientId INTEGER NOT NULL,\n" +
+                        "  PRIMARY KEY(Recipe_idRecipe, Ingredient_ingredientId),\n" +
+                        "  FOREIGN KEY(Recipe_idRecipe)\n" +
+                        "    REFERENCES Recipe(idRecipe)\n" +
+                        "      ON DELETE NO ACTION\n" +
+                        "      ON UPDATE NO ACTION,\n" +
+                        "  FOREIGN KEY(Ingredient_ingredientId)\n" +
+                        "    REFERENCES Ingredient(ingredientId)\n" +
+                        "      ON DELETE NO ACTION\n" +
+                        "      ON UPDATE NO ACTION\n" +
+                        ");\n\n" +
+
+                        "CREATE INDEX Recipe_has_Ingredient_FKIndex1 ON Recipe_has_Ingredient (Recipe_idRecipe);\n" +
+                        "CREATE INDEX Recipe_has_Ingredient_FKIndex2 ON Recipe_has_Ingredient (Ingredient_ingredientId);\n\n" +
+
+                        "CREATE TABLE Recipe_has_Steps (\n" +
+                        "  Recipe_idRecipe INTEGER NOT NULL,\n" +
+                        "  Steps_idSteps INTEGER NOT NULL,\n" +
+                        "  PRIMARY KEY(Recipe_idRecipe, Steps_idSteps),\n" +
+                        "  FOREIGN KEY(Recipe_idRecipe)\n" +
+                        "    REFERENCES Recipe(idRecipe)\n" +
+                        "      ON DELETE NO ACTION\n" +
+                        "      ON UPDATE NO ACTION,\n" +
+                        "  FOREIGN KEY(Steps_idSteps)\n" +
+                        "    REFERENCES Steps(idSteps)\n" +
+                        "      ON DELETE NO ACTION\n" +
+                        "      ON UPDATE NO ACTION\n" +
+                        ");\n\n" +
+
+                        "CREATE INDEX Recipe_has_Steps_FKIndex1 ON Recipe_has_Steps (Recipe_idRecipe);\n" +
+                        "CREATE INDEX Recipe_has_Steps_FKIndex2 ON Recipe_has_Steps (Steps_idSteps);\n\n" +
+
+                        "CREATE TABLE ShoppingList (\n" +
+                        "  shoppingListItemName VARCHAR,\n" +
+                        "  purchasedQuantity FLOAT,\n" +
+                        "  purchaseDate DATE,\n" +
+                        "  isFood BOOLEAN,\n" +
+                        "  PRIMARY KEY(shoppingListItemName)\n" +
+                        ");\n\n" +
+
+                        "CREATE TABLE AIRecipe (\n" +
+                        "  AIRecipeId INTEGER NOT NULL,\n" +
+                        "  AIRecipeText VARCHAR,\n" +
+                        "  PRIMARY KEY(AIRecipeId)\n" +
+                        ");\n\n" +
+
+                        "CREATE TABLE Ingredient (\n" +
+                        "  ingredientId INTEGER NOT NULL,\n" +
+                        "  ingredientName VARCHAR,\n" +
+                        "  quantity FLOAT,\n" +
+                        "  unitSystem VARCHAR,\n" +
+                        "  timeToSpoil DATE,\n" +
+                        "  checkIfSpoiledArray ARRAY,\n" +
+                        "  PRIMARY KEY(ingredientId)\n" +
+                        ");";
         // Split and run each statement
-        for (String statement : query.split(";")) {
+        for (String statement : DATABASE_CREATE_SCRIPT.split(";")) {
             statement = statement.trim();
             if (!statement.isEmpty()) {
                 db.execSQL(statement + ";");
@@ -119,5 +129,79 @@ public class DBHandler extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Handle upgrades
+        db.execSQL("DROP TABLE IF EXISTS Recipe");
+        db.execSQL("DROP TABLE IF EXISTS Steps");
+        db.execSQL("DROP TABLE IF EXISTS Tags");
+        db.execSQL("DROP TABLE IF EXISTS Recipe_has_Steps");
+        db.execSQL("DROP TABLE IF EXISTS Recipe_has_Ingredient");
+        db.execSQL("DROP TABLE IF EXISTS Recipe_has_Tags");
+
+        db.execSQL("DROP TABLE IF EXISTS ShoppingList");
+        db.execSQL("DROP TABLE IF EXISTS AIRecipe");
+        db.execSQL("DROP TABLE IF EXISTS Ingredient");
+
+        // Recreate tables
+        onCreate(db);
+    }
+
+    public int getNextUnusedAIRecipeId() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT MAX(AIRecipeId) FROM AIRecipe;";
+        Cursor cursor = db.rawQuery(query, null);
+        int nextId;
+        if (cursor.moveToFirst()) {
+            nextId = Integer.parseInt(cursor.getString(0)) + 1;
+        } else {
+            nextId = 1;
+        }
+        cursor.close();
+        db.close();
+        return nextId;
+    }
+    public Ingredient findIngredient(String Ingredient_name){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM Ingredient \n" +
+                        "WHERE quantity>0;";
+        Cursor cursor = db.rawQuery(query, null);
+        Ingredient ingredient = new Ingredient();
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            ingredient.setIngredientId(Integer.parseInt(cursor.getString(0)));
+            ingredient.setIngredientName(cursor.getString(1));
+            ingredient.setQuantity(Float.parseFloat(cursor.getString(2)));
+            ingredient.setUnitSystem(cursor.getString(3));
+            ingredient.setTimeToSpoil(cursor.getString(4));
+            cursor.close();
+        } else {
+            ingredient = null;
+        }
+        db.close();
+        return ingredient;
+    }
+
+    // Add an AI recipe to the database
+    public void registerAIRecipe(AIRecipe recipe){
+        String registration_query = "INSERT INTO AIRecipe (AIRecipeId, AIRecipeText)" +
+                                    "VALUES ('" + recipe.getAIRecipeId() + "', '" + recipe.getAIRecipeText() + "');";
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(registration_query);
+        db.close();
+    }
+
+    public AIRecipe getAIRecipe(int AIRecipeId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM AIRecipe " +
+                        "WHERE AIRecipeId='" + AIRecipeId + "';";
+        Cursor cursor = db.rawQuery(query, null);
+        AIRecipe recipe = new AIRecipe();
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            recipe.setAIRecipeId(Integer.parseInt(cursor.getString(0)));
+            recipe.setAIRecipeText(cursor.getString(1));
+            cursor.close();
+        } else {
+            recipe = null;
+        }
+        return recipe;
     }
 }
