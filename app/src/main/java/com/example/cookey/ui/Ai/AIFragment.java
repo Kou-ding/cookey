@@ -1,5 +1,6 @@
 package com.example.cookey.ui.Ai;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -22,6 +23,9 @@ import android.widget.LinearLayout;
 
 import com.example.cookey.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,34 +127,65 @@ public class AIFragment extends Fragment {
         return view;
     }
     private void addCheckbox() {
-        final CheckBox newCheckbox = new CheckBox(requireContext());
+        final Context context = requireContext();
+
+        // Create TextInputLayout
+        final TextInputLayout textInputLayout = new TextInputLayout(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
         layoutParams.setMargins(0, 8, 0, 8); // Add some spacing
-        newCheckbox.setLayoutParams(layoutParams);
-        newCheckbox.setText("New ingredient");
-        checkboxes.add(newCheckbox);
-        checkboxContainer.addView(newCheckbox);
+        textInputLayout.setLayoutParams(layoutParams);
+        textInputLayout.setHint("New ingredient"); // Initial hint
 
-        final EditText editText = new EditText(requireContext());
-        editText.setLayoutParams(layoutParams);
-        editText.setHint("Enter ingredient...");
-        checkboxContainer.addView(editText);
+        // Create TextInputEditText
+        final TextInputEditText editText = new TextInputEditText(context);
+        textInputLayout.addView(editText);
+
+        // Create MaterialCheckBox
+        final MaterialCheckBox checkBox = new MaterialCheckBox(context);
+        checkBox.setChecked(false);
+
+        // Set CheckBox click listener to update input field focus
+        checkBox.setOnClickListener(v -> {
+            if (checkBox.isChecked()) {
+                editText.requestFocus(); // Request focus when checked
+            }
+        });
+
+        // Set CheckBox as start icon using built-in drawables
+        textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, R.drawable.check_box_outline_blank_24dp_e3e3e3_fill0_wght400_grad0_opsz24)); // Initial unchecked icon
+        textInputLayout.setStartIconOnClickListener(v -> {
+            checkBox.setChecked(!checkBox.isChecked());
+            textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, checkBox.isChecked() ? R.drawable.select_check_box_24dp_e3e3e3_fill0_wght400_grad0_opsz24 : R.drawable.check_box_outline_blank_24dp_e3e3e3_fill0_wght400_grad0_opsz24)); // Update icon
+            //Optional: If you want to trigger the editText focus on checkbox click
+            if (checkBox.isChecked()) {
+                editText.requestFocus(); // Request focus when checked
+            }
+        });
+
+        // Add to checkbox container
+        checkboxContainer.addView(textInputLayout);
+
+        //Add checkbox to list - we'll use MaterialCheckBox instead for our checkbox list.
+        checkboxes.add(checkBox);
 
         editText.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s)) {
-                    newCheckbox.setText(s.toString());
-                    // Only add new checkbox if this is the last one
-                    if (checkboxes.get(checkboxes.size() - 1) == newCheckbox) {
-                        addCheckbox();
-                    }
+                // Add new checkbox if this is the last one and input is not empty.
+                if (s != null && !s.toString().trim().isEmpty() &&
+                        !checkboxes.isEmpty() && checkboxes.get(checkboxes.size() - 1) == checkBox) {
+                    addCheckbox(); // Add a new checkbox when text is entered in the last one
                 }
             }
         });
