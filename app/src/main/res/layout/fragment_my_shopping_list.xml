@@ -9,24 +9,75 @@
         android:id="@+id/view"
         android:layout_width="378dp"
         android:layout_height="554dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
-        android:layout_marginEnd="16dp"
-        android:background="?attr/colorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollViewShoppingList"
+        android:layout_width="379dp"
+        android:layout_height="554dp"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/addNonFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Add"
+        app:icon="@drawable/add_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox4" />
+
+    <CheckBox
+        android:id="@+id/checkBox4"
+        android:layout_width="345dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="CheckBox"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox5" />
+
+    <CheckBox
+        android:id="@+id/checkBox6"
+        android:layout_width="347dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="CheckBox"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <CheckBox
+        android:id="@+id/checkBox5"
+        android:layout_width="346dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="CheckBox"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox6" />
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="0dp"
         android:layout_height="51dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
-        android:buttonTint="?attr/colorOnSecondary"
         android:text="CheckBox"
-        android:textColor="?attr/colorOnSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -36,11 +87,9 @@
         android:layout_width="0dp"
         android:layout_height="51dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
-        android:buttonTint="?attr/colorOnSecondary"
         android:text="CheckBox"
-        android:textColor="?attr/colorOnSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,11 +100,9 @@
         android:layout_width="0dp"
         android:layout_height="51dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
-        android:buttonTint="?attr/colorOnSecondary"
         android:text="CheckBox"
-        android:textColor="?attr/colorOnSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +115,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Food"
-        android:textColor="?attr/colorOnSecondary"
         app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toTopOf="@+id/view" />
 
@@ -77,39 +123,38 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="Non-Food"
-        android:textColor="?attr/colorOnSecondary"
         app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
+        app:layout_constraintTop_toBottomOf="@+id/button4" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/deleteShoppingList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Delete"
         app:icon="@drawable/delete_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/editShoppingList"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/editShoppingList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Edit"
         app:icon="@drawable/edit_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
+        app:layout_constraintEnd_toStartOf="@+id/addToIngredients"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button"
+        app:layout_constraintStart_toEndOf="@+id/deleteShoppingList"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/addToIngredients"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -117,8 +162,19 @@
         app:icon="@drawable/cookie_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button2"
+        app:layout_constraintStart_toEndOf="@+id/editShoppingList"
         app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Add"
+        app:icon="@drawable/add_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

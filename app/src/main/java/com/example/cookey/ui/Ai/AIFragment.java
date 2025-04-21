@@ -47,6 +47,8 @@ public class AIFragment extends Fragment {
     private String mParam2;
 
     private LinearLayout checkboxContainer;
+
+    private MaterialCheckBox useMyIngredientsCheckBox;
     private final List<CheckBox> checkboxes = new ArrayList<>();
     public AIFragment() {
         // Required empty public constructor
@@ -99,11 +101,13 @@ public class AIFragment extends Fragment {
         // Initialize views from the layout
         Button expandButton = view.findViewById(R.id.expandButton);
         checkboxContainer = view.findViewById(R.id.checkboxContainer);
+        useMyIngredientsCheckBox = view.findViewById(R.id.useMyIngredientsCheckBox);
 
         // Set click listener for the expand button
         expandButton.setOnClickListener(v -> {
             boolean isVisible = checkboxContainer.getVisibility() == View.VISIBLE;
             checkboxContainer.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+            useMyIngredientsCheckBox.setVisibility(isVisible ? View.GONE : View.VISIBLE);
 
             // Change down arrow (optional)
             // Change the button icon
