@@ -43,39 +43,46 @@
     <Button
         android:id="@+id/generate_ai_recipe"
         android:layout_width="110dp"
-        android:layout_height="52dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:text="@string/cook"
         android:textAlignment="center"
         app:icon="@drawable/chef_hat_24px"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/scrollArea"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
-    <LinearLayout
-        android:layout_width="240dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+    <!-- Scrollable container for ingredient controls -->
+    <ScrollView
+        android:id="@+id/scrollArea"
+        android:layout_width="224dp"
+        android:layout_height="220dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@+id/generate_ai_recipe"
+        android:fillViewport="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
-        <Button
-            android:id="@+id/expandButton"
-            android:layout_width="224dp"
-            android:layout_height="52dp"
-            android:text="@string/add_ingredients"
-            app:icon="@drawable/keyboard_arrow_down_24dp_e3e3e3_fill0_wght400_grad0_opsz24" />
-
         <LinearLayout
-            android:id="@+id/checkboxContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-            <!-- Checkboxes will be added here dynamically -->
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/expandButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_ingredients"
+                app:icon="@drawable/keyboard_arrow_down_24dp_e3e3e3_fill0_wght400_grad0_opsz24" />
+
+            <LinearLayout
+                android:id="@+id/checkboxContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" />
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
