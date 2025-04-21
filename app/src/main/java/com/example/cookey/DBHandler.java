@@ -113,8 +113,8 @@ public class DBHandler extends SQLiteOpenHelper {
                         "  ingredientName VARCHAR,\n" +
                         "  quantity FLOAT,\n" +
                         "  unitSystem VARCHAR,\n" +
-                        "  timeToSpoil DATE,\n" +
-                        "  checkIfSpoiledArray ARRAY,\n" +
+                        "  daysToSpoil INTEGER,\n" +
+                        "  checkIfSpoiledArray TEXT,\n" +
                         "  PRIMARY KEY(ingredientId)\n" +
                         ");";
         // Split and run each statement
@@ -170,7 +170,7 @@ public class DBHandler extends SQLiteOpenHelper {
             ingredient.setIngredientName(cursor.getString(1));
             ingredient.setQuantity(Float.parseFloat(cursor.getString(2)));
             ingredient.setUnitSystem(cursor.getString(3));
-            ingredient.setTimeToSpoil(cursor.getString(4));
+            ingredient.setDaysToSpoil(Integer.parseInt(cursor.getString(4)));
             cursor.close();
         } else {
             ingredient = null;
@@ -203,5 +203,32 @@ public class DBHandler extends SQLiteOpenHelper {
             recipe = null;
         }
         return recipe;
+    }
+
+    // Return an array of all my Ingredients
+    public Ingredient[] getAllIngredients(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM Ingredient " +
+                        "WHERE quantity>0;";
+        Cursor cursor = db.rawQuery(query, null);
+        int ingredientCount = cursor.getCount();
+        Ingredient[] ingredients = new Ingredient[ingredientCount];
+        int i = 0;
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                Ingredient ingredient = new Ingredient();
+                ingredient.setIngredientId(Integer.parseInt(cursor.getString(0)));
+                ingredient.setIngredientName(cursor.getString(1));
+                ingredient.setQuantity(Float.parseFloat(cursor.getString(2)));
+                ingredient.setUnitSystem(cursor.getString(3));
+                ingredient.setDaysToSpoil(Integer.parseInt(cursor.getString(4)));
+                ingredients[i] = ingredient;
+                cursor.moveToNext();
+                i++;
+            }
+        }
+        cursor.close();
+        db.close();
+        return ingredients;
     }
 }

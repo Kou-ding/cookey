@@ -1,23 +1,25 @@
 package com.example.cookey;
 
+import java.util.List;
+
 public class Ingredient {
     private int ingredientId; // id of the ingredient
     private String ingredientName; // name of the ingredient
     private float quantity; // total quantity of the ingredient
     private String unitSystem;
     // Arrays that hold different purchases of the same ingredient
-    private String timeToSpoil; // the time it take for the ingredient to spoil (days)
-    private String checkIfSpoiledArray; // the date you should check if something has spoiled
+    private int daysToSpoil; // the time it take for the ingredient to spoil (days)
+    private List<String> checkIfSpoiledArray; // the date you should check if something has spoiled
 
     public Ingredient(){
         // empty constructor
     }
-    public Ingredient(int ingredientId, String ingredientName, float quantity, String unitSystem, String timeToSpoil, String purchaseDate){
+    public Ingredient(int ingredientId, String ingredientName, float quantity, String unitSystem, int daysToSpoil, String purchaseDate){
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
         this.quantity = quantity;
         this.unitSystem = unitSystem;
-        this.timeToSpoil = timeToSpoil;
+        this.daysToSpoil = daysToSpoil;
     }
 
     public int getIngredientId(){
@@ -48,17 +50,17 @@ public class Ingredient {
         this.unitSystem = unitSystem;
     }
 
-    public String getTimeToSpoil(){
-        return timeToSpoil;
+    public int getDaysToSpoil(){
+        return daysToSpoil;
     }
-    public void setTimeToSpoil(String timeToSpoil){
-        this.timeToSpoil = timeToSpoil;
+    public void setDaysToSpoil(int daysToSpoil){
+        this.daysToSpoil = daysToSpoil;
     }
 
-    public String getCheckIfSpoiledArray(){
+    public List<String> getCheckIfSpoiledArray(){
         return checkIfSpoiledArray;
     }
-    public void setCheckIfSpoiledArray(String checkIfSpoiledArray){
+    public void setCheckIfSpoiledArray(List<String> checkIfSpoiledArray){
         this.checkIfSpoiledArray = checkIfSpoiledArray;
     }
 

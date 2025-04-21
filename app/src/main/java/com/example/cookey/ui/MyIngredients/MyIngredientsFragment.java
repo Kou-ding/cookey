@@ -7,8 +7,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import com.example.cookey.DBHandler;
+import com.example.cookey.Ingredient;
 import com.example.cookey.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,10 +64,34 @@ public class MyIngredientsFragment extends Fragment {
         }
     }
 
+    private ListView ingredientListView;
+    private DBHandler dbHandler;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_ingredients, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_ingredients, container, false); // Replace your_layout_file
+        ingredientListView = view.findViewById(R.id.myIngredientListView); // Replace with your ListView's ID
+        dbHandler = new DBHandler(requireContext()); // Initialize your DBHandler
+        populateListView();
+        return view;
+    }
+    private void populateListView() {
+        Ingredient[] ingredients = dbHandler.getAllIngredients();
+        if (ingredients != null && ingredients.length > 0) {
+            List<String> ingredientNames = new ArrayList<>();
+            for (Ingredient ingredient : ingredients) {
+                ingredientNames.add(ingredient.getIngredientName()); // Or any other relevant data
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_list_item_1, // Standard list item layout
+                    ingredientNames
+            );
+            ingredientListView.setAdapter(adapter);
+        } else {
+            // Handle the case where no ingredients are found (e.g., show a message)
+            // ingredientListView.setEmptyView(findViewById(R.id.empty_view));
+        }
     }
 }
