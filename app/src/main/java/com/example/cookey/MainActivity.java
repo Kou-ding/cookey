@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
 
         // database
-        DBHandler dbHandler = new DBHandler(this); // 'this' is the Context
+        DBHandler dbHandler = new DBHandler(this);
         SQLiteDatabase db = dbHandler.getWritableDatabase(); // this triggers onCreate if DB doesn't exist
 
     }
