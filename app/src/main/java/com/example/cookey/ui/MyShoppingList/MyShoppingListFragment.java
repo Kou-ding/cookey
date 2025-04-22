@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
+import com.example.cookey.DBHandler;
 import com.example.cookey.R;
 
 /**
@@ -80,7 +83,7 @@ public class MyShoppingListFragment extends Fragment {
         Button addNonFoodButton = view.findViewById(R.id.addNonFood);
 
         addFoodButton.setOnClickListener(v -> {
-            showIngredientInput(listLayout);  // ✅ Use new version
+            addAutoCompleteTextView(listLayout);
         });
 
         return view;
@@ -119,6 +122,55 @@ public class MyShoppingListFragment extends Fragment {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
+
+    private void addAutoCompleteTextView(LinearLayout parentLayout) {
+        AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(getContext());
+        autoCompleteTextView.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        autoCompleteTextView.setHint("Type ingredient...");
+        autoCompleteTextView.setTextSize(16);
+        autoCompleteTextView.setThreshold(1); // Start suggesting from first character
+
+        // Set up text change listener to update suggestions
+        autoCompleteTextView.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateSuggestions(autoCompleteTextView, s.toString());
+            }
+        });
+
+        // Add it to layout at correct position (below "Food", above Add button)
+        int addButtonIndex = getButtonIndex(parentLayout, R.id.addFood);
+        parentLayout.addView(autoCompleteTextView, addButtonIndex);
+    }
+    private void updateSuggestions(AutoCompleteTextView view, String query) {
+        DBHandler dbHandler = new DBHandler(getContext());
+        String[] matches = dbHandler.similarIngredients(query);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                getContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                matches
+        );
+        view.setAdapter(adapter);
+        view.showDropDown(); // Optional: always show dropdown as you type
+    }
+    private int getButtonIndex(LinearLayout layout, int buttonId) {
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            if (child.getId() == buttonId) {
+                return i;
+            }
+        }
+        return layout.getChildCount(); // fallback
+    }
+
+
 
 
 
