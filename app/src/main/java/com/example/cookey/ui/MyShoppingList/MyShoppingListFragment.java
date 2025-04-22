@@ -3,9 +3,11 @@ package com.example.cookey.ui.MyShoppingList;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import androidx.annotation.OptIn;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.util.Log;
+import androidx.media3.common.util.UnstableApi;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -84,12 +86,15 @@ public class MyShoppingListFragment extends Fragment {
         Button addNonFoodButton = view.findViewById(R.id.addNonFood);
 
         addFoodButton.setOnClickListener(v -> {
-            addAutoCompleteTextView(listLayout);
+            showFoodIngredientInput(listLayout);
+        });
+        addNonFoodButton.setOnClickListener(v -> {
+            showNonFoodIngredientInput(listLayout);
         });
 
         return view;
     }
-    private void showIngredientInput(LinearLayout parentLayout) {
+    private void showFoodIngredientInput(LinearLayout parentLayout) {
         EditText ingredientInput = new EditText(getContext());
         ingredientInput.setHint("Type ingredient...");
         ingredientInput.setLayoutParams(new LinearLayout.LayoutParams(
@@ -109,6 +114,26 @@ public class MyShoppingListFragment extends Fragment {
         // Insert the EditText just before the Add button
         parentLayout.addView(ingredientInput, addButtonIndex);
     }
+    private void showNonFoodIngredientInput(LinearLayout parentLayout) {
+        EditText ingredientInput = new EditText(getContext());
+        ingredientInput.setHint("Type ingredient...");
+        ingredientInput.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+
+        // Set margin (optional)
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ingredientInput.getLayoutParams();
+        params.topMargin = dpToPx(8);
+        params.bottomMargin = dpToPx(8);
+        ingredientInput.setLayoutParams(params);
+
+        // Find the index of the Add button
+        int addButtonIndex = getIndexOfChildById(parentLayout, R.id.addNonFood);
+
+        // Insert the EditText just before the Add button
+        parentLayout.addView(ingredientInput, addButtonIndex);
+    }
 
     private int getIndexOfChildById(LinearLayout parent, int id) {
         for (int i = 0; i < parent.getChildCount(); i++) {
@@ -124,6 +149,7 @@ public class MyShoppingListFragment extends Fragment {
         return Math.round(dp * density);
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private void addAutoCompleteTextView(LinearLayout parentLayout) {
         AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(getContext());
         autoCompleteTextView.setLayoutParams(new LinearLayout.LayoutParams(
@@ -165,8 +191,10 @@ public class MyShoppingListFragment extends Fragment {
     }
 
     private void updateSuggestions(AutoCompleteTextView view, String query) {
-        DBHandler dbHandler = new DBHandler(getContext());
-        String[] matches = dbHandler.similarIngredients(query);
+        String[] matches;
+        try (DBHandler dbHandler = new DBHandler(getContext())) {
+            matches = dbHandler.similarIngredients(query);
+        }
 
         // Update the adapter on the UI thread to avoid potential crashes
         if (view != null && view.getContext() != null) { //Add a safety check to ensure view and context are valid

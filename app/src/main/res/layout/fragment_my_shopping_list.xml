@@ -78,11 +78,12 @@
         android:id="@+id/deleteShoppingList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delete"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:text="Delete"
         app:icon="@drawable/delete_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        app:layout_constraintTop_toBottomOf="@+id/view"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <Button
         android:id="@+id/editShoppingList"
@@ -99,10 +100,11 @@
         android:id="@+id/addToIngredients"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Add"
         app:icon="@drawable/cookie_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        app:layout_constraintTop_toBottomOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
