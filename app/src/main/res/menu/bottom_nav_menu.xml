@@ -2,24 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_MyRecipes"
-        android:icon="@drawable/chef_hat_24px"
+        android:icon="@drawable/ic_chef_hat"
         android:title="@string/title_MyRecipes" />
 
     <item
         android:id="@+id/navigation_MyIngredients"
-        android:icon="@drawable/grocery_24px"
+        android:icon="@drawable/ic_grocery"
         android:title="@string/title_MyIngredients" />
     <item
         android:id="@+id/navigation_AI"
-        android:icon="@drawable/wand_shine_24px"
+        android:icon="@drawable/ic_wand_shine"
         android:title="@string/title_AI" />
     <item
         android:id="@+id/navigation_MyShoppingList"
-        android:icon="@drawable/checklist_24px"
+        android:icon="@drawable/ic_checklist"
         android:title="@string/title_MyShoppingList" />
     <item
         android:id="@+id/navigation_Settings"
-        android:icon="@drawable/settings_24px"
+        android:icon="@drawable/ic_settings"
         android:title="@string/title_Settings" />
 
 
