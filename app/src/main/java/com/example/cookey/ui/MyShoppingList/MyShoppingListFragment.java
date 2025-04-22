@@ -86,17 +86,18 @@ public class MyShoppingListFragment extends Fragment {
         Button addNonFoodButton = view.findViewById(R.id.addNonFood);
 
         addFoodButton.setOnClickListener(v -> {
-            showFoodIngredientInput(listLayout);
+            addAutoCompleteTextView(listLayout);
         });
         addNonFoodButton.setOnClickListener(v -> {
-            showNonFoodIngredientInput(listLayout);
+            showIngredientInput(listLayout);
         });
 
         return view;
     }
-    private void showFoodIngredientInput(LinearLayout parentLayout) {
+    private void showIngredientInput(LinearLayout parentLayout) {
         EditText ingredientInput = new EditText(getContext());
         ingredientInput.setHint("Type ingredient...");
+        ingredientInput.setTextSize(20);
         ingredientInput.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -108,22 +109,8 @@ public class MyShoppingListFragment extends Fragment {
         params.bottomMargin = dpToPx(8);
         ingredientInput.setLayoutParams(params);
 
-        // Find the index of the Add button
-        int addButtonIndex = getIndexOfChildById(parentLayout, R.id.addFood);
-
-        // Insert the EditText just before the Add button
-        parentLayout.addView(ingredientInput, addButtonIndex);
-    }
-    private void showNonFoodIngredientInput(LinearLayout parentLayout) {
-        EditText ingredientInput = new EditText(getContext());
-        ingredientInput.setHint("Type ingredient...");
-        ingredientInput.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-
-        // Set margin (optional)
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ingredientInput.getLayoutParams();
+        // Set margin for the auto complete text field
+        params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.topMargin = dpToPx(8);
         params.bottomMargin = dpToPx(8);
         ingredientInput.setLayoutParams(params);
@@ -156,8 +143,15 @@ public class MyShoppingListFragment extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
+
+        // Set margin for the auto complete text field
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = dpToPx(8);
+        params.bottomMargin = dpToPx(8);
+        autoCompleteTextView.setLayoutParams(params);
+
         autoCompleteTextView.setHint("Type ingredient...");
-        autoCompleteTextView.setTextSize(16);
+        autoCompleteTextView.setTextSize(20);
         autoCompleteTextView.setThreshold(1); // Suggest from first character
 
         // 🔄 Dynamic suggestions - Ensure thread safety
@@ -227,7 +221,7 @@ public class MyShoppingListFragment extends Fragment {
 
             CheckBox checkBox = new CheckBox(getContext());
             checkBox.setText(selectedIngredient);
-            checkBox.setTextSize(16);
+            checkBox.setTextSize(20);
             checkBox.setChecked(false);
 
             parentLayout.addView(checkBox, index);

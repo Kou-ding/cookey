@@ -4,21 +4,18 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.example.cookey.R;
@@ -46,14 +43,12 @@ public class AIFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private LinearLayout checkboxContainer;
-
-    private MaterialCheckBox useMyIngredientsCheckBox;
     private final List<CheckBox> checkboxes = new ArrayList<>();
     public AIFragment() {
         // Required empty public constructor
     }
 
+    
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -99,34 +94,32 @@ public class AIFragment extends Fragment {
 
         // Expand Button //
         // Initialize views from the layout
-        Button expandButton = view.findViewById(R.id.expandButton);
-        checkboxContainer = view.findViewById(R.id.checkboxContainer);
-        useMyIngredientsCheckBox = view.findViewById(R.id.useMyIngredientsCheckBox);
+        MaterialButton expandButton = view.findViewById(R.id.expandButton);
+        LinearLayout checkboxContainer = view.findViewById(R.id.checkboxContainer);
+
 
         // Set click listener for the expand button
         expandButton.setOnClickListener(v -> {
             boolean isVisible = checkboxContainer.getVisibility() == View.VISIBLE;
             checkboxContainer.setVisibility(isVisible ? View.GONE : View.VISIBLE);
-            useMyIngredientsCheckBox.setVisibility(isVisible ? View.GONE : View.VISIBLE);
 
             // Change down arrow (optional)
             // Change the button icon
             Drawable newIcon = ContextCompat.getDrawable(
                     requireContext(),
                     isVisible
-                            ? R.drawable.keyboard_arrow_down_24dp_e3e3e3_fill0_wght400_grad0_opsz24  // Down arrow when collapsing
-                            : R.drawable.keyboard_arrow_up_24dp_e3e3e3_fill0_wght400_grad0_opsz24    // Up arrow when expanding
+                            ? R.drawable.ic_keyboard_arrow_down  // Down arrow when collapsing
+                            : R.drawable.ic_keyboard_arrow_up    // Up arrow when expanding
             );
             ((MaterialButton) expandButton).setIcon(newIcon);
 
-            // Add first checkbox only when first expanded
-            if (!isVisible && checkboxes.isEmpty()) {
-                addCheckbox();
-            }
+
         });
 
         // Add initial checkbox (and subsequent ones dynamically)
-        addCheckbox();
+        if(checkboxContainer.getVisibility() == View.VISIBLE) {
+            addCheckbox();
+        }
 
         return view;
     }
@@ -159,18 +152,15 @@ public class AIFragment extends Fragment {
         });
 
         // Set CheckBox as start icon using built-in drawables
-        textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, R.drawable.check_box_outline_blank_24dp_e3e3e3_fill0_wght400_grad0_opsz24)); // Initial unchecked icon
+        textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, R.drawable.ic_check_box_outline_blank)); // Initial unchecked icon
         textInputLayout.setStartIconOnClickListener(v -> {
             checkBox.setChecked(!checkBox.isChecked());
-            textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, checkBox.isChecked() ? R.drawable.select_check_box_24dp_e3e3e3_fill0_wght400_grad0_opsz24 : R.drawable.check_box_outline_blank_24dp_e3e3e3_fill0_wght400_grad0_opsz24)); // Update icon
+            textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, checkBox.isChecked() ? R.drawable.ic_select_check_box : R.drawable.ic_check_box_outline_blank)); // Update icon
             //Optional: If you want to trigger the editText focus on checkbox click
             if (checkBox.isChecked()) {
                 editText.requestFocus(); // Request focus when checked
             }
         });
-
-        // Add to checkbox container
-        checkboxContainer.addView(textInputLayout);
 
         //Add checkbox to list - we'll use MaterialCheckBox instead for our checkbox list.
         checkboxes.add(checkBox);
@@ -194,5 +184,9 @@ public class AIFragment extends Fragment {
             }
         });
     }
+
+//    public String generateAIRecipe(String prompt, List<String> ingredients) {
+//
+//    }
 
 }

@@ -5,25 +5,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
 import com.example.cookey.IngredientAdapter;
 import com.example.cookey.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class MyIngredientsFragment extends Fragment {
 
     private IngredientAdapter adapter;
-    private DBHandler dbHandler;
+    private MyIngredientsViewModel viewModel;
     private boolean editing = false;
 
     @Nullable
@@ -32,16 +31,21 @@ public class MyIngredientsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_ingredients, container, false);
 
-        ListView ingredientListView = view.findViewById(R.id.myIngredientListView);
+        RecyclerView recyclerView = view.findViewById(R.id.myIngredientRecyclerView);
         Button editButton = view.findViewById(R.id.editButton);
 
-        dbHandler = new DBHandler(requireContext());
-        List<Ingredient> ingredients = new ArrayList<>(Arrays.asList(dbHandler.getAllIngredients()));
+        viewModel = new ViewModelProvider(this).get(MyIngredientsViewModel.class);
+        viewModel.loadIngredients(requireContext());
 
-        adapter = new IngredientAdapter(requireContext(), ingredients);
-        ingredientListView.setAdapter(adapter);
+        adapter = new IngredientAdapter(new ArrayList<>(), requireContext());
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(adapter);
 
-        // Toggle edit mode on button click
+        viewModel.getIngredients().observe(getViewLifecycleOwner(), ingredients -> {
+            adapter.updateIngredients(ingredients);
+            editButton.setEnabled(!ingredients.isEmpty());
+        });
+
         editButton.setOnClickListener(v -> {
             editing = !editing;
             adapter.setEditingEnabled(editing);
@@ -49,9 +53,7 @@ public class MyIngredientsFragment extends Fragment {
         });
 
         adapter.setOnDeleteClickListener(ingredient -> {
-            dbHandler.deleteIngredient(ingredient.getIngredientId()); // assuming getId() exists
-            ingredients.remove(ingredient);
-            adapter.notifyDataSetChanged();
+            viewModel.deleteIngredient(requireContext(), ingredient.getIngredientId());
         });
 
         return view;
