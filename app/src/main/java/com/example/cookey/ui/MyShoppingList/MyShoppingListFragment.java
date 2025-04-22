@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.media3.common.util.Log;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -131,35 +132,56 @@ public class MyShoppingListFragment extends Fragment {
         ));
         autoCompleteTextView.setHint("Type ingredient...");
         autoCompleteTextView.setTextSize(16);
-        autoCompleteTextView.setThreshold(1); // Start suggesting from first character
+        autoCompleteTextView.setThreshold(1); // Suggest from first character
 
-        // Set up text change listener to update suggestions
+        // 🔄 Dynamic suggestions - Ensure thread safety
         autoCompleteTextView.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void afterTextChanged(Editable s) {}
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                updateSuggestions(autoCompleteTextView, s.toString());
+                // Post to the UI thread to ensure thread safety when updating the adapter
+                autoCompleteTextView.post(() -> updateSuggestions(autoCompleteTextView, s.toString()));
             }
         });
 
-        // Add it to layout at correct position (below "Food", above Add button)
+        // ✅ On item selected → replace with CheckBox - Robust and safe
+        autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
+            Log.d("ShoppingList", "onItemClick: position=" + position + ", count=" + parent.getCount());
+            if (position >= 0 && position < parent.getCount()) {
+                String selectedIngredient = (String) parent.getItemAtPosition(position);
+                replaceWithCheckbox(selectedIngredient, parentLayout, autoCompleteTextView); // Call helper
+            } else {
+                Log.e("ShoppingList", "Invalid position in onItemClick: position=" + position + ", count=" + parent.getCount());
+                autoCompleteTextView.dismissDropDown(); // Close dropdown on error
+                // Consider a Toast message if this happens frequently (but avoid being annoying)
+                // Toast.makeText(getContext(), "Error: Could not process selection.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Insert into layout just before the Add button
         int addButtonIndex = getButtonIndex(parentLayout, R.id.addFood);
         parentLayout.addView(autoCompleteTextView, addButtonIndex);
     }
+
     private void updateSuggestions(AutoCompleteTextView view, String query) {
         DBHandler dbHandler = new DBHandler(getContext());
         String[] matches = dbHandler.similarIngredients(query);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                getContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                matches
-        );
-        view.setAdapter(adapter);
-        view.showDropDown(); // Optional: always show dropdown as you type
+        // Update the adapter on the UI thread to avoid potential crashes
+        if (view != null && view.getContext() != null) { //Add a safety check to ensure view and context are valid
+            view.post(() -> {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        view.getContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        matches
+                );
+                view.setAdapter(adapter);
+                view.showDropDown(); // Optional: always show dropdown as you type
+            });
+        }
     }
+
     private int getButtonIndex(LinearLayout layout, int buttonId) {
         for (int i = 0; i < layout.getChildCount(); i++) {
             View child = layout.getChildAt(i);
@@ -170,10 +192,19 @@ public class MyShoppingListFragment extends Fragment {
         return layout.getChildCount(); // fallback
     }
 
+    private void replaceWithCheckbox(String selectedIngredient, LinearLayout parentLayout, AutoCompleteTextView autoCompleteTextView) {
+        if (isAdded() && getView() != null) { // Check if the fragment is added and the view is valid
+            int index = parentLayout.indexOfChild(autoCompleteTextView);
+            parentLayout.removeView(autoCompleteTextView);
 
+            CheckBox checkBox = new CheckBox(getContext());
+            checkBox.setText(selectedIngredient);
+            checkBox.setTextSize(16);
+            checkBox.setChecked(false);
 
-
-
+            parentLayout.addView(checkBox, index);
+        }
+    }
 
 
 }
