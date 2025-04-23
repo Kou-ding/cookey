@@ -2,12 +2,8 @@ package com.example.cookey;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-//import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
-//import android.content.ContentValues;
-//import android.database.Cursor;
-//import android.util.Log;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -145,7 +141,7 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     
-
+    // Ingredients Section //
     // Return an array of all my Ingredients
     public Ingredient[] getAllIngredients(){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -179,7 +175,6 @@ public class DBHandler extends SQLiteOpenHelper {
 
         db.close();
     }
-
     public String[] similarIngredients(String searchIngredient){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM Ingredient " +
@@ -219,13 +214,14 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     // For Database debugging //
+    // Delete all ingredients from the database
     public void dropDatabase(){
         SQLiteDatabase db = this.getWritableDatabase();
         // Remove all ingredients from the Ingredient table
         db.execSQL("DELETE FROM Ingredient;");
         db.close();
     }
-
+    // Execute a command on the database
     public void executeCommand(String command){
         SQLiteDatabase db = this.getWritableDatabase();
         for (String statement : command.split(";")) {
@@ -237,8 +233,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    
-    
     // AI Recipe Section //
     // During AI Recipe creation make sure the AI Recipe ID is unique
     public int getNextUnusedAIRecipeId() {
@@ -255,7 +249,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
         return nextId;
     }
-
     // Add an AI recipe to the database
     public void registerAIRecipe(AIRecipe recipe){
         String registration_query = "INSERT INTO AIRecipe (AIRecipeId, AIRecipeText)" +
@@ -264,7 +257,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL(registration_query);
         db.close();
     }
-
     // Get an AI recipe from the database
     public AIRecipe getAIRecipe(int AIRecipeId){
         SQLiteDatabase db = this.getReadableDatabase();
