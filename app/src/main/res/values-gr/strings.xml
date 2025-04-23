@@ -20,4 +20,5 @@
     <string name="edit">Edit</string>
     <string name="view_all_ingredients">View all ingredients</string>
     <string name="ingredient_recycle_view">Ingredient recycle view</string>
+    <string name="done">Done</string>
 </resources>
