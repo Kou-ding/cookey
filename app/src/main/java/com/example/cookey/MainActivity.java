@@ -1,5 +1,6 @@
 package com.example.cookey;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -9,6 +10,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.cookey.databinding.ActivityMainBinding;
+import com.google.android.material.navigation.NavigationBarView;
+
 import android.database.sqlite.SQLiteDatabase;
 
 
@@ -27,7 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Bottom Navigation
         BottomNavigationView navView = findViewById(R.id.bottom_navigation);
-        AppBarConfiguration appBarConfiguration= new AppBarConfiguration.Builder(R.id.navigation_MyRecipes,R.id.navigation_MyIngredients,R.id.navigation_AI,R.id.navigation_MyShoppingList,R.id.navigation_Settings).build();
+        AppBarConfiguration appBarConfiguration= new AppBarConfiguration.Builder(
+                R.id.navigation_MyRecipes,
+                R.id.navigation_MyIngredients,
+                R.id.navigation_AI,
+                R.id.navigation_MyShoppingList,
+                R.id.navigation_Settings).build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this,navController,appBarConfiguration);
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
@@ -39,4 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }

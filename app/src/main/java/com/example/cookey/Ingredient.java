@@ -9,7 +9,7 @@ public class Ingredient {
     private String unitSystem;
     // Arrays that hold different purchases of the same ingredient
     private int daysToSpoil; // the time it take for the ingredient to spoil (days)
-    private List<String> checkIfSpoiledArray; // the date you should check if something has spoiled
+    private String checkIfSpoiledArray; // the date you should check if something has spoiled
 
     public Ingredient(){
         // empty constructor
@@ -57,10 +57,10 @@ public class Ingredient {
         this.daysToSpoil = daysToSpoil;
     }
 
-    public List<String> getCheckIfSpoiledArray(){
+    public String getCheckIfSpoiledArray(){
         return checkIfSpoiledArray;
     }
-    public void setCheckIfSpoiledArray(List<String> checkIfSpoiledArray){
+    public void setCheckIfSpoiledArray(String checkIfSpoiledArray){
         this.checkIfSpoiledArray = checkIfSpoiledArray;
     }
 

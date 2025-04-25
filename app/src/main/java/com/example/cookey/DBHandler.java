@@ -113,7 +113,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 "  quantity FLOAT,\n" +
                 "  unitSystem VARCHAR,\n" +
                 "  daysToSpoil INTEGER,\n" +
-                "  checkIfSpoiledArray TEXT,\n" +
+                "  checkIfSpoiledArray VARCHAR,\n" +
                 "  PRIMARY KEY(ingredientId)\n" +
                 ");";
         // Split and run each statement
@@ -146,29 +146,35 @@ public class DBHandler extends SQLiteOpenHelper {
     
     // Ingredients Section //
     // Return an array of all my Ingredients
-    public List<Ingredient> getAllIngredients(){
+    public List<Ingredient> getAllIngredients() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM Ingredient " +
-                        "WHERE quantity>0;";
-        Cursor cursor = db.rawQuery(query, null);
-        int ingredientCount = cursor.getCount();
         List<Ingredient> ingredients = new ArrayList<>();
-        int i = 0;
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                Ingredient ingredient = new Ingredient();
-                ingredient.setIngredientId(Integer.parseInt(cursor.getString(0)));
-                ingredient.setIngredientName(cursor.getString(1));
-                ingredient.setQuantity(Float.parseFloat(cursor.getString(2)));
-                ingredient.setUnitSystem(cursor.getString(3));
-                ingredient.setDaysToSpoil(Integer.parseInt(cursor.getString(4)));
-                ingredients.add(ingredient);
-                cursor.moveToNext();
-                i++;
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM Ingredient WHERE quantity > 0";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    Ingredient ingredient = new Ingredient();
+                    ingredient.setIngredientId(cursor.getInt(0));
+                    ingredient.setIngredientName(cursor.getString(1));
+                    ingredient.setQuantity(cursor.getFloat(2));
+                    ingredient.setUnitSystem(cursor.getString(3));
+                    ingredient.setDaysToSpoil(cursor.getInt(4));
+                    ingredient.setCheckIfSpoiledArray(cursor.getString(5));
+
+                    ingredients.add(ingredient);
+                } while (cursor.moveToNext());
             }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
         }
-        cursor.close();
-        db.close();
+
         return ingredients;
     }
     public Ingredient getIngredient(String ingredientName) {
@@ -188,6 +194,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 ingredient.setQuantity(cursor.getFloat(2));
                 ingredient.setUnitSystem(cursor.getString(3));
                 ingredient.setDaysToSpoil(cursor.getInt(4));
+                ingredient.setCheckIfSpoiledArray(cursor.getString(5));
             }
         } finally {
             if (cursor != null) {
