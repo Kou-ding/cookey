@@ -1,4 +1,4 @@
-package com.example.cookey.ui.AiRecipeEdit;
+package com.example.cookey;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,12 +13,8 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import com.example.cookey.R;
 
-import java.util.Objects;
-
-public class AIRecipeEditFragment extends Fragment {
+public class AIRecipeEditActivity extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
