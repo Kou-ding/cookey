@@ -5,11 +5,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "cookeyDB.db";
-    public DBHandler(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -143,13 +146,13 @@ public class DBHandler extends SQLiteOpenHelper {
     
     // Ingredients Section //
     // Return an array of all my Ingredients
-    public Ingredient[] getAllIngredients(){
+    public List<Ingredient> getAllIngredients(){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM Ingredient " +
                         "WHERE quantity>0;";
         Cursor cursor = db.rawQuery(query, null);
         int ingredientCount = cursor.getCount();
-        Ingredient[] ingredients = new Ingredient[ingredientCount];
+        List<Ingredient> ingredients = new ArrayList<>();
         int i = 0;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
@@ -159,7 +162,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 ingredient.setQuantity(Float.parseFloat(cursor.getString(2)));
                 ingredient.setUnitSystem(cursor.getString(3));
                 ingredient.setDaysToSpoil(Integer.parseInt(cursor.getString(4)));
-                ingredients[i] = ingredient;
+                ingredients.add(ingredient);
                 cursor.moveToNext();
                 i++;
             }
