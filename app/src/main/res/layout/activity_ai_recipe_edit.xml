@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout2"
+        android:id="@+id/AIRecipeInputLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"
@@ -32,6 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ai_recipe_text_input"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/ai_recipe" />
@@ -49,15 +50,15 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/discard_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Discard"
+        android:text="@string/discard"
         app:icon="@drawable/ic_close"
         app:layout_constraintEnd_toStartOf="@+id/save_ai_recipe"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/AIRecipeInputLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

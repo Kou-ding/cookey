@@ -1,50 +1,73 @@
 package com.example.cookey;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
+import android.widget.Button;
 
-public class AIRecipeEditActivity extends Fragment {
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.textfield.TextInputEditText;
+
+public class AIRecipeEditActivity extends AppCompatActivity {
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ai_recipe_edit, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_ai_recipe_edit);
+
+        // Enable the back button in the action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Edit AI Recipe");
+        }
+
+        Button saveButton = findViewById(R.id.save_ai_recipe);
+        saveButton.setOnClickListener(v -> {
+            // Create a new AIRecipe object to store the data
+            AIRecipe recipe = new AIRecipe();
+
+            // Fetch the recipe from the EditText field
+            TextInputEditText recipeInput = findViewById(R.id.ai_recipe_text_input);
+            String AiRecipeText = recipeInput.getText().toString().trim();
+
+            // Save the recipe to the database
+            int AiRecipeId;
+            try (DBHandler db = new DBHandler(this, null, null, 1)) {
+                AiRecipeId = db.getNextUnusedAIRecipeId();
+                recipe.setAIRecipeId(AiRecipeId);
+                recipe.setAIRecipeText(AiRecipeText);
+                db.registerAIRecipe(recipe);
+            }
+
+            // Handle save button click here
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+        Button discardButton = findViewById(R.id.discard_button);
+        discardButton.setOnClickListener(v -> {
+            // Handle discard button click here
+            finish();
+        });
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu here (if you have one, otherwise leave empty)
+        // getMenuInflater().inflate(R.menu.your_menu, menu);
+        return true;
+    }
 
-        // Use MenuProvider for Options Menu
-        requireActivity().addMenuProvider(new MenuProvider() {
-            @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                // Inflate menu here (if you have one, otherwise leave empty)
-                // menuInflater.inflate(R.menu.your_menu, menu);
-            }
-
-            @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                // Handle menu item selection here
-                if (menuItem.getItemId() == android.R.id.home) {
-                    // Handle the back button press
-                    FragmentManager fm = getParentFragmentManager();
-                    fm.popBackStack();
-                    return true;
-                }
-                return false;
-            }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED); // Optional: Control when the menu is active
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Handle menu item selection here
+        if (item.getItemId() == android.R.id.home) {
+            // Handle the back button press
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

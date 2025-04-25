@@ -27,9 +27,12 @@
             android:name=".AIRecipeEditActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
-
         <activity
             android:name=".AIRecipeViewActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".IngredientActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
 

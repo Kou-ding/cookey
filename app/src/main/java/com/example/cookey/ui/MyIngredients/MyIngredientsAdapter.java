@@ -1,5 +1,7 @@
 package com.example.cookey.ui.MyIngredients;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -14,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cookey.Ingredient;
+import com.example.cookey.IngredientActivity;
 import com.example.cookey.R;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -66,7 +69,7 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
     /**
      *  Class that holds the items to be displayed in the RecyclerView
      */
-    static class ViewHolder extends RecyclerView.ViewHolder {
+     class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, quantityTextView, unitSystemTextView;
         EditText quantityEditText;
         ImageButton deleteButton;
@@ -83,12 +86,23 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
             quantityEditText = view.findViewById(R.id.ingredientEditQuantity);
             deleteButton = view.findViewById(R.id.deleteIngredient);
 
-            view.setOnClickListener(v -> {
-                int position = getAdapterPosition();
+            if (viewMode) {
+                view.setOnClickListener(v -> {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Ingredient ingredient = ingredients.get(position);
 
-                Snackbar.make(v, "Click detected on item " + position,
-                        Snackbar.LENGTH_LONG).show();
-            });
+                        // Launch IngredientActivity with the ingredient name
+                        Intent intent = new Intent(v.getContext(), IngredientActivity.class);
+                        intent.putExtra("ingredientName", ingredient.getIngredientName());
+                        v.getContext().startActivity(intent);
+
+                        // Optional transition animation
+                        ((Activity) v.getContext()).overridePendingTransition(
+                                android.R.anim.fade_in, android.R.anim.fade_out);
+                    }
+                });
+            }
         }
     }
 

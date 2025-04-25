@@ -171,6 +171,33 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
         return ingredients;
     }
+    public Ingredient getIngredient(String ingredientName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Ingredient ingredient = null;
+        Cursor cursor = null;
+
+        try {
+            // Use rawQuery with parameter binding for safety
+            String query = "SELECT * FROM Ingredient WHERE ingredientName = ?";
+            cursor = db.rawQuery(query, new String[]{ingredientName});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                ingredient = new Ingredient();
+                ingredient.setIngredientId(cursor.getInt(0));
+                ingredient.setIngredientName(cursor.getString(1));
+                ingredient.setQuantity(cursor.getFloat(2));
+                ingredient.setUnitSystem(cursor.getString(3));
+                ingredient.setDaysToSpoil(cursor.getInt(4));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return ingredient;
+    }
     public void deleteIngredient(int ingredientId) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE Ingredient SET quantity = 0 WHERE ingredientId = " + ingredientId + ";";
@@ -240,23 +267,25 @@ public class DBHandler extends SQLiteOpenHelper {
     // During AI Recipe creation make sure the AI Recipe ID is unique
     public int getNextUnusedAIRecipeId() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT MAX(AIRecipeId) FROM AIRecipe;";
-        Cursor cursor = db.rawQuery(query, null);
-        int nextId;
-        if (cursor.moveToFirst()) {
-            nextId = Integer.parseInt(cursor.getString(0)) + 1;
-        } else {
-            nextId = 1;
+        int nextId = 1; // Default if table is empty
+
+        try {
+            Cursor cursor = db.rawQuery("SELECT MAX(AIRecipeId) FROM AIRecipe", null);
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                nextId = cursor.getInt(0) + 1;
+            }
+            cursor.close();
+        } finally {
+            db.close();
         }
-        cursor.close();
-        db.close();
         return nextId;
     }
     // Add an AI recipe to the database
     public void registerAIRecipe(AIRecipe recipe){
+        SQLiteDatabase db = this.getWritableDatabase();
         String registration_query = "INSERT INTO AIRecipe (AIRecipeId, AIRecipeText)" +
                 "VALUES ('" + recipe.getAIRecipeId() + "', '" + recipe.getAIRecipeText() + "');";
-        SQLiteDatabase db = this.getWritableDatabase();
+
         db.execSQL(registration_query);
         db.close();
     }

@@ -1,5 +1,7 @@
 package com.example.cookey;
 
+import java.io.Serializable;
+
 public class AIRecipe {
     private int AIRecipeId;
     private String AIRecipeText;

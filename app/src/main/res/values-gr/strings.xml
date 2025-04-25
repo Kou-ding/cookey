@@ -22,4 +22,5 @@
     <string name="ingredient_recycle_view">Ingredient recycle view</string>
     <string name="done">Done</string>
     <string name="save">Save</string>
+    <string name="discard">Discard</string>
 </resources>
