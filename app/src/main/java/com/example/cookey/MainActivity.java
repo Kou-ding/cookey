@@ -21,19 +21,21 @@ public class MainActivity extends AppCompatActivity {
         // Make Dark theme the default theme
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
+        // Set up the binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Bottom Navigation
         BottomNavigationView navView = findViewById(R.id.bottom_navigation);
         AppBarConfiguration appBarConfiguration= new AppBarConfiguration.Builder(R.id.navigation_MyRecipes,R.id.navigation_MyIngredients,R.id.navigation_AI,R.id.navigation_MyShoppingList,R.id.navigation_Settings).build();
-
-
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this,navController,appBarConfiguration);
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
 
         // database
-        DBHandler dbHandler = new DBHandler(this);
-        SQLiteDatabase db = dbHandler.getWritableDatabase(); // this triggers onCreate if DB doesn't exist
+        try (DBHandler dbHandler = new DBHandler(this, null, null, 1)) {
+            SQLiteDatabase db = dbHandler.getWritableDatabase(); // this triggers onCreate if DB doesn't exist
+        }
 
     }
 
