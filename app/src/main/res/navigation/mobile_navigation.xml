@@ -26,7 +26,7 @@
     </fragment>
     <fragment
         android:id="@+id/AIRecipeEditFragment"
-        android:name="com.example.cookey.ui.AiRecipeEdit.AIRecipeEditFragment"
+        android:name="com.example.cookey.AIRecipeEditActivity"
         android:label="Edit Recipe"
         tools:layout="@layout/fragment_ai_recipe_edit">
         <action
