@@ -186,7 +186,7 @@ public class MyShoppingListFragment extends Fragment {
 
     private void updateSuggestions(AutoCompleteTextView view, String query) {
         String[] matches;
-        try (DBHandler dbHandler = new DBHandler(getContext())) {
+        try (DBHandler dbHandler = new DBHandler(getContext(),null,null,1)) {
             matches = dbHandler.similarIngredients(query);
         }
 

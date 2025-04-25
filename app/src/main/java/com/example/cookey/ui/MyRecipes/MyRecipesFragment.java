@@ -51,7 +51,7 @@ public class MyRecipesFragment extends Fragment {
         Button dbdropper = view.findViewById(R.id.dropDB);
         Button dbexecutor = view.findViewById(R.id.executeCMD);
 
-        db = new DBHandler(getContext());
+        db = new DBHandler(getContext(),null,null,1);
         dbdropper.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
