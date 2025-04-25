@@ -19,20 +19,7 @@
         android:id="@+id/navigation_AI"
         android:name="com.example.cookey.ui.Ai.AIFragment"
         android:label="@string/title_AI"
-        tools:layout="@layout/fragment_ai">
-        <action
-            android:id="@+id/action_AIFragment_to_AIRecipeEditFragment"
-            app:destination="@id/AIRecipeEditFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/AIRecipeEditFragment"
-        android:name="com.example.cookey.AIRecipeEditActivity"
-        android:label="Edit Recipe"
-        tools:layout="@layout/fragment_ai_recipe_edit">
-        <action
-            android:id="@+id/action_AIRecipeEditFragment_to_AIFragment"
-            app:destination="@id/navigation_AI" />
-    </fragment>
+        tools:layout="@layout/fragment_ai"/>
     <fragment
         android:id="@+id/navigation_MyShoppingList"
         android:name="com.example.cookey.ui.MyShoppingList.MyShoppingListFragment"
