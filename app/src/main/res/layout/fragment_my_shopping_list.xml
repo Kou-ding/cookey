@@ -4,101 +4,98 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MyShoppingList.MyShoppingListFragment"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".ui.MyShoppingList.MyShoppingListFragment">
 
-    <ScrollView
-        android:id="@+id/scrollViewShoppingList"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+    <TextView
+        android:id="@+id/foodType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:text="Item Type"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listItemsRecyclerView"
+        android:layout_width="409dp"
+        android:layout_height="505dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/editShoppingList"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/toggleType"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/foodType" />
 
-        <LinearLayout
-            android:id="@+id/shoppingListLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+    <Button
+        android:id="@+id/addItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="Add"
+        app:icon="@drawable/ic_add"
+        app:layout_constraintBottom_toTopOf="@+id/newList"
+        app:layout_constraintEnd_toStartOf="@+id/toggleType"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Food Section -->
-            <TextView
-                android:id="@+id/foodItems"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:text="Food"
-                android:textSize="16sp" />
+    <ToggleButton
+        android:id="@+id/toggleType"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/item_type_toggle"
+        android:checked="true"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/refillIngredients"
+        app:layout_constraintEnd_toStartOf="@+id/deleteMode"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/addItem" />
 
-            <Button
-                android:id="@+id/addFood"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:text="Add"
-                app:icon="@drawable/ic_add" />
-
-            <!-- Non-Food Section -->
-            <TextView
-                android:id="@+id/nonFoodItems"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="32dp"
-                android:text="Non-Food"
-                android:textSize="16sp" />
-
-            <Button
-                android:id="@+id/addNonFood"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:text="Add"
-                app:icon="@drawable/ic_add" />
-        </LinearLayout>
-    </ScrollView>
+    <Button
+        android:id="@+id/deleteMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="Del"
+        app:icon="@drawable/ic_delete"
+        app:layout_constraintBottom_toTopOf="@+id/refillIngredients"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/toggleType" />
 
     <!-- Bottom Buttons -->
     <Button
-        android:id="@+id/deleteShoppingList"
+        android:id="@+id/newList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginBottom="24dp"
-        android:text="Delete"
-        app:icon="@drawable/ic_delete"
+        android:text="New List"
+        app:icon="@drawable/ic_refresh"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/refillIngredients"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/editShoppingList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:text="Edit"
-        app:icon="@drawable/ic_edit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addToIngredients"
-        app:layout_constraintStart_toEndOf="@+id/deleteShoppingList" />
-
-    <Button
-        android:id="@+id/addToIngredients"
+        android:id="@+id/refillIngredients"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:text="Add"
+        android:text="Refill Ingredients"
         app:icon="@drawable/ic_cookie"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/newList" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

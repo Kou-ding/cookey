@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -256,6 +257,7 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         // Remove all ingredients from the Ingredient table
         db.execSQL("DELETE FROM Ingredient;");
+        db.execSQL("DELETE FROM ShoppingList;");
         db.close();
     }
     // Execute a command on the database
@@ -312,5 +314,132 @@ public class DBHandler extends SQLiteOpenHelper {
             recipe = null;
         }
         return recipe;
+    }
+
+    // Shopping List section
+    public List<ShoppingListItem> getAllShoppingListItems(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<ShoppingListItem> items = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM ShoppingList";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ShoppingListItem item = new ShoppingListItem();
+                    item.setShoppingListItemName(cursor.getString(0));
+                    item.setPurchasedQuantity(cursor.getFloat(1));
+                    item.setPurchaseDate(cursor.getString(2));
+                    item.setIsFood(cursor.getInt(3) != 0);
+
+                    items.add(item);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return items;
+    }
+
+    public void deleteShoppingListItem(String shoppingListItemName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM ShoppingList WHERE shoppingListItemName = '" + shoppingListItemName + "';";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public List<ShoppingListItem> getAllFoodItems(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<ShoppingListItem> items = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM ShoppingList WHERE isFood = 1";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ShoppingListItem item = new ShoppingListItem();
+                    item.setShoppingListItemName(cursor.getString(0));
+                    item.setPurchasedQuantity(cursor.getFloat(1));
+                    item.setPurchaseDate(cursor.getString(2));
+                    item.setIsFood(cursor.getInt(3) != 0);
+
+                    items.add(item);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return items;
+    }
+
+    public List<ShoppingListItem> getAllNonFoodItems(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<ShoppingListItem> items = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM ShoppingList WHERE isFood = 0";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ShoppingListItem item = new ShoppingListItem();
+                    item.setShoppingListItemName(cursor.getString(0));
+                    item.setPurchasedQuantity(cursor.getFloat(1));
+                    item.setPurchaseDate(cursor.getString(2));
+                    item.setIsFood(cursor.getInt(3) != 0);
+
+                    items.add(item);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return items;
+    }
+
+    public void newShoppingList(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM ShoppingList;";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void addFoodItem(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "INSERT INTO ShoppingList VALUES ('', 0, '', 1);";
+        db.execSQL(query);
+        db.close();
+    }
+    public void addNonFoodItem() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "INSERT INTO ShoppingList VALUES ('', 0, '', 0);";
+        db.execSQL(query);
+        db.close();
     }
 }

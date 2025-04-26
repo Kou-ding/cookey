@@ -150,9 +150,4 @@ public class AIFragment extends Fragment {
             }
         });
     }
-
-//    public String generateAIRecipe(String prompt, List<String> ingredients) {
-//
-//    }
-
 }
