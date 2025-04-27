@@ -56,16 +56,6 @@
             </FrameLayout>
 
             <!-- Recipe Name Title -->
-            <TextView
-                android:id="@+id/textViewRecipeName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Kimchi"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="16dp"/>
 
             <!-- Editable Recipe Name Input -->
             <com.google.android.material.textfield.TextInputLayout

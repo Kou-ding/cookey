@@ -1,11 +1,13 @@
 package com.example.cookey; // άλλαξε το αν χρειάζεται
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,8 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,8 +56,6 @@ public class AddRecipeActivity extends AppCompatActivity {
     private AutoCompleteTextView autoCompleteDifficulty;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +75,14 @@ public class AddRecipeActivity extends AppCompatActivity {
         CheckBox cbQuick = findViewById(R.id.checkboxQuick);
 
         Button btnSelectCountry = findViewById(R.id.btnSelectCountry);
+
+        ScrollView scrollView = findViewById(R.id.scrollView);
+
+        //Prevent scrollview from resetting and also in a magical way, it fixed the <<not removing focus>> while user is NOT in editTextFields?"
+        scrollView.setOnTouchListener((v, event) -> {
+            hideKeyboard();
+            return false;
+        });
 
         btnSelectTime = findViewById(R.id.btnSelectTime);
 
@@ -96,6 +107,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
 
         dbHandler = new DBHandler(this); // Connect with DB
+
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -157,10 +169,8 @@ public class AddRecipeActivity extends AppCompatActivity {
         });
 
 
-
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnConfirm.setOnClickListener(v -> {
+            if (validateFields()) {
                 saveRecipe();
             }
         });
@@ -189,37 +199,63 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void saveRecipe() {
+
+        //Take the input from all fields
         String recipeName = editTextRecipeName.getText().toString().trim();
+        int timeToMake = selectedTimeMinutes;
+        long countryID = selectedCountryId;
+        int mealNumber = 0;
+        String difficulty = autoCompleteDifficulty.getText().toString().trim();
+        boolean isFavorite = false;
+        byte[] photoBytes = null;
 
-        if (recipeName.isEmpty()) {
-            Toast.makeText(this, "Please enter a recipe name.", Toast.LENGTH_SHORT).show();
-            return;
+        //Servings
+        String servingsText = editTextMealNumber.getText().toString().trim();
+        if(!servingsText.isEmpty()){
+            mealNumber =Integer.parseInt(servingsText);
         }
 
-        long recipeId = dbHandler.addRecipe(recipeName, 60, 1);
-
-        if (recipeId == -1) {
-            Toast.makeText(this, "Failed to save recipe.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Αποθήκευση επιλεγμένων υλικών
-        for (SelectedIngredient ingredient : selectedIngredients) {
-            dbHandler.addIngredientToRecipe(recipeId, ingredient.getIngredientId(), ingredient.getQuantity());
-        }
-
-        // Αποθήκευση βημάτων εκτέλεσης
-        for (int i = 0; i < stepsLayout.getChildCount(); i++) {
-            View view = stepsLayout.getChildAt(i);
-            if (view instanceof TextView) {
-                String stepDescription = ((TextView) view).getText().toString().trim();
-                if (!stepDescription.isEmpty()) {
-                    dbHandler.addStep(stepDescription, recipeId);
-                }
+        //image handling
+        if(selectedImageUri != null ){
+            try{
+                InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
+                photoBytes = new byte[inputStream.available()];
+                inputStream.read(photoBytes);
+                inputStream.close();
+            } catch (IOException e){
+                e.printStackTrace();
             }
         }
 
-        Toast.makeText(this, "Recipe and all details saved successfully!", Toast.LENGTH_SHORT).show();
+        DBHandler dbHandler = new DBHandler(this);
+        long recipeId = dbHandler.addRecipe(
+                recipeName,
+                timeToMake,
+                countryID,
+                mealNumber,
+                difficulty,
+                photoBytes,
+                isFavorite
+        );
+
+
+        for (SelectedIngredient ingredient : selectedIngredients) {
+            dbHandler.addIngredientToRecipe(recipeId, ingredient.getName(), ingredient.getQuantity(), "g", 7);
+        }
+
+
+        int stepCounter = 1;
+        for (StepModel step : selectedSteps) {
+            dbHandler.addStep(step.getDescription(), recipeId, stepCounter);
+            stepCounter++;
+        }
+
+        for (String tag : selectedTags) {
+            dbHandler.addTagToRecipe(recipeId, tag);
+        }
+
+        Toast.makeText(this, "Recipe saved successfully!", Toast.LENGTH_SHORT).show();
+   //     finish(); // Close AddRecipe Activity
     }
 
     private void addSelectedStep(String description) {
@@ -375,6 +411,66 @@ public class AddRecipeActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         imagePickerLauncher.launch(intent);
+    }
+
+    //Remove focus when not in editText
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus();
+        }
+    }
+
+    private boolean validateFields() {
+        String recipeName = editTextRecipeName.getText().toString().trim();
+
+        //Recipe Name check
+        if (recipeName.isEmpty()) {
+            Toast.makeText(this, "Please enter the recipe name", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //Ingredients check
+        if (selectedIngredients.isEmpty()) {
+            Toast.makeText(this, "Please add at least one ingredient", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //Steps check
+        if (selectedSteps.isEmpty()) {
+            Toast.makeText(this, "Please add at least one step", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //Country check
+        if (selectedCountryId == -1) {
+            Toast.makeText(this, "Please select a country", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //TimetoMake check
+        if (selectedTimeMinutes <= 0) {
+            Toast.makeText(this, "Please enter cooking time", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //Meal Number check
+        String servingsText = editTextMealNumber.getText().toString().trim();
+        if (servingsText.isEmpty()) {
+            Toast.makeText(this, "Please enter the number of servings", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //Difficulty check
+        String difficultyText = autoCompleteDifficulty.getText().toString().trim();
+        if (difficultyText.isEmpty()) {
+            Toast.makeText(this, "Please select a difficulty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
     }
 
 
