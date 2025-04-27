@@ -27,7 +27,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/autoCompleteIngredient"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
             android:text="AutoComplete"
