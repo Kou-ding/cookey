@@ -32,7 +32,13 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     @Override
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         IngredientModel ingredient = ingredientList.get(position);
-        holder.textViewName.setText(ingredient.getName());
+      //  holder.textViewName.setText(ingredient.getName());
+
+        String displayText = ingredient.getName();
+        if(ingredient.getUnit() != null && !ingredient.getUnit().isEmpty()){
+            displayText += " (" + ingredient.getUnit() + ")";
+        }
+        holder.textViewName.setText(displayText);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
