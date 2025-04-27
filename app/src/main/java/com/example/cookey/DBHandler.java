@@ -95,11 +95,12 @@ public class DBHandler extends SQLiteOpenHelper {
                 "CREATE INDEX Recipe_has_Steps_FKIndex2 ON Recipe_has_Steps (Steps_idSteps);\n\n" +
 
                 "CREATE TABLE ShoppingList (\n" +
+                "  shoppingListItemId INTEGER NOT NULL,\n" +
                 "  shoppingListItemName VARCHAR,\n" +
                 "  purchasedQuantity FLOAT,\n" +
                 "  purchaseDate DATE,\n" +
                 "  isFood BOOLEAN,\n" +
-                "  PRIMARY KEY(shoppingListItemName)\n" +
+                "  PRIMARY KEY(shoppingListItemId)\n" +
                 ");\n\n" +
 
                 "CREATE TABLE AIRecipe (\n" +
@@ -329,10 +330,11 @@ public class DBHandler extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     ShoppingListItem item = new ShoppingListItem();
-                    item.setShoppingListItemName(cursor.getString(0));
-                    item.setPurchasedQuantity(cursor.getFloat(1));
-                    item.setPurchaseDate(cursor.getString(2));
-                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setShoppingListItemId(cursor.getInt(0));
+                    item.setShoppingListItemName(cursor.getString(1));
+                    item.setPurchasedQuantity(cursor.getFloat(2));
+                    item.setPurchaseDate(cursor.getString(3));
+                    item.setIsFood(cursor.getInt(4) != 0);
 
                     items.add(item);
                 } while (cursor.moveToNext());
@@ -369,10 +371,11 @@ public class DBHandler extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     ShoppingListItem item = new ShoppingListItem();
-                    item.setShoppingListItemName(cursor.getString(0));
-                    item.setPurchasedQuantity(cursor.getFloat(1));
-                    item.setPurchaseDate(cursor.getString(2));
-                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setShoppingListItemId(cursor.getInt(0));
+                    item.setShoppingListItemName(cursor.getString(1));
+                    item.setPurchasedQuantity(cursor.getFloat(2));
+                    item.setPurchaseDate(cursor.getString(3));
+                    item.setIsFood(cursor.getInt(4) != 0);
 
                     items.add(item);
                 } while (cursor.moveToNext());
@@ -402,10 +405,11 @@ public class DBHandler extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     ShoppingListItem item = new ShoppingListItem();
-                    item.setShoppingListItemName(cursor.getString(0));
-                    item.setPurchasedQuantity(cursor.getFloat(1));
-                    item.setPurchaseDate(cursor.getString(2));
-                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setShoppingListItemId(cursor.getInt(0));
+                    item.setShoppingListItemName(cursor.getString(1));
+                    item.setPurchasedQuantity(cursor.getFloat(2));
+                    item.setPurchaseDate(cursor.getString(3));
+                    item.setIsFood(cursor.getInt(4) != 0);
 
                     items.add(item);
                 } while (cursor.moveToNext());
@@ -430,15 +434,63 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void addFoodItem(){
+    public void addFoodItem(int Id){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ('', 0, '', 1);";
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', 0, '', 1);";
         db.execSQL(query);
         db.close();
     }
-    public void addNonFoodItem() {
+    public void addNonFoodItem(int Id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ('', 0, '', 0);";
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+"'', 0, '', 0);";
+        db.execSQL(query);
+        db.close();
+    }
+    public int getNextUnusedShoppingListItemId(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        int nextId = 1; // Default if table is empty
+
+        try {
+            Cursor cursor = db.rawQuery("SELECT MAX(shoppingListItemId) FROM ShoppingList", null);
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                nextId = cursor.getInt(0) + 1;
+            }
+            cursor.close();
+        } finally {
+            db.close();
+        }
+        return nextId;
+    }
+
+    public String getUnitSystem(String ingredientName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT unitSystem FROM Ingredient WHERE ingredientName = '" + ingredientName + "';";
+        Cursor cursor = db.rawQuery(query, null);
+        String unitSystem = "units";
+        if (cursor.moveToFirst()) {
+            unitSystem = cursor.getString(0);
+        }
+        cursor.close();
+        db.close();
+        return unitSystem;
+    }
+    public void refillIngredients(List<ShoppingListItem> items){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query;
+        for (ShoppingListItem item : items){
+            // Add the quantity of the shopping list item to the ingredient
+            query = "UPDATE Ingredient SET quantity = quantity + " + item.getPurchasedQuantity() + " WHERE ingredientName = '" + item.getShoppingListItemName() + "';";
+            db.execSQL(query);
+        }
+        // Delete all the items from the shopping list
+        query = "DELETE FROM ShoppingList;";
+        db.execSQL(query);
+        db.close();
+
+    }
+    public void setNewItemNameAndQuantity(int id, String name, float quantity){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE ShoppingList SET shoppingListItemName = '" + name + "', purchasedQuantity = " + quantity + " WHERE shoppingListItemId = " + id + ";";
         db.execSQL(query);
         db.close();
     }

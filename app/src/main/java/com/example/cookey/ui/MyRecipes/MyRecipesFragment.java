@@ -60,26 +60,26 @@ public class MyRecipesFragment extends Fragment {
                     "INSERT INTO Ingredient VALUES (19, 'Soy Sauce', 250, 'ml', 730, '[]');\n" +
                     "INSERT INTO Ingredient VALUES (20, 'Mixed Vegetables', 750, 'grams', 180, '[\"2024-04-01\"]');" +
 
-                    "INSERT INTO ShoppingList VALUES ('Milk', 1.0, '2023-06-15', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Bread', 2.0, '2023-06-16', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Eggs', 12.0, '2023-06-17', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Chicken', 1.5, '2023-06-18', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Rice', 5.0, '2023-06-19', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Pasta', 2.0, '2023-06-20', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Tomatoes', 6.0, '2023-06-21', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Potatoes', 10.0, '2023-06-22', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Onions', 4.0, '2023-06-23', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Apples', 8.0, '2023-06-24', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Bananas', 5.0, '2023-06-25', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Toilet Paper', 4.0, '2023-06-26', 0);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Soap', 2.0, '2023-06-27', 0);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Shampoo', 1.0, '2023-06-28', 0);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Toothpaste', 1.0, '2023-06-29', 0);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Coffee', 1.0, '2023-06-30', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Tea', 1.0, '2023-07-01', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Sugar', 2.0, '2023-07-02', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Salt', 1.0, '2023-07-03', 1);\n" +
-                    "INSERT INTO ShoppingList VALUES ('Olive Oil', 1.0, '2023-07-04', 1);\n";
+                    "INSERT INTO ShoppingList VALUES (1, 'Whole Milk', 1.0, '2023-06-15', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (2, 'Bread', 2.0, '2023-06-16', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (3, 'Eggs', 12.0, '2023-06-17', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (4, 'Chicken', 1.5, '2023-06-18', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (5, 'Rice', 5.0, '2023-06-19', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (6, 'Pasta', 2.0, '2023-06-20', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (7 ,'Tomatoes', 6.0, '2023-06-21', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (8, 'Potatoes', 10.0, '2023-06-22', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (9, 'Onions', 4.0, '2023-06-23', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (10, 'Apples', 8.0, '2023-06-24', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (11, 'Bananas', 5.0, '2023-06-25', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (12, 'Toilet Paper', 4.0, '2023-06-26', 0);\n" +
+                    "INSERT INTO ShoppingList VALUES (13, 'Soap', 2.0, '2023-06-27', 0);\n" +
+                    "INSERT INTO ShoppingList VALUES (14, 'Shampoo', 1.0, '2023-06-28', 0);\n" +
+                    "INSERT INTO ShoppingList VALUES (15, 'Toothpaste', 1.0, '2023-06-29', 0);\n" +
+                    "INSERT INTO ShoppingList VALUES (16, 'Coffee', 1.0, '2023-06-30', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (17, 'Tea', 1.0, '2023-07-01', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (18, 'Sugar', 2.0, '2023-07-02', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (19, 'Salt', 1.0, '2023-07-03', 1);\n" +
+                    "INSERT INTO ShoppingList VALUES (20, 'Olive Oil', 1.0, '2023-07-04', 1);\n";
                 db.executeCommand(command);
             }
         });

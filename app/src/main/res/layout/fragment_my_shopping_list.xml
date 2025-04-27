@@ -20,9 +20,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listItemsRecyclerView"
-        android:layout_width="409dp"
+        android:layout_width="0dp"
         android:layout_height="505dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/toggleType"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,18 +56,18 @@
         android:textOn=""
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/refillIngredients"
-        app:layout_constraintEnd_toStartOf="@+id/deleteMode"
+        app:layout_constraintEnd_toStartOf="@+id/editMode"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/addItem" />
 
     <Button
-        android:id="@+id/deleteMode"
+        android:id="@+id/editMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
-        android:text="Del"
-        app:icon="@drawable/ic_delete"
+        android:text="@string/edit"
+        app:icon="@drawable/ic_edit"
         app:layout_constraintBottom_toTopOf="@+id/refillIngredients"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

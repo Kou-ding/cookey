@@ -1,6 +1,7 @@
 package com.example.cookey;
 
 public class ShoppingListItem {
+    private int shoppingListItemId;
     private String shoppingListItemName;
     private float purchasedQuantity;
     private String purchaseDate;
@@ -9,11 +10,20 @@ public class ShoppingListItem {
     public ShoppingListItem() {
         // empty constructor
     }
-    public ShoppingListItem(String shoppingListItemName, float purchasedQuantity, String purchaseDate, boolean isFood) {
+    public ShoppingListItem(int shoppingListItemId, String shoppingListItemName, float purchasedQuantity, String purchaseDate, boolean isFood) {
+        this.shoppingListItemId = shoppingListItemId;
         this.shoppingListItemName = shoppingListItemName;
         this.purchasedQuantity = purchasedQuantity;
         this.purchaseDate = purchaseDate;
         this.isFood = isFood;
+    }
+
+    // Shopping List Item Id
+    public void setShoppingListItemId(int shoppingListItemId) {
+        this.shoppingListItemId = shoppingListItemId;
+    }
+    public int getShoppingListItemId(){
+        return shoppingListItemId;
     }
     // Ingredient Name
     public void setShoppingListItemName(String shoppingListItemName) {

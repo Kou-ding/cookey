@@ -2,35 +2,25 @@ package com.example.cookey.ui.MyShoppingList;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-import androidx.media3.common.util.Log;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.cookey.DBHandler;
-import com.example.cookey.Ingredient;
-import com.example.cookey.IngredientAutocompleteAdapter;
 import com.example.cookey.R;
 import com.example.cookey.ShoppingListItem;
-import com.example.cookey.ui.MyIngredients.MyIngredientsAdapter;
 
 import java.util.List;
 
 public class MyShoppingListFragment extends Fragment {
 
-    private IngredientAutocompleteAdapter adapter;
+    private MyShoppingListAdapter adapter;
 
     private boolean foodMode = true;
     private boolean nonFoodMode = false;
@@ -47,13 +37,15 @@ public class MyShoppingListFragment extends Fragment {
 
         // Initialize the layout components
         RecyclerView recyclerView = view.findViewById(R.id.listItemsRecyclerView);
-
+        TextView foodType = view.findViewById(R.id.foodType);
         Button addItemButton = view.findViewById(R.id.addItem);
-        Button deleteModeButton = view.findViewById(R.id.deleteMode);
+        Button editModeButton = view.findViewById(R.id.editMode);
         Button refillIngredientsButton = view.findViewById(R.id.refillIngredients);
         Button newListButton = view.findViewById(R.id.newList);
         ToggleButton toggleTypeButton = view.findViewById(R.id.toggleType);
 
+        // Set the initial text for the food type
+        foodType.setText("Food");
 
         // Initialize the database handler
         List<ShoppingListItem> listItems;
@@ -63,7 +55,7 @@ public class MyShoppingListFragment extends Fragment {
         }
 
         // Initialize the adapter
-        adapter = new IngredientAutocompleteAdapter(listItems);
+        adapter = new MyShoppingListAdapter(listItems);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         // Set up the recycler view
@@ -72,11 +64,13 @@ public class MyShoppingListFragment extends Fragment {
         // Item Type Toggle Listener
         toggleTypeButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
+                foodType.setText("Food");
                 foodMode = true;
                 nonFoodMode = false;
                 loadItems();
 
             } else {
+                foodType.setText("Non-Food");
                 foodMode = false;
                 nonFoodMode = true;
                 loadItems();
@@ -92,15 +86,38 @@ public class MyShoppingListFragment extends Fragment {
         });
 
         // Delete Mode Button Listener
-        deleteModeButton.setOnClickListener(v -> {
+        editModeButton.setOnClickListener(v -> {
+            // Toggle the edit mode inside the adapter
             adapter.editMode = !adapter.editMode;
             adapter.notifyDataSetChanged();
+
+            // Change the edit text into done
+            if (adapter.editMode) {
+                editModeButton.setText(R.string.done);
+            } else {
+                editModeButton.setText(R.string.edit);
+            }
+            if (!adapter.editMode) {
+                try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                    for (ShoppingListItem item : adapter.getItems()) {
+                        db.setNewItemNameAndQuantity(item.getShoppingListItemId(), item.getShoppingListItemName(), item.getPurchasedQuantity());
+                    }
+                    loadItems();
+                }
+            }
         });
 
         // Add Item Button Listener
         addItemButton.setOnClickListener(v -> {
             addItem(foodMode);
             loadItems();
+        });
+
+        // Refill Ingredients Button Listener
+        refillIngredientsButton.setOnClickListener(v -> {
+            try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                db.refillIngredients(adapter.getCheckedItems());
+            }
         });
 
         return view;
@@ -127,9 +144,9 @@ public class MyShoppingListFragment extends Fragment {
     public void addItem(boolean foodMode){
         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
             if(foodMode) {
-                db.addFoodItem();
+                db.addFoodItem(db.getNextUnusedShoppingListItemId());
             } else {
-                db.addNonFoodItem();
+                db.addNonFoodItem(db.getNextUnusedShoppingListItemId());
             }
         }
     }
