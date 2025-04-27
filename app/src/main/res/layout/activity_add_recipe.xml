@@ -39,6 +39,7 @@
                     android:layout_height="200dp"
                     android:layout_gravity="center"
                     android:layout_marginTop="30dp"
+                    android:background="@drawable/circle_background"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_placeholder"/>
 
@@ -111,23 +112,6 @@
                         android:orientation="vertical"
                         android:layout_marginTop="8dp">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="1 kg Chinese cabbage"
-                            android:textSize="16sp"/>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="#CCCCCC"
-                            android:layout_marginVertical="4dp"/>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="25 gr salt"
-                            android:textSize="16sp"/>
 
                     </LinearLayout>
 
@@ -170,25 +154,15 @@
                         android:orientation="vertical"
                         android:layout_marginTop="8dp">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Step 1: Wash and cut the cabbage into large pieces."
-                            android:textSize="16sp"/>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="#CCCCCC"
-                            android:layout_marginVertical="4dp"/>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Step 2: Mix with salt and massage with your hands."
-                            android:textSize="16sp"/>
-
                     </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnAddStep"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add +"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="8dp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -215,16 +189,19 @@
                         android:textStyle="bold" />
 
                     <CheckBox
+                        android:id="@+id/checkboxSpicy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Spicy" />
 
                     <CheckBox
+                        android:id="@+id/checkboxVegetarian"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Vegetarian" />
 
                     <CheckBox
+                        android:id="@+id/checkboxQuick"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Quick" />
@@ -260,7 +237,48 @@
                     android:text="Time: 60'" />
             </LinearLayout>
 
+
+        <!-- Servings and Difficulty Buttons -->
+
+            <!-- Meal Number (Servings) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:boxBackgroundMode="outline"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMealNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Servings (e.g., 4)"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Difficulty -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:boxBackgroundMode="outline">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteDifficulty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Difficulty"
+                    android:textSize="16sp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:paddingEnd="12dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+
         </LinearLayout>
+
+
 
     </ScrollView>
 

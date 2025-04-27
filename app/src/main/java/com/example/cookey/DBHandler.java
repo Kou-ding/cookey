@@ -1,5 +1,6 @@
 package com.example.cookey;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -12,8 +13,8 @@ import java.util.List;
 public class DBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "cookeyDB.db";
-    public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    public DBHandler(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -234,5 +235,63 @@ public class DBHandler extends SQLiteOpenHelper {
         String query = "INSERT INTO ShoppingList VALUES ('', 0, '', 0);";
         db.execSQL(query);
         db.close();
+    }
+
+    public long addRecipe(String name, int timeToMake, int countryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long id = -1;
+
+        try {
+            String sql = "INSERT INTO Recipe (name, timeToMake, country) VALUES (?, ?, ?)";
+            db.execSQL(sql, new Object[]{name, timeToMake, countryId});
+
+            //Take the Last id
+            Cursor cursor = db.rawQuery("SELECT last_insert_rowid()",null);
+            if(cursor.moveToFirst()){
+                id = cursor.getLong(0);
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+
+        return id;
+    }
+
+    //Add a step
+    public boolean addStep(String description, long recipeId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean success = false;
+
+        try {
+            String sql = "INSERT INTO Steps (description, idRecipe) VALUES (?,?)";
+            db.execSQL(sql, new Object[]{description,recipeId});
+            success = true;
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            db.close();
+        }
+        return success;
+    }
+
+    //Add Ingriedent
+    public boolean addIngredientToRecipe(long recipeId, long ingredientId, double quantity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean success = false;
+
+        try {
+            String sql = "INSERT INTO Recipe_has_Ingredient (idRecipe, idIngredient, quantity) VALUES (?, ?, ?)";
+            db.execSQL(sql, new Object[]{recipeId, ingredientId, quantity});
+            success = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+
+        return success;
     }
 }
