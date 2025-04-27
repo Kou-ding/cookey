@@ -31,10 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AIFragment extends Fragment {
-    private final List<CheckBox> checkboxes = new ArrayList<>();
-    public AIFragment() {
-        // Required empty public constructor
-    }
+
+    private boolean useIngredientsMode = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,93 +59,24 @@ public class AIFragment extends Fragment {
         // Expand Button //
         // Initialize views from the layout
         MaterialButton expandButton = view.findViewById(R.id.expandButton);
-        LinearLayout checkboxContainer = view.findViewById(R.id.checkboxContainer);
-
 
         // Set click listener for the expand button
         expandButton.setOnClickListener(v -> {
-            boolean isVisible = checkboxContainer.getVisibility() == View.VISIBLE;
-            checkboxContainer.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+            // Toggle the useIngredientsMode flag
+            useIngredientsMode = !useIngredientsMode;
 
-            // Change down arrow (optional)
             // Change the button icon
             Drawable newIcon = ContextCompat.getDrawable(
                     requireContext(),
-                    isVisible
-                            ? R.drawable.ic_keyboard_arrow_down  // Down arrow when collapsing
-                            : R.drawable.ic_keyboard_arrow_up    // Up arrow when expanding
+                    useIngredientsMode
+                            ? R.drawable.ic_keyboard_arrow_up // Down arrow when collapsing
+                            : R.drawable.ic_keyboard_arrow_down     // Up arrow when expanding
             );
-            ((MaterialButton) expandButton).setIcon(newIcon);
+            expandButton.setIcon(newIcon);
 
 
         });
-
-        // Add initial checkbox (and subsequent ones dynamically)
-        if(checkboxContainer.getVisibility() == View.VISIBLE) {
-            addCheckbox();
-        }
 
         return view;
-    }
-    private void addCheckbox() {
-        final Context context = requireContext();
-
-        // Create TextInputLayout
-        final TextInputLayout textInputLayout = new TextInputLayout(context);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        layoutParams.setMargins(0, 8, 0, 8); // Add some spacing
-        textInputLayout.setLayoutParams(layoutParams);
-        textInputLayout.setHint("New ingredient"); // Initial hint
-
-        // Create TextInputEditText
-        final TextInputEditText editText = new TextInputEditText(context);
-        textInputLayout.addView(editText);
-
-        // Create MaterialCheckBox
-        final MaterialCheckBox checkBox = new MaterialCheckBox(context);
-        checkBox.setChecked(false);
-
-        // Set CheckBox click listener to update input field focus
-        checkBox.setOnClickListener(v -> {
-            if (checkBox.isChecked()) {
-                editText.requestFocus(); // Request focus when checked
-            }
-        });
-
-        // Set CheckBox as start icon using built-in drawables
-        textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, R.drawable.ic_check_box_outline_blank)); // Initial unchecked icon
-        textInputLayout.setStartIconOnClickListener(v -> {
-            checkBox.setChecked(!checkBox.isChecked());
-            textInputLayout.setStartIconDrawable(ContextCompat.getDrawable(context, checkBox.isChecked() ? R.drawable.ic_select_check_box : R.drawable.ic_check_box_outline_blank)); // Update icon
-            //Optional: If you want to trigger the editText focus on checkbox click
-            if (checkBox.isChecked()) {
-                editText.requestFocus(); // Request focus when checked
-            }
-        });
-
-        //Add checkbox to list - we'll use MaterialCheckBox instead for our checkbox list.
-        checkboxes.add(checkBox);
-
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Add new checkbox if this is the last one and input is not empty.
-                if (s != null && !s.toString().trim().isEmpty() &&
-                        !checkboxes.isEmpty() && checkboxes.get(checkboxes.size() - 1) == checkBox) {
-                    addCheckbox(); // Add a new checkbox when text is entered in the last one
-                }
-            }
-        });
     }
 }

@@ -6,30 +6,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        android:layout_width="0dp"
-        android:layout_height="130dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/ai_prompt"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:visibility="visible"
-            tools:visibility="visible" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/chef_hat_image"
         android:layout_width="292dp"
         android:layout_height="225dp"
         android:layout_marginStart="32dp"
@@ -41,58 +19,64 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ai_chef_hat_2" />
 
-    <!-- Scrollable container for ingredient controls -->
-    <Button
-        android:id="@+id/generate_ai_recipe"
-        android:layout_width="110dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:text="@string/cook"
-        android:textAlignment="center"
-        app:icon="@drawable/ic_chef_hat"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/scrollArea"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chef_hat_image">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/ai_prompt"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:visibility="visible"
+            tools:visibility="visible" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Button
+        android:id="@+id/expandButton"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/add_ingredients"
+        app:cornerRadius="4dp"
+        app:icon="@drawable/ic_keyboard_arrow_down"
+        app:layout_constraintBottom_toBottomOf="@+id/generate_ai_recipe"
+        app:layout_constraintEnd_toStartOf="@+id/generate_ai_recipe"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayout"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
-    <ScrollView
-        android:id="@+id/scrollArea"
-        android:layout_width="224dp"
-        android:layout_height="220dp"
-        android:layout_marginStart="24dp"
+    <Button
+        android:id="@+id/generate_ai_recipe"
+        android:layout_width="wrap_content"
+        android:layout_height="52dp"
         android:layout_marginTop="16dp"
-        android:fillViewport="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+        android:text="@string/cook"
+        android:textAlignment="center"
+        app:cornerRadius="4dp"
+        app:icon="@drawable/ic_chef_hat"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/expandButton"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/expandButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/add_ingredients"
-                app:icon="@drawable/ic_keyboard_arrow_down" />
-            <CheckBox
-                android:id="@+id/useMyIngredientsCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="use my ings"
-                android:layout_margin="8dp"
-                android:visibility="gone"
-                />
-
-            <LinearLayout
-                android:id="@+id/checkboxContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone" />
-        </LinearLayout>
-    </ScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/expandButton"
+        app:layout_constraintStart_toStartOf="@+id/expandButton"
+        app:layout_constraintTop_toBottomOf="@+id/expandButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

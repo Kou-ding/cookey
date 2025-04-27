@@ -1,6 +1,9 @@
 package com.example.cookey.ui.MyShoppingList;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +18,7 @@ import android.widget.ToggleButton;
 import com.example.cookey.DBHandler;
 import com.example.cookey.R;
 import com.example.cookey.ShoppingListItem;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -39,7 +43,7 @@ public class MyShoppingListFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.listItemsRecyclerView);
         TextView foodType = view.findViewById(R.id.foodType);
         Button addItemButton = view.findViewById(R.id.addItem);
-        Button editModeButton = view.findViewById(R.id.editMode);
+        MaterialButton editModeButton = view.findViewById(R.id.editMode);
         Button refillIngredientsButton = view.findViewById(R.id.refillIngredients);
         Button newListButton = view.findViewById(R.id.newList);
         ToggleButton toggleTypeButton = view.findViewById(R.id.toggleType);
@@ -97,6 +101,14 @@ public class MyShoppingListFragment extends Fragment {
             } else {
                 editModeButton.setText(R.string.edit);
             }
+            // Change the button icon
+            Drawable newIcon = ContextCompat.getDrawable(
+                    requireContext(),
+                    adapter.editMode
+                            ? R.drawable.ic_check
+                            : R.drawable.ic_edit
+            );
+            editModeButton.setIcon(newIcon);
             if (!adapter.editMode) {
                 try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
                     for (ShoppingListItem item : adapter.getItems()) {

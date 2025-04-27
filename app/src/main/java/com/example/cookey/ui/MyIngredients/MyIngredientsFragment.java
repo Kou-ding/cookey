@@ -1,5 +1,6 @@
 package com.example.cookey.ui.MyIngredients;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
 import com.example.cookey.R;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -64,7 +67,7 @@ public class MyIngredientsFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.myIngredientRecyclerView);
 
         // Initialize the edit button
-        Button editButton = view.findViewById(R.id.editButton);
+        MaterialButton editButton = view.findViewById(R.id.editButton);
 
         // Initialize the adapter with callback methods that delegate to the ViewModel
         adapter = new MyIngredientsAdapter();
@@ -83,7 +86,18 @@ public class MyIngredientsFragment extends Fragment {
                 }
             }
             adapter.setMode(editMode);
+
+            // Update the button text
             editButton.setText(editMode ? getString(R.string.done) : getString(R.string.edit));
+
+            // Update the button icon
+            Drawable newIcon = ContextCompat.getDrawable(
+                    requireContext(),
+                    editMode
+                            ? R.drawable.ic_check
+                            : R.drawable.ic_edit
+            );
+            editButton.setIcon(newIcon);
         });
         // Set the delete button click listener
         adapter.setOnDeleteClickListener(ingredient -> {
