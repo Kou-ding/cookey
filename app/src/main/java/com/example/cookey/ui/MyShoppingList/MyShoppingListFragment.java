@@ -122,8 +122,6 @@ public class MyShoppingListFragment extends Fragment {
         // Add Item Button Listener
         addItemButton.setOnClickListener(v -> {
             addItem(foodMode);
-            // scroll to the bottom to see the new item
-            recyclerView.scrollToPosition(adapter.getItemCount());
             loadItems();
         });
 
