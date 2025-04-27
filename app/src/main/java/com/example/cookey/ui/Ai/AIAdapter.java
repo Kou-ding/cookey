@@ -1,5 +1,9 @@
 package com.example.cookey.ui.Ai;
 
+import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +28,7 @@ import java.util.List;
 
 public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
     private List<ShoppingListItem> items;
-    public AIAdapter() {
+    public AIAdapter(Context context) {
         items = new ArrayList<>();
     }
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -63,12 +67,30 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
         holder.itemQuantityText.setVisibility(View.GONE);
         holder.itemQuantityEdit.setVisibility(View.GONE);
         holder.itemUnitSystem.setVisibility(View.GONE);
+        holder.autoCompleteIngredient.setText(item.getShoppingListItemName());
 
         // Handle delete button click
         holder.deleteItem.setOnClickListener(v -> {
             items.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, items.size());
+        });
+
+        holder.autoCompleteIngredient.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    item.setShoppingListItemName(s.toString());
+                } catch (NumberFormatException e) {
+                    Log.e("MyShoppingListAdapter", "Error parsing item quantity", e);
+                }
+            }
         });
 
         // Create the suggestions list
