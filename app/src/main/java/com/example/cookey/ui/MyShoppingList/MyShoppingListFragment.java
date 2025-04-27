@@ -118,6 +118,7 @@ public class MyShoppingListFragment extends Fragment {
             try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
                 db.refillIngredients(adapter.getCheckedItems());
             }
+            loadItems();
         });
 
         return view;

@@ -7,6 +7,8 @@ public class ShoppingListItem {
     private String purchaseDate;
     private boolean isFood;
 
+    private boolean isChecked;
+
     public ShoppingListItem() {
         // empty constructor
     }
@@ -55,5 +57,13 @@ public class ShoppingListItem {
     }
     public boolean getIsFood() {
         return isFood;
+    }
+
+    // Is Checked
+    public void setIsChecked(boolean isChecked) {
+        this.isChecked = isChecked;
+    }
+    public boolean getIsChecked() {
+        return isChecked;
     }
 }

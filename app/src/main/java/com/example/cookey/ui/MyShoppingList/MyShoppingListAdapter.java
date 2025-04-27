@@ -65,6 +65,8 @@
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             ShoppingListItem item = items.get(position);
+            // Set the checkbox state based on the item 'checked' property
+            holder.ingredientCheckbox.setChecked(item.getIsChecked());
 
             if (viewMode) {
                 holder.autoCompleteIngredient.setVisibility(View.GONE);
@@ -165,6 +167,16 @@
                     db.deleteShoppingListItem(item.getShoppingListItemName());
                 }
             });
+
+            // Handle checkbox state change
+            holder.ingredientCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                // Update the checked status of the item
+                item.setIsChecked(isChecked);
+                // Update the database
+                try (DBHandler db = new DBHandler(buttonView.getContext(), null, null, 1)) {
+                    db.setShoppingListItemChecked(item.getShoppingListItemId(), isChecked);
+                }
+            });
         }
         @Override
         public int getItemCount() {
@@ -175,9 +187,18 @@
             return items;
         }
 
+        // Implementing getCheckedItems function
         public List<ShoppingListItem> getCheckedItems() {
+            List<ShoppingListItem> checkedItems = new ArrayList<>();
 
-            return items;
+            for (ShoppingListItem item : items) {
+                // Check if the checkbox is ticked
+                if (item.getIsChecked()) {
+                    checkedItems.add(item);
+                }
+            }
+
+            return checkedItems;
         }
 
     }
