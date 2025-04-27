@@ -6,18 +6,18 @@ public class ShoppingListItem {
     private float purchasedQuantity;
     private String purchaseDate;
     private boolean isFood;
-
     private boolean isChecked;
 
     public ShoppingListItem() {
         // empty constructor
     }
-    public ShoppingListItem(int shoppingListItemId, String shoppingListItemName, float purchasedQuantity, String purchaseDate, boolean isFood) {
+    public ShoppingListItem(int shoppingListItemId, String shoppingListItemName, float purchasedQuantity, String purchaseDate, boolean isFood, boolean isChecked) {
         this.shoppingListItemId = shoppingListItemId;
         this.shoppingListItemName = shoppingListItemName;
         this.purchasedQuantity = purchasedQuantity;
         this.purchaseDate = purchaseDate;
         this.isFood = isFood;
+        this.isChecked = isChecked;
     }
 
     // Shopping List Item Id

@@ -154,6 +154,7 @@
             );
 
             // Set it to the AutoCompleteTextView
+            holder.autoCompleteIngredient.setThreshold(1);
             holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
 
 
