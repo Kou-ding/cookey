@@ -23,6 +23,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AddRecipeActivity"
+            android:label="@string/app_name">
+        </activity>
+
 
     </application>
 
