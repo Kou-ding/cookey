@@ -17,6 +17,8 @@ public class AIRecipeEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ai_recipe_edit);
+        TextInputEditText recipeInput = findViewById(R.id.ai_recipe_text_input);
+        recipeInput.setText(getIntent().getStringExtra("AIResponse"));
 
         // Enable the back button in the action bar
         if (getSupportActionBar() != null) {
@@ -30,7 +32,6 @@ public class AIRecipeEditActivity extends AppCompatActivity {
             AIRecipe recipe = new AIRecipe();
 
             // Fetch the recipe from the EditText field
-            TextInputEditText recipeInput = findViewById(R.id.ai_recipe_text_input);
             String AiRecipeText = recipeInput.getText().toString().trim();
 
             // Save the recipe to the database
