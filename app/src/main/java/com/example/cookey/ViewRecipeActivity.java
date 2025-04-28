@@ -1,6 +1,8 @@
 package com.example.cookey;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 public class ViewRecipeActivity extends AppCompatActivity {
@@ -24,18 +27,22 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private RecyclerView recyclerViewIngredients, recyclerViewSteps;
     private Button btnEditRecipe;
 
+
     ViewIngredientAdapter viewIngredientAdapter;
     private StepAdapter stepAdapter;
 
     private List<ViewIngredientModel> ingredientsList;
     private List<StepModel> stepsList = new ArrayList<>();
 
+    private DBHandler dbHandler;
+    private int recipeID = 1; //ULTRA DUMMY
+
     @Override
     protected void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_recipe_details);
 
-        // Find Views
+        // Find-Init Views
         imageViewRecipe = findViewById(R.id.imageViewRecipe);
         imageViewFlag = findViewById(R.id.imageViewFlag);
         imageViewClock = findViewById(R.id.imageViewClock);
@@ -52,7 +59,54 @@ public class ViewRecipeActivity extends AppCompatActivity {
         recyclerViewSteps = findViewById(R.id.recyclerViewSteps);
         btnEditRecipe = findViewById(R.id.btnEditRecipe);
 
-        // Dummy Data
+        dbHandler = new DBHandler(this);
+
+        //Get recipe from dB
+       // RecipeModel recipe = dbHandler.getRecipeId(recipeID);
+
+        /*
+        if(recipe != null){
+
+            //Image First
+            if(recipe.getPhoto() != null){
+                Bitmap bitmap = BitmapFactory.decodeByteArray(recipe.getPhoto(),0, recipe.getPhoto().length);
+                imageViewRecipe.setImageBitmap(bitmap);
+            }else{
+                imageViewRecipe.setImageResource(R.drawable.ic_placeholder); // if image doesnt exist, fill the photo with a placeholder
+            }
+
+            //Name
+            textViewRecipeName.setText(recipe.getName());
+
+            //Tags
+            if(recipe.getTags() != null && !recipe.getTags().isEmpty()){
+                textViewTags.setText(String.join(", ", recipe.getTags()));
+            }else{
+                textViewTags.setText("-");
+            }
+
+            //Country
+            textViewCountry.setText(recipe.getCountryName());
+
+            //Time
+            textViewTime.setText(recipe.getTimeToMake());
+
+            //Ingredients Recycler
+            viewIngredientAdapter = new ViewIngredientAdapter(recipe.getIngredients());
+            recyclerViewIngredients.setLayoutManager(new LinearLayoutManager(this));
+            recyclerViewIngredients.setAdapter(viewIngredientAdapter);
+
+            //Steps Recycler
+            stepAdapter = new StepAdapter(recipe.getSteps());
+            recyclerViewSteps.setLayoutManager(new LinearLayoutManager(this));
+            recyclerViewSteps.setAdapter(stepAdapter);
+        }
+
+
+         */
+
+
+        /// Dummy Data - OLD
         textViewRecipeName.setText("Kimchi");
         textViewTags.setText("Vegan, Spicy, Traditional");
         textViewCountry.setText("Korea");
@@ -102,6 +156,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         // Default tab
         tabIngredients.performClick();
 
+
         // Back Button
        // btnBack.setOnClickListener(v -> finish());
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +166,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: Consume and Favorite button clicks
+        // TODO: btnConsume, btnFavorite, btnEditRecipe
     }
 
     private void highlightSelectedTab(TextView selectedTab, TextView unselectedTab) {

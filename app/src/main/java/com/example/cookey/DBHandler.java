@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "cookeyDB.db";
 
     public DBHandler(Context context) {
@@ -422,4 +422,82 @@ public class DBHandler extends SQLiteOpenHelper {
         return id;
     }
 
+    /*
+    public RecipeModel getRecipeId(int recipeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        //Get dB data
+        Cursor cursor = db.rawQuery(
+                "SELECT idRecipe, name, timeToMake, country, difficulty, photo, favourites " +
+                        "FROM Recipe " +
+                        "WHERE idRecipe = ?",
+                new String[]{String.valueOf(recipeId)}
+        );
+
+        RecipeModel recipe = null;
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("idRecipe"));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+            int timeToMake = cursor.getInt(cursor.getColumnIndexOrThrow("timeToMake"));
+            int countryId = cursor.getInt(cursor.getColumnIndexOrThrow("country"));
+            String difficulty = cursor.getString(cursor.getColumnIndexOrThrow("difficulty"));
+            byte[] photo = cursor.getBlob(cursor.getColumnIndexOrThrow("photo"));
+            boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow("favourites")) == 1;
+
+            String countryName = String.valueOf(countryId);
+
+            //Get tags
+            List<String> tags = new ArrayList<>();
+            Cursor tagsCursor = db.rawQuery("SELECT t.name FROM Tags t " +
+                    "INNER JOIN Recipe_has_Tags rht ON t.idTag = rht.idTag " +
+                    "WHERE rht.idRecipe_fk = ?", new String[]{String.valueOf(recipeId)});
+            if (tagsCursor != null) {
+                while (tagsCursor.moveToNext()) {
+                    tags.add(tagsCursor.getString(tagsCursor.getColumnIndexOrThrow("name")));
+                }
+                tagsCursor.close();
+            }
+
+            //Get Ingredients
+            List<ViewIngredientModel> ingredients = new ArrayList<>();
+            Cursor ingredientsCursor = db.rawQuery("SELECT i.name, i.unit, rhi.quantity FROM Recipe_has_Ingredient rhi " +
+                    "INNER JOIN Ingredient i ON rhi.idIngredient = i.idIngredient " +
+                    "WHERE rhi.idRecipe = ?", new String[]{String.valueOf(recipeId)});
+            if (ingredientsCursor != null) {
+                while (ingredientsCursor.moveToNext()) {
+                    String ingredientName = ingredientsCursor.getString(ingredientsCursor.getColumnIndexOrThrow("name"));
+                    String unit = ingredientsCursor.getString(ingredientsCursor.getColumnIndexOrThrow("unit"));
+                    float quantity = ingredientsCursor.getFloat(ingredientsCursor.getColumnIndexOrThrow("quantity"));
+                    ingredients.add(new ViewIngredientModel(ingredientName, unit, quantity));
+                }
+                ingredientsCursor.close();
+            }
+
+            //Get Steps
+            List<StepModel> steps = new ArrayList<>();
+            Cursor stepsCursor = db.rawQuery("SELECT s.text FROM Steps s " +
+                    "INNER JOIN Recipe_has_Steps rhs ON s.idStep = rhs.idStep " +
+                    "WHERE rhs.idRecipe = ? ORDER BY rhs.numberOfStep ASC", new String[]{String.valueOf(recipeId)});
+            if (stepsCursor != null) {
+                while (stepsCursor.moveToNext()) {
+                    String description = stepsCursor.getString(stepsCursor.getColumnIndexOrThrow("text"));
+                    steps.add(new StepModel(description));
+                }
+                stepsCursor.close();
+            }
+
+            //Create RecipeModel
+            recipe = new RecipeModel(id, name, timeToMake, countryName, difficulty, photo, isFavorite, tags, ingredients, steps);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+
+        return recipe;
+    }
+
+     */
 }

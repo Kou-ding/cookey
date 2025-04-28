@@ -40,6 +40,18 @@ public class IngredientSelectDialog extends Dialog {
         dummyIngredients.add(new IngredientModel(3, "Water", "ml"));
         dummyIngredients.add(new IngredientModel(4, "Flour", "kg"));
         dummyIngredients.add(new IngredientModel(5, "Sugar", "g"));
+        dummyIngredients.add(new IngredientModel(5, "Butter", "g"));
+        dummyIngredients.add(new IngredientModel(5, "Egg", "kg"));
+        dummyIngredients.add(new IngredientModel(5, "Garlic", "g"));
+        dummyIngredients.add(new IngredientModel(5, "Cat", "kg"));
+        dummyIngredients.add(new IngredientModel(5, "Olive Oil", "ml"));
+        dummyIngredients.add(new IngredientModel(5, "Potato", "kg"));
+        dummyIngredients.add(new IngredientModel(5, "Celery", "g"));
+        dummyIngredients.add(new IngredientModel(5, "Carrot", "g"));
+        dummyIngredients.add(new IngredientModel(5, "Mushroom", "kg"));
+        dummyIngredients.add(new IngredientModel(5, "Lemon", "ml"));
+        dummyIngredients.add(new IngredientModel(5, "Parmesan", "g"));
+        dummyIngredients.add(new IngredientModel(5, "Cheddar", "g"));
 
         adapter = new IngredientAdapter(dummyIngredients, ingredient -> showQuantityDialog(ingredient));
         recyclerView.setAdapter(adapter);
