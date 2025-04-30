@@ -1,12 +1,17 @@
 package com.example.cookey;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
@@ -478,20 +483,55 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
         return unitSystem;
     }
-    public void refillIngredients(List<ShoppingListItem> items){
+    public void refillIngredients(List<ShoppingListItem> items) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query;
-        for (ShoppingListItem item : items){
-            // Add the quantity of the shopping list item to the ingredient
-            query = "UPDATE Ingredient SET quantity = quantity + " + item.getPurchasedQuantity() + " WHERE ingredientName = '" + item.getShoppingListItemName() + "';";
-            db.execSQL(query);
-            // Delete all the checked items from the shopping list
-            query = "DELETE FROM ShoppingList WHERE shoppingListItemName = '" + item.getShoppingListItemName() + "';";
-            db.execSQL(query);
-        }
-        db.close();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");  // Format to match DB format
+
+        for (ShoppingListItem item : items) {
+            String name = item.getShoppingListItemName();
+            double quantity = item.getPurchasedQuantity();
+
+            // Update quantity
+            String updateQuantityQuery = "UPDATE Ingredient SET quantity = quantity + " + quantity +
+                    " WHERE ingredientName = ?";
+            db.execSQL(updateQuantityQuery, new Object[]{name});
+
+            // Fetch daysToSpoil and checkIfSpoiledArray
+            Cursor cursor = db.rawQuery("SELECT daysToSpoil, checkIfSpoiledArray FROM Ingredient WHERE ingredientName = ?", new String[]{name});
+            if (cursor.moveToFirst()) {
+                int daysToSpoil = cursor.getInt(0);
+                String currentArray = cursor.getString(1);
+
+                // Compute new spoil date
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DAY_OF_YEAR, daysToSpoil);
+                String newSpoilDate = sdf.format(cal.getTime());
+
+                // Append to JSON array
+                JSONArray spoilArray;
+                try {
+                    spoilArray = new JSONArray(currentArray);
+                } catch (Exception e) {
+                    spoilArray = new JSONArray();  // Start fresh if bad format
+                }
+                spoilArray.put(newSpoilDate);
+
+                // Update the array in the DB
+                ContentValues values = new ContentValues();
+                values.put("checkIfSpoiledArray", spoilArray.toString());
+                db.update("Ingredient", values, "ingredientName = ?", new String[]{name});
+            }
+            cursor.close();
+
+            // Delete the item from the shopping list
+            String deleteQuery = "DELETE FROM ShoppingList WHERE shoppingListItemName = ?";
+            db.execSQL(deleteQuery, new Object[]{name});
+        }
+
+        db.close();
     }
+
     public void setNewItemNameAndQuantity(int id, String name, float quantity){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE ShoppingList SET shoppingListItemName = '" + name + "', purchasedQuantity = " + quantity + " WHERE shoppingListItemId = " + id + ";";
