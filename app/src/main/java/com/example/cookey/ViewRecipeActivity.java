@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,15 +35,20 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private StepAdapter stepAdapter;
 
     private List<ViewIngredientModel> ingredientsList;
+
+    private TextView textViewServing, textViewDifficulty;
     private List<StepModel> stepsList = new ArrayList<>();
 
     private DBHandler dbHandler;
-    private int recipeID = 1; //ULTRA DUMMY
+    private int recipeID = 2; //ULTRA DUMMY
 
     @Override
     protected void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_recipe_details);
+
+        //Seeder - Used for testing
+      //      RecipeSeeder.seed(this);
 
         // Find-Init Views
         imageViewRecipe = findViewById(R.id.imageViewRecipe);
@@ -55,14 +63,86 @@ public class ViewRecipeActivity extends AppCompatActivity {
         textViewTime = findViewById(R.id.textViewTime);
         tabIngredients = findViewById(R.id.tabIngredients);
         tabSteps = findViewById(R.id.tabSteps);
+        textViewServing = findViewById(R.id.textViewServing);
+        textViewDifficulty = findViewById(R.id.textViewDifficulty);
         recyclerViewIngredients = findViewById(R.id.recyclerViewIngredients);
         recyclerViewSteps = findViewById(R.id.recyclerViewSteps);
         btnEditRecipe = findViewById(R.id.btnEditRecipe);
 
+
+
         dbHandler = new DBHandler(this);
 
         //Get recipe from dB
-       // RecipeModel recipe = dbHandler.getRecipeId(recipeID);
+        RecipeModel recipe = dbHandler.getRecipeId(recipeID);
+
+        if (recipe != null) {
+            // Image
+            if (recipe.getPhoto() != null && recipe.getPhoto().length > 0) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(recipe.getPhoto(), 0, recipe.getPhoto().length);
+                imageViewRecipe.setImageBitmap(bitmap);
+            } else {
+                imageViewRecipe.setImageResource(R.drawable.ic_placeholder);
+            }
+
+            // Name
+            textViewRecipeName.setText(recipe.getName());
+
+            // Tags
+            if (recipe.getTags() != null && !recipe.getTags().isEmpty()) {
+                textViewTags.setText(String.join(", ", recipe.getTags()));
+            } else {
+                textViewTags.setText("-");
+            }
+
+            // Country
+            textViewCountry.setText(recipe.getCountryName());
+            Log.d("BRO",recipe.getCountryName());
+
+            // Time (minutes)
+            textViewTime.setText(recipe.getTimeToMake() + "'");
+
+            // Ingredients Recycler
+            viewIngredientAdapter = new ViewIngredientAdapter(recipe.getIngredients());
+            recyclerViewIngredients.setLayoutManager(new LinearLayoutManager(this));
+            recyclerViewIngredients.setAdapter(viewIngredientAdapter);
+
+            // Steps Recycler
+            stepAdapter = new StepAdapter(recipe.getSteps());
+            recyclerViewSteps.setLayoutManager(new LinearLayoutManager(this));
+            recyclerViewSteps.setAdapter(stepAdapter);
+
+            // Servings (προσθήκη από το RecipeModel - αν δεν υπάρχει, αφαίρεσε αυτή τη γραμμή)
+            // textViewServing.setText(recipe.getMealNumber() + " servings");
+
+            // Difficulty
+            textViewDifficulty.setText(recipe.getDifficulty());
+
+            // Favorite button state
+            btnFavorite.setImageResource(
+                    recipe.isFavorite() ? R.drawable.ic_heart_filled : R.drawable.favorite_24px
+            );
+        } else {
+            Toast.makeText(this, "Recipe not found!", Toast.LENGTH_SHORT).show();
+            finish(); // Κλείνει την activity αν η συνταγή δεν βρέθηκε
+        }
+
+        // Tabs Click
+        tabIngredients.setOnClickListener(v -> {
+            recyclerViewIngredients.setVisibility(View.VISIBLE);
+            recyclerViewSteps.setVisibility(View.GONE);
+            highlightSelectedTab(tabIngredients, tabSteps);
+        });
+
+        tabSteps.setOnClickListener(v -> {
+            recyclerViewIngredients.setVisibility(View.GONE);
+            recyclerViewSteps.setVisibility(View.VISIBLE);
+            highlightSelectedTab(tabSteps, tabIngredients);
+        });
+
+        // Default tab
+        tabIngredients.performClick();
+
 
         /*
         if(recipe != null){
@@ -100,11 +180,18 @@ public class ViewRecipeActivity extends AppCompatActivity {
             stepAdapter = new StepAdapter(recipe.getSteps());
             recyclerViewSteps.setLayoutManager(new LinearLayoutManager(this));
             recyclerViewSteps.setAdapter(stepAdapter);
+
+            //Servings
+            textViewServing.setText(recipe.getMealNumber() + " servings");
+
+            //Difficulty
+            textViewDifficulty.setText(recipe.getDifficulty());
         }
 
 
          */
 
+        /*
 
         /// Dummy Data - OLD
         textViewRecipeName.setText("Kimchi");
@@ -155,6 +242,30 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
         // Default tab
         tabIngredients.performClick();
+        */
+
+        btnConsume.setOnClickListener(view -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Consume?")
+                    .setMessage("Are you sure that you want to cosnume this recipe?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        Toast.makeText(this, "Recipe Consumed!", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+
+        final boolean[] isFav = {false}; //temp
+
+        btnFavorite.setOnClickListener(view -> {
+            isFav[0] = !isFav[0];
+
+            if(isFav[0]){
+                btnFavorite.setImageResource(R.drawable.ic_heart_filled);
+            } else{
+                btnFavorite.setImageResource(R.drawable.favorite_24px);
+            }
+        });
 
 
         // Back Button
@@ -169,6 +280,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         // TODO: btnConsume, btnFavorite, btnEditRecipe
     }
 
+    /** @noinspection deprecation*/
     private void highlightSelectedTab(TextView selectedTab, TextView unselectedTab) {
         selectedTab.setBackgroundColor(getResources().getColor(R.color.teal_700));
         selectedTab.setTextColor(getResources().getColor(android.R.color.white));

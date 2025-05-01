@@ -28,10 +28,14 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class AddRecipeActivity extends AppCompatActivity {
 
@@ -51,6 +55,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private long selectedCountryId = -1;
     private int selectedTimeMinutes = 0;
     private Button btnSelectTime;
+    private Button btnSelectCountry;
 
     private TextInputEditText editTextMealNumber;
     private AutoCompleteTextView autoCompleteDifficulty;
@@ -74,7 +79,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         CheckBox cbVegetarian = findViewById(R.id.checkboxVegetarian);
         CheckBox cbQuick = findViewById(R.id.checkboxQuick);
 
-        Button btnSelectCountry = findViewById(R.id.btnSelectCountry);
+        btnSelectCountry = findViewById(R.id.btnSelectCountry);
 
         ScrollView scrollView = findViewById(R.id.scrollView);
 
@@ -150,15 +155,12 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
 
-        btnSelectCountry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CountrySelectDialog dialog = new CountrySelectDialog(AddRecipeActivity.this, country -> {
-                    btnSelectCountry.setText(country.getName());
-                    selectedCountryId = country.getId(); // Keep country id for saving
-                });
-                dialog.show();
-            }
+        btnSelectCountry.setOnClickListener(v -> {
+            CountrySelectDialog dialog = new CountrySelectDialog(AddRecipeActivity.this, country -> {
+                btnSelectCountry.setText(country.getName());
+                btnSelectCountry.setTag(country);  // save country object
+            });
+            dialog.show();
         });
 
         btnSelectTime.setOnClickListener(new View.OnClickListener() {
@@ -198,12 +200,31 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     }
 
+    private String getCountryNameByCode(String code) {
+        try {
+            InputStream is = getAssets().open("countries.json");
+            String json = new Scanner(is).useDelimiter("\\A").next();
+            JSONArray countries = new JSONArray(json);
+
+            for (int i = 0; i < countries.length(); i++) {
+                JSONObject country = countries.getJSONObject(i);
+                if (country.getString("code").equalsIgnoreCase(code)) {
+                    return country.getString("name");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Unknown";
+    }
+
+
     private void saveRecipe() {
 
         //Take the input from all fields
         String recipeName = editTextRecipeName.getText().toString().trim();
         int timeToMake = selectedTimeMinutes;
-        long countryID = selectedCountryId;
+        String countryCode = ((CountryModel) btnSelectCountry.getTag()).getCode();
         int mealNumber = 0;
         String difficulty = autoCompleteDifficulty.getText().toString().trim();
         boolean isFavorite = false;
@@ -231,7 +252,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         long recipeId = dbHandler.addRecipe(
                 recipeName,
                 timeToMake,
-                countryID,
+                countryCode,
                 mealNumber,
                 difficulty,
                 photoBytes,

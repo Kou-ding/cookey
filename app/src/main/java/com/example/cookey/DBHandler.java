@@ -1,5 +1,7 @@
 package com.example.cookey;
 
+import static java.security.AccessController.getContext;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,15 +10,21 @@ import android.content.Context;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "cookeyDB.db";
+    private Context context;
 
     public DBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -26,7 +34,7 @@ public class DBHandler extends SQLiteOpenHelper {
                         "  idRecipe INTEGER NOT NULL,\n" +
                         "  name VARCHAR,\n" +
                         "  timeToMake INTEGER,\n" +
-                        "  country INTEGER,\n" +
+                        "  country VARCHAR,\n" +
                         "  mealNumber INTEGER,\n" +
                         "  difficulty ENUM,\n" +
                         "  photo BLOB,\n" +
@@ -238,7 +246,7 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public long addRecipe(String name, int timeToMake, long countryId, int mealNumber, String difficulty, byte[] photoBytes, boolean isFavourite) {
+    public long addRecipe(String name, int timeToMake, String country, int mealNumber, String difficulty, byte[] photoBytes, boolean isFavourite) {
         SQLiteDatabase db = this.getWritableDatabase();
         long newRecipeID = -1;
 
@@ -247,7 +255,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         statement.bindString(1, name);
         statement.bindLong(2, timeToMake);
-        statement.bindLong(3, countryId);
+        statement.bindString(3, country);
         statement.bindLong(4, mealNumber);
         statement.bindString(5, difficulty);
 
@@ -422,82 +430,114 @@ public class DBHandler extends SQLiteOpenHelper {
         return id;
     }
 
-    /*
+
     public RecipeModel getRecipeId(int recipeId) {
         SQLiteDatabase db = this.getReadableDatabase();
+        RecipeModel recipe = null;
 
-        //Get dB data
+        // Get recipe
         Cursor cursor = db.rawQuery(
                 "SELECT idRecipe, name, timeToMake, country, difficulty, photo, favourites " +
-                        "FROM Recipe " +
-                        "WHERE idRecipe = ?",
+                        "FROM Recipe WHERE idRecipe = ?",
                 new String[]{String.valueOf(recipeId)}
         );
 
-        RecipeModel recipe = null;
-
         if (cursor != null && cursor.moveToFirst()) {
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow("idRecipe"));
-            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-            int timeToMake = cursor.getInt(cursor.getColumnIndexOrThrow("timeToMake"));
-            int countryId = cursor.getInt(cursor.getColumnIndexOrThrow("country"));
-            String difficulty = cursor.getString(cursor.getColumnIndexOrThrow("difficulty"));
-            byte[] photo = cursor.getBlob(cursor.getColumnIndexOrThrow("photo"));
-            boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow("favourites")) == 1;
+            try {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("idRecipe"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                int timeToMake = cursor.getInt(cursor.getColumnIndexOrThrow("timeToMake"));
+                String countryCode = cursor.getString(cursor.getColumnIndexOrThrow("country"));
+                String countryName = getCountryNameByCode(countryCode);
+                String difficulty = cursor.getString(cursor.getColumnIndexOrThrow("difficulty"));
+                byte[] photo = cursor.getBlob(cursor.getColumnIndexOrThrow("photo"));
+                boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow("favourites")) == 1;
 
-            String countryName = String.valueOf(countryId);
-
-            //Get tags
-            List<String> tags = new ArrayList<>();
-            Cursor tagsCursor = db.rawQuery("SELECT t.name FROM Tags t " +
-                    "INNER JOIN Recipe_has_Tags rht ON t.idTag = rht.idTag " +
-                    "WHERE rht.idRecipe_fk = ?", new String[]{String.valueOf(recipeId)});
-            if (tagsCursor != null) {
-                while (tagsCursor.moveToNext()) {
-                    tags.add(tagsCursor.getString(tagsCursor.getColumnIndexOrThrow("name")));
+                // Get tags
+                List<String> tags = new ArrayList<>();
+                Cursor tagsCursor = db.rawQuery(
+                        "SELECT t.name FROM Tags t " +
+                                "INNER JOIN Recipe_has_Tags rht ON t.idTags = rht.Tags_idTags " +
+                                "WHERE rht.Recipe_idRecipe = ?",
+                        new String[]{String.valueOf(recipeId)}
+                );
+                if (tagsCursor != null) {
+                    while (tagsCursor.moveToNext()) {
+                        tags.add(tagsCursor.getString(tagsCursor.getColumnIndexOrThrow("name")));
+                    }
+                    tagsCursor.close();
                 }
-                tagsCursor.close();
-            }
 
-            //Get Ingredients
-            List<ViewIngredientModel> ingredients = new ArrayList<>();
-            Cursor ingredientsCursor = db.rawQuery("SELECT i.name, i.unit, rhi.quantity FROM Recipe_has_Ingredient rhi " +
-                    "INNER JOIN Ingredient i ON rhi.idIngredient = i.idIngredient " +
-                    "WHERE rhi.idRecipe = ?", new String[]{String.valueOf(recipeId)});
-            if (ingredientsCursor != null) {
-                while (ingredientsCursor.moveToNext()) {
-                    String ingredientName = ingredientsCursor.getString(ingredientsCursor.getColumnIndexOrThrow("name"));
-                    String unit = ingredientsCursor.getString(ingredientsCursor.getColumnIndexOrThrow("unit"));
-                    float quantity = ingredientsCursor.getFloat(ingredientsCursor.getColumnIndexOrThrow("quantity"));
-                    ingredients.add(new ViewIngredientModel(ingredientName, unit, quantity));
+                // Get ingredients (ViewIngredientModel)
+                List<ViewIngredientModel> ingredients = new ArrayList<>();
+                Cursor ingredientsCursor = db.rawQuery(
+                        "SELECT i.ingredientName, i.unitSystem, i.quantity " +
+                                "FROM Ingredient i " +
+                                "INNER JOIN Recipe_has_Ingredient rhi ON i.ingredientId = rhi.Ingredient_ingredientId " +
+                                "WHERE rhi.Recipe_idRecipe = ?",
+                        new String[]{String.valueOf(recipeId)}
+                );
+                if (ingredientsCursor != null) {
+                    while (ingredientsCursor.moveToNext()) {
+                        String ingredientName = ingredientsCursor.getString(ingredientsCursor.getColumnIndexOrThrow("ingredientName"));
+                        String unit = ingredientsCursor.getString(ingredientsCursor.getColumnIndexOrThrow("unitSystem"));
+                        float quantity = ingredientsCursor.getFloat(ingredientsCursor.getColumnIndexOrThrow("quantity"));
+                        ingredients.add(new ViewIngredientModel(ingredientName, unit, quantity));
+                    }
+                    ingredientsCursor.close();
                 }
-                ingredientsCursor.close();
-            }
 
-            //Get Steps
-            List<StepModel> steps = new ArrayList<>();
-            Cursor stepsCursor = db.rawQuery("SELECT s.text FROM Steps s " +
-                    "INNER JOIN Recipe_has_Steps rhs ON s.idStep = rhs.idStep " +
-                    "WHERE rhs.idRecipe = ? ORDER BY rhs.numberOfStep ASC", new String[]{String.valueOf(recipeId)});
-            if (stepsCursor != null) {
-                while (stepsCursor.moveToNext()) {
-                    String description = stepsCursor.getString(stepsCursor.getColumnIndexOrThrow("text"));
-                    steps.add(new StepModel(description));
+                // Gets Steps
+                List<StepModel> steps = new ArrayList<>();
+                Cursor stepsCursor = db.rawQuery(
+                        "SELECT s.text FROM Steps s " +
+                                "INNER JOIN Recipe_has_Steps rhs ON s.idSteps = rhs.Steps_idSteps " +
+                                "WHERE rhs.Recipe_idRecipe = ? ORDER BY s.numberOfStep ASC",
+                        new String[]{String.valueOf(recipeId)}
+                );
+                if (stepsCursor != null) {
+                    while (stepsCursor.moveToNext()) {
+                        String description = stepsCursor.getString(stepsCursor.getColumnIndexOrThrow("text"));
+                        steps.add(new StepModel(description));
+                    }
+                    stepsCursor.close();
                 }
-                stepsCursor.close();
+
+                // Create RecipeModel
+                recipe = new RecipeModel(
+                        id, name, timeToMake, countryName, difficulty, photo, isFavorite,
+                        tags, ingredients, steps
+                );
+            } finally {
+                cursor.close();
             }
-
-            //Create RecipeModel
-            recipe = new RecipeModel(id, name, timeToMake, countryName, difficulty, photo, isFavorite, tags, ingredients, steps);
-        }
-
-        if (cursor != null) {
-            cursor.close();
         }
         db.close();
-
         return recipe;
     }
 
-     */
+    private String getCountryNameByCode(String code) {
+        try {
+            InputStream is = context.getAssets().open("countries.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            String json = new String(buffer, "UTF-8");
+
+            JSONArray countries = new JSONArray(json);
+            for (int i = 0; i < countries.length(); i++) {
+                JSONObject country = countries.getJSONObject(i);
+                if (country.getString("code").equalsIgnoreCase(code)) {
+                    return country.getString("name");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("DBHandler", "Error loading country name for code: " + code, e);
+        }
+        return "Unknown";
+    }
+
+
 }
