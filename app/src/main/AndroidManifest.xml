@@ -12,16 +12,37 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cookey"
         tools:targetApi="31">
+
+        <!-- Κύριο Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- Νέες Activities -->
+        <activity
+            android:name=".AddRecipeActivity"
+            android:label="@string/title_add_recipe"
+            android:exported="true"
+            android:parentActivityName=".MainActivity"  />
+
+        <activity
+            android:name=".SearchRecipeActivity"
+            android:label="@string/title_search_recipe"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".RecipeDetailsActivity"
+            android:label="@string/title_recipe_details"
+            android:exported="true"
+            android:parentActivityName=".MainActivity"  />
+
+    </application>
+    <uses-permission android:name="android.permission.SET_DEBUG_APP"></uses-permission>
 </manifest>

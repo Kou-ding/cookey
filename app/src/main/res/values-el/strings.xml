@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">cookey</string>
+    <string name="title_MyRecipes">Οι συνταγές μου</string>
+    <string name="title_MyList">Η λίστα μου</string>
+    <string name="title_AI">AI</string>
+    <string name="title_MyShoppingList">Λίστα για τα Ψώνια</string>
+    <string name="title_Settings">Ρυθμίσεις</string>
+    <string name="title_Search">Αναζήτηση</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="change_language">Αλλαγή Γλώσσας</string>
+    <string name="change_theme">Αλλαγή Θέματος</string>
+    <string name="favorite">Αγαπημένα</string>
+    <string name="title_add_recipe">Προσθήκη Συνταγής</string>
+    <string name="title_search_recipe">Αναζήτηση Συνταγής</string>
+    <string name="title_recipe_details">Στοιχεία Συνταγής</string>
+    <string name="search_hint">Αναζήτηση συνταγών...</string>
+    <string name="search">Αναζήτηση</string>
+    <string name="filter_prompt">Διάλεξε Φίλτρο</string>
+    <string name="apply_filters">Εφαρμογή</string>
+    <string name="filter_favorites">Μόνο Αγαπημένα</string>
+    <string name="filter_difficulty_easy">Εύκολο</string>
+    <string name="filter_difficulty_medium">Μέτριο</string>
+    <string name="filter_difficulty_hard">Δύσκολο</string>
+    <string name="recipe_image_desc">Εικόνα Συνταγής</string>
+    <string name="recipe_title_desc">Τίτλος Συνταγής</string>
+    <string name="search_results_desc">Λίστα αποτελεσμάτων αναζήτησης</string>
+    <string name="search_recipe_button">Search Button</string>
+    <string name="add_recipe_button">Add Recipe Button</string>
+    <string name="recipe_title_example">Recipe Title</string>
+    <string name="recipe_text_example">30 mins | Easy</string>
+</resources>
