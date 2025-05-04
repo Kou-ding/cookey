@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -25,6 +26,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -60,6 +63,9 @@ public class AddRecipeActivity extends AppCompatActivity {
     private TextInputEditText editTextMealNumber;
     private AutoCompleteTextView autoCompleteDifficulty;
 
+    private RecyclerView recyclerViewTags;
+    private TagAdapter tagsAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +81,15 @@ public class AddRecipeActivity extends AppCompatActivity {
         ingredientsLayout = findViewById(R.id.linearLayoutIngredients);
         stepsLayout = findViewById(R.id.linearLayoutSteps);
 
+        /*
         CheckBox cbSpicy = findViewById(R.id.checkboxSpicy);
         CheckBox cbVegetarian = findViewById(R.id.checkboxVegetarian);
         CheckBox cbQuick = findViewById(R.id.checkboxQuick);
+        */
+
+        recyclerViewTags = findViewById(R.id.recyclerViewTags);
+        recyclerViewTags.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
 
         btnSelectCountry = findViewById(R.id.btnSelectCountry);
 
@@ -113,6 +125,12 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         dbHandler = new DBHandler(this); // Connect with DB
 
+        //Tag connect
+        List<String> allTags = dbHandler.getAllTags(); //
+        tagsAdapter = new TagAdapter(allTags);
+        recyclerViewTags.setAdapter(tagsAdapter);
+
+
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -131,6 +149,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
 
+        /*
         cbSpicy.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 selectedTags.add("Spicy");
@@ -154,11 +173,13 @@ public class AddRecipeActivity extends AppCompatActivity {
                 selectedTags.remove("Quick");
             }
         });
+                 */
 
         btnSelectCountry.setOnClickListener(v -> {
             CountrySelectDialog dialog = new CountrySelectDialog(AddRecipeActivity.this, country -> {
                 btnSelectCountry.setText(country.getName());
                 btnSelectCountry.setTag(country);  // save country object
+                selectedCountryId = country.getId();
             });
             dialog.show();
         });
@@ -277,6 +298,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Recipe saved successfully!", Toast.LENGTH_SHORT).show();
    //     finish(); // Close AddRecipe Activity
+        Log.d("Got added OK","recipe added");
     }
 
     private void addSelectedStep(String description) {

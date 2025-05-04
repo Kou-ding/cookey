@@ -48,7 +48,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_details);
 
         //Seeder - Used for testing
-      //      RecipeSeeder.seed(this);
+        RecipeSeeder.seed(this);
 
         // Find-Init Views
         imageViewRecipe = findViewById(R.id.imageViewRecipe);
@@ -124,7 +124,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
             );
         } else {
             Toast.makeText(this, "Recipe not found!", Toast.LENGTH_SHORT).show();
-            finish(); // Κλείνει την activity αν η συνταγή δεν βρέθηκε
+         //   finish(); // Κλείνει την activity αν η συνταγή δεν βρέθηκε
         }
 
         // Tabs Click

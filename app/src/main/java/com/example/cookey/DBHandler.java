@@ -418,7 +418,7 @@ public class DBHandler extends SQLiteOpenHelper {
         long id = -1;
         Cursor cursor = null;
         try {
-            cursor = db.rawQuery("SELECT idTag FROM Tags WHERE name = ?", new String[]{tagName});
+            cursor = db.rawQuery("SELECT idTags FROM Tags WHERE name = ?", new String[]{tagName});
             if (cursor.moveToFirst()) {
                 id = cursor.getLong(0);
             }
@@ -538,6 +538,21 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return "Unknown";
     }
+
+    public List<String> getAllTags(){
+        List<String> tags = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT name FROM Tags", null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                tags.add(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+            }
+            cursor.close();
+        }
+        db.close();
+        return tags;
+    }
+
 
 
 }

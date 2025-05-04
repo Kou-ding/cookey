@@ -35,6 +35,7 @@ public class IngredientSelectDialog extends Dialog {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         List<IngredientModel> dummyIngredients = new ArrayList<>();
+
         dummyIngredients.add(new IngredientModel(1, "Rice", "kg"));
         dummyIngredients.add(new IngredientModel(2, "Salt", "g"));
         dummyIngredients.add(new IngredientModel(3, "Water", "ml"));
@@ -52,6 +53,8 @@ public class IngredientSelectDialog extends Dialog {
         dummyIngredients.add(new IngredientModel(5, "Lemon", "ml"));
         dummyIngredients.add(new IngredientModel(5, "Parmesan", "g"));
         dummyIngredients.add(new IngredientModel(5, "Cheddar", "g"));
+
+
 
         adapter = new IngredientAdapter(dummyIngredients, ingredient -> showQuantityDialog(ingredient));
         recyclerView.setAdapter(adapter);

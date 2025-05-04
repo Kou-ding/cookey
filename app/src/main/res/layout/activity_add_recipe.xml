@@ -165,6 +165,8 @@
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
+
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -178,23 +180,12 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <CheckBox
-                        android:id="@+id/checkboxSpicy"
-                        android:layout_width="wrap_content"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewTags"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Spicy" />
-
-                    <CheckBox
-                        android:id="@+id/checkboxVegetarian"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Vegetarian" />
-
-                    <CheckBox
-                        android:id="@+id/checkboxQuick"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Quick" />
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
