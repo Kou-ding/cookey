@@ -4,18 +4,16 @@ public class ShoppingListItem {
     private int shoppingListItemId;
     private String shoppingListItemName;
     private float purchasedQuantity;
-    private String purchaseDate;
     private boolean isFood;
     private boolean isChecked;
 
     public ShoppingListItem() {
         // empty constructor
     }
-    public ShoppingListItem(int shoppingListItemId, String shoppingListItemName, float purchasedQuantity, String purchaseDate, boolean isFood, boolean isChecked) {
+    public ShoppingListItem(int shoppingListItemId, String shoppingListItemName, float purchasedQuantity, boolean isFood, boolean isChecked) {
         this.shoppingListItemId = shoppingListItemId;
         this.shoppingListItemName = shoppingListItemName;
         this.purchasedQuantity = purchasedQuantity;
-        this.purchaseDate = purchaseDate;
         this.isFood = isFood;
         this.isChecked = isChecked;
     }
@@ -27,6 +25,7 @@ public class ShoppingListItem {
     public int getShoppingListItemId(){
         return shoppingListItemId;
     }
+
     // Ingredient Name
     public void setShoppingListItemName(String shoppingListItemName) {
         this.shoppingListItemName = shoppingListItemName;
@@ -41,14 +40,6 @@ public class ShoppingListItem {
     }
     public float getPurchasedQuantity(){
         return purchasedQuantity;
-    }
-
-    // Purchase Date
-    public void setPurchaseDate(String purchaseDate) {
-        this.purchaseDate = purchaseDate;
-    }
-    public String getPurchaseDate(){
-        return purchaseDate;
     }
 
     // Is Food
