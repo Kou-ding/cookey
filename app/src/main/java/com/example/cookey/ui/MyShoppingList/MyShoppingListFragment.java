@@ -1,5 +1,6 @@
 package com.example.cookey.ui.MyShoppingList;
 
+import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.cookey.DBHandler;
@@ -83,10 +85,20 @@ public class MyShoppingListFragment extends Fragment {
 
         // New List Button Listener
         newListButton.setOnClickListener(v -> {
-            try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-                db.newShoppingList();
-                loadItems();
-            }
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Consume?")
+                    .setMessage("Are you sure that you want create a new Shopping List? All the items in your current Shopping List will be deleted!")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        Toast.makeText(requireContext(), "New List created!", Toast.LENGTH_SHORT).show();
+                        try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                            db.newShoppingList();
+                            loadItems();
+                        }
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        Toast.makeText(requireContext(), "No changes made", Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
         });
 
         // Delete Mode Button Listener
@@ -127,12 +139,22 @@ public class MyShoppingListFragment extends Fragment {
 
         // Refill Ingredients Button Listener
         refillIngredientsButton.setOnClickListener(v -> {
-            try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-                db.refillIngredients(adapter.getCheckedItems());
-            }
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Consume?")
+                    .setMessage("Are you sure that you want to include all the checked items in your Ingredients?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        Toast.makeText(requireContext(), "Ingredients Refilled!", Toast.LENGTH_SHORT).show();
+                        try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                            db.refillIngredients(adapter.getCheckedItems());
+                        }
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        Toast.makeText(requireContext(), "No changes made", Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+
             loadItems();
         });
-
         return view;
     }
     public void loadItems() {
