@@ -124,7 +124,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
 
     public void addItem(){
         // Add a blank item to the local list
-        items.add(new ShoppingListItem(items.size()+1, "", 0, "", false, false));
+        items.add(new ShoppingListItem(items.size()+1, "", 0,  false, false));
         // Notify the adapter that an item has been added
         notifyDataSetChanged();
     }
