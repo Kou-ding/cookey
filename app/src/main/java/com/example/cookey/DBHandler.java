@@ -103,7 +103,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 "  shoppingListItemId INTEGER NOT NULL,\n" +
                 "  shoppingListItemName VARCHAR,\n" +
                 "  purchasedQuantity FLOAT,\n" +
-                "  purchaseDate DATE,\n" +
                 "  isFood BOOLEAN,\n" +
                 "  isChecked BOOLEAN,\n" +
                 "  PRIMARY KEY(shoppingListItemId)\n" +
@@ -339,9 +338,8 @@ public class DBHandler extends SQLiteOpenHelper {
                     item.setShoppingListItemId(cursor.getInt(0));
                     item.setShoppingListItemName(cursor.getString(1));
                     item.setPurchasedQuantity(cursor.getFloat(2));
-                    item.setPurchaseDate(cursor.getString(3));
-                    item.setIsFood(cursor.getInt(4) != 0);
-                    item.setIsChecked(cursor.getInt(5) != 0);
+                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setIsChecked(cursor.getInt(4) != 0);
 
                     items.add(item);
                 } while (cursor.moveToNext());
@@ -381,9 +379,8 @@ public class DBHandler extends SQLiteOpenHelper {
                     item.setShoppingListItemId(cursor.getInt(0));
                     item.setShoppingListItemName(cursor.getString(1));
                     item.setPurchasedQuantity(cursor.getFloat(2));
-                    item.setPurchaseDate(cursor.getString(3));
-                    item.setIsFood(cursor.getInt(4) != 0);
-                    item.setIsChecked(cursor.getInt(5) != 0);
+                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setIsChecked(cursor.getInt(4) != 0);
 
                     items.add(item);
                 } while (cursor.moveToNext());
@@ -416,9 +413,8 @@ public class DBHandler extends SQLiteOpenHelper {
                     item.setShoppingListItemId(cursor.getInt(0));
                     item.setShoppingListItemName(cursor.getString(1));
                     item.setPurchasedQuantity(cursor.getFloat(2));
-                    item.setPurchaseDate(cursor.getString(3));
-                    item.setIsFood(cursor.getInt(4) != 0);
-                    item.setIsChecked(cursor.getInt(5) != 0);
+                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setIsChecked(cursor.getInt(4) != 0);
 
                     items.add(item);
                 } while (cursor.moveToNext());
@@ -445,13 +441,13 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public void addFoodItem(int Id){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', 0, '', 1, 0);";
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', 0, 1, 0);";
         db.execSQL(query);
         db.close();
     }
     public void addNonFoodItem(int Id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ("+Id+"'', 0, '', 0, 0);";
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', 0, 0, 0);";
         db.execSQL(query);
         db.close();
     }
