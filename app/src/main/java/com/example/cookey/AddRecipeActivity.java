@@ -198,17 +198,11 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
 
-        btnAddIngredient.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                IngredientSelectDialog dialog = new IngredientSelectDialog(AddRecipeActivity.this, new IngredientSelectDialog.OnIngredientSelectedListener() {
-                    @Override
-                    public void onIngredientSelected(IngredientModel ingredient, double quantity) {
-                        addSelectedIngredient(ingredient, quantity);
-                    }
-                });
-                dialog.show();
-            }
+        btnAddIngredient.setOnClickListener(v -> {
+            IngredientSelectDialog dialog = new IngredientSelectDialog(AddRecipeActivity.this, (ingredient, quantity) -> {
+                addSelectedIngredient(ingredient, quantity);
+            });
+            dialog.show();
         });
 
         Button btnAddStep = findViewById(R.id.btnAddStep);
@@ -281,12 +275,12 @@ public class AddRecipeActivity extends AppCompatActivity {
         );
 
 
-        for (SelectedIngredient ingredient : selectedIngredients) {
+        for (SelectedIngredient sel : selectedIngredients) {
             dbHandler.addIngredientToRecipeIngredients(
                     recipeId,
-                    ingredient.getName(),
-                    ingredient.getQuantity(),
-                    ingredient.getUnit()
+                    sel.getName(),
+                    sel.getQuantity(),
+                    sel.getUnit()
             );
         }
 
@@ -447,7 +441,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         ingredientsLayout.addView(container);
 
         // Add to list
-        SelectedIngredient selected = new SelectedIngredient(ingredient.getId(), ingredient.getName(), ingredient.getUnit(), quantity);
+        SelectedIngredient selected = new SelectedIngredient(ingredient, quantity);
         selectedIngredients.add(selected);
 
         // Delete ingredient
@@ -521,38 +515,6 @@ public class AddRecipeActivity extends AppCompatActivity {
         }
 
         return true;
-    }
-
-
-
-    private static class SelectedIngredient {
-        private long ingredientId;
-        private String name;
-        private String unit;
-        private double quantity;
-
-        public SelectedIngredient(long ingredientId, String name, String unit, double quantity) {
-            this.ingredientId = ingredientId;
-            this.name = name;
-            this.unit = unit;
-            this.quantity = quantity;
-        }
-
-        public long getIngredientId() {
-            return ingredientId;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getUnit() {
-            return unit;
-        }
-
-        public double getQuantity() {
-            return quantity;
-        }
     }
 }
 

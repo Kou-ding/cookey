@@ -10,12 +10,16 @@
         android:id="@+id/autoCompleteIngredient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Type ingredient..."
-        android:inputType="text" />
+        android:hint="Select Ingredient"
+        android:inputType="text"
+        android:completionThreshold="1"
+        android:layout_marginBottom="12dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewIngredients"
+    <EditText
+        android:id="@+id/editTextQuantity"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="12dp" />
+        android:layout_height="wrap_content"
+        android:hint="Quantity"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="16dp" />
 </LinearLayout>

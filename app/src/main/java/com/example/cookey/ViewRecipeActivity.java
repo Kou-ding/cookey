@@ -40,7 +40,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private List<StepModel> stepsList = new ArrayList<>();
 
     private DBHandler dbHandler;
-    private int recipeID = 5; //ULTRA DUMMY
+    private int recipeID = 7; //ULTRA DUMMY
 
     @Override
     protected void onCreate(Bundle savedInstance){
@@ -283,9 +283,9 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
     /** @noinspection deprecation*/
     private void highlightSelectedTab(TextView selectedTab, TextView unselectedTab) {
-        selectedTab.setBackgroundColor(getResources().getColor(R.color.teal_700));
+        selectedTab.setBackgroundColor(getResources().getColor(R.color.pastelChocolate));
         selectedTab.setTextColor(getResources().getColor(android.R.color.white));
         unselectedTab.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-        unselectedTab.setTextColor(getResources().getColor(android.R.color.black));
+        unselectedTab.setTextColor(getResources().getColor(R.color.white));
     }
 }

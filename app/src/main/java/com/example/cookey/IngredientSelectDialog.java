@@ -3,9 +3,14 @@ package com.example.cookey;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,10 +20,13 @@ import java.util.List;
 
 public class IngredientSelectDialog extends Dialog {
 
-    private RecyclerView recyclerView;
-    private IngredientAdapter adapter;
     private OnIngredientSelectedListener listener;
-    private AutoCompleteTextView autoComplete;
+    private AutoCompleteTextView autoCompleteIngredient;
+    private EditText editTextQuantity;
+    private Button confirmButton;
+
+    private List<IngredientModel> allIngredients;
+    private IngredientModel selectedIngredient;
 
     public interface OnIngredientSelectedListener {
         void onIngredientSelected(IngredientModel ingredient, double quantity);
@@ -34,53 +42,58 @@ public class IngredientSelectDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_select_ingredient);
 
-        autoComplete = findViewById(R.id.autoCompleteIngredient);
-        recyclerView = findViewById(R.id.recyclerViewIngredients);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        autoCompleteIngredient = findViewById(R.id.autoCompleteIngredient);
+        editTextQuantity = findViewById(R.id.editTextQuantity);
+        editTextQuantity.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
         DBHandler dbHandler = new DBHandler(getContext());
-        List<IngredientModel> ingredients = dbHandler.getAllAddIngredients();
-
-        adapter = new IngredientAdapter(ingredients, ingredient -> showQuantityDialog(ingredient));
-
-        adapter = new IngredientAdapter(ingredients, ingredient -> showQuantityDialog(ingredient));
-        recyclerView.setAdapter(adapter);
+        allIngredients = dbHandler.getAllAddIngredients();
 
         List<String> ingredientNames = new ArrayList<>();
-        for (IngredientModel ing : ingredients) {
-            ingredientNames.add(ing.getName());
+        for (IngredientModel i : allIngredients) {
+            ingredientNames.add(i.getName());
         }
 
-        ArrayAdapter<String> autoAdapter = new ArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line, ingredientNames);
-        autoComplete.setAdapter(autoAdapter);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, ingredientNames);
+        autoCompleteIngredient.setAdapter(adapter);
 
-        autoComplete.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedName = (String) parent.getItemAtPosition(position);
-            for (IngredientModel ing : ingredients) {
-                if (ing.getName().equalsIgnoreCase(selectedName)) {
-                    showQuantityDialog(ing);
+        autoCompleteIngredient.setOnItemClickListener((parent, view, position, id) -> {
+            String name = (String) parent.getItemAtPosition(position);
+            for (IngredientModel i : allIngredients) {
+                if (i.getName().equals(name)) {
+                    selectedIngredient = i;
                     break;
                 }
             }
         });
+
+        confirmButton = new Button(getContext());
+        confirmButton.setText("Confirm");
+        confirmButton.setOnClickListener(v -> {
+            if (selectedIngredient == null) {
+                Toast.makeText(getContext(), "Please select an ingredient", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String qtyText = editTextQuantity.getText().toString().trim();
+            if (qtyText.isEmpty()) {
+                Toast.makeText(getContext(), "Please enter a quantity", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            double quantity;
+            try {
+                quantity = Double.parseDouble(qtyText);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Invalid quantity", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            listener.onIngredientSelected(selectedIngredient, quantity);
+            dismiss();
+        });
+
+        // Add confirm button dynamically
+        ((LinearLayout) findViewById(R.id.layoutRoot)).addView(confirmButton);
     }
 
-    private void showQuantityDialog(IngredientModel ingredient) {
-        Dialog quantityDialog = new Dialog(getContext());
-        quantityDialog.setContentView(R.layout.dialog_enter_quantity);
-        EditText editTextQuantity = quantityDialog.findViewById(R.id.editTextQuantity);
-        quantityDialog.findViewById(R.id.buttonConfirmQuantity).setOnClickListener(v -> {
-            String quantityText = editTextQuantity.getText().toString().trim();
-            if (!quantityText.isEmpty()) {
-                double quantity = Double.parseDouble(quantityText);
-                listener.onIngredientSelected(ingredient, quantity);
-                quantityDialog.dismiss();
-                dismiss();
-            } else {
-                Toast.makeText(getContext(), "Please enter a quantity", Toast.LENGTH_SHORT).show();
-            }
-        });
-        quantityDialog.show();
-    }
 }
