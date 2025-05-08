@@ -1,15 +1,15 @@
 package com.example.cookey;
 
 import java.util.List;
-public class RecipeModel {
 
-    //This class models a recipe. "FULL Recipe" in other words
-    // Will be used to show everything in the edit-recipe function of the project
+public class RecipeModel {
 
     private int id;
     private String name;
     private int timeToMake;
-    private String countryName; // INT?
+    private String countryCode;
+    private String countryName;
+    private int mealNumber;
     private String difficulty;
     private byte[] photo;
     private boolean isFavorite;
@@ -17,8 +17,12 @@ public class RecipeModel {
     private List<ViewIngredientModel> ingredients;
     private List<StepModel> steps;
 
+    // Default constructor
+    public RecipeModel() {
+    }
+
     public RecipeModel(int id, String name, int timeToMake, String countryName, String difficulty, byte[] photo, boolean isFavorite,
-                       List<String> tags, List<ViewIngredientModel> ingredients, List<StepModel> steps){
+                       List<String> tags, List<ViewIngredientModel> ingredients, List<StepModel> steps) {
         this.id = id;
         this.name = name;
         this.timeToMake = timeToMake;
@@ -30,7 +34,6 @@ public class RecipeModel {
         this.ingredients = ingredients;
         this.steps = steps;
     }
-
 
     public int getId() {
         return id;
@@ -56,12 +59,28 @@ public class RecipeModel {
         this.timeToMake = timeToMake;
     }
 
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
     public String getCountryName() {
         return countryName;
     }
 
     public void setCountryName(String countryName) {
         this.countryName = countryName;
+    }
+
+    public int getMealNumber() {
+        return mealNumber;
+    }
+
+    public void setMealNumber(int mealNumber) {
+        this.mealNumber = mealNumber;
     }
 
     public String getDifficulty() {
@@ -111,5 +130,4 @@ public class RecipeModel {
     public void setSteps(List<StepModel> steps) {
         this.steps = steps;
     }
-
 }

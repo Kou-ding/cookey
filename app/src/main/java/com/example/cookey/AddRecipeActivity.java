@@ -282,7 +282,12 @@ public class AddRecipeActivity extends AppCompatActivity {
 
 
         for (SelectedIngredient ingredient : selectedIngredients) {
-            dbHandler.addIngredientToRecipe(recipeId, ingredient.getName(), ingredient.getQuantity(), "g", 7);
+            dbHandler.addIngredientToRecipeIngredients(
+                    recipeId,
+                    ingredient.getName(),
+                    ingredient.getQuantity(),
+                    ingredient.getUnit()
+            );
         }
 
 
@@ -292,7 +297,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             stepCounter++;
         }
 
-        for (String tag : selectedTags) {
+        for (String tag : tagsAdapter.getSelectedTags()) {
             dbHandler.addTagToRecipe(recipeId, tag);
         }
 
@@ -300,6 +305,8 @@ public class AddRecipeActivity extends AppCompatActivity {
    //     finish(); // Close AddRecipe Activity
         Log.d("Got added OK","recipe added");
     }
+
+
 
     private void addSelectedStep(String description) {
         LinearLayout container = new LinearLayout(this);

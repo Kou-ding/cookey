@@ -40,7 +40,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private List<StepModel> stepsList = new ArrayList<>();
 
     private DBHandler dbHandler;
-    private int recipeID = 2; //ULTRA DUMMY
+    private int recipeID = 5; //ULTRA DUMMY
 
     @Override
     protected void onCreate(Bundle savedInstance){
@@ -48,7 +48,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_details);
 
         //Seeder - Used for testing
-        RecipeSeeder.seed(this);
+      //  RecipeSeeder.seed(this);
 
         // Find-Init Views
         imageViewRecipe = findViewById(R.id.imageViewRecipe);
@@ -258,14 +258,15 @@ public class ViewRecipeActivity extends AppCompatActivity {
         final boolean[] isFav = {false}; //temp
 
         btnFavorite.setOnClickListener(view -> {
-            isFav[0] = !isFav[0];
+            boolean newFavStatus = !recipe.isFavorite(); // toggle
+            dbHandler.setFavorite(recipeID, newFavStatus); // update dB
 
-            if(isFav[0]){
-                btnFavorite.setImageResource(R.drawable.ic_heart_filled);
-            } else{
-                btnFavorite.setImageResource(R.drawable.favorite_24px);
-            }
+            recipe.setFavorite(newFavStatus); // update obj
+            btnFavorite.setImageResource(
+                    newFavStatus ? R.drawable.ic_heart_filled : R.drawable.favorite_24px
+            );
         });
+
 
 
         // Back Button
