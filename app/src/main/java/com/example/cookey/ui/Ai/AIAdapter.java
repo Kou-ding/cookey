@@ -38,6 +38,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
         TextView itemUnitSystem;
         ImageButton deleteItem;
         AutoCompleteTextView autoCompleteIngredient;
+        private TextWatcher textWatcher;
 
         public ViewHolder(View view) {
             super(view);
@@ -47,6 +48,23 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
             itemUnitSystem = itemView.findViewById(R.id.itemUnitSystem);
             deleteItem = itemView.findViewById(R.id.deleteItem);
             autoCompleteIngredient = itemView.findViewById(R.id.autoCompleteIngredient);
+            // Initialize TextWatcher once in ViewHolder
+            textWatcher = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        items.get(position).setShoppingListItemName(s.toString());
+                    }
+                }
+            };
+            autoCompleteIngredient.addTextChangedListener(textWatcher);
         }
     }
     @NonNull
@@ -68,6 +86,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
         holder.itemQuantityEdit.setVisibility(View.GONE);
         holder.itemUnitSystem.setVisibility(View.GONE);
         holder.autoCompleteIngredient.setText(item.getShoppingListItemName());
+        holder.autoCompleteIngredient.addTextChangedListener(holder.textWatcher);
 
         // Handle delete button click
         holder.deleteItem.setOnClickListener(v -> {
@@ -76,24 +95,17 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
             notifyItemRangeChanged(position, items.size());
         });
 
-        holder.autoCompleteIngredient.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                try {
-                    item.setShoppingListItemName(s.toString());
-                } catch (NumberFormatException e) {
-                    Log.e("MyShoppingListAdapter", "Error parsing item quantity", e);
-                }
-            }
-        });
-
         // Create the suggestions list
+        ArrayAdapter<String> autoCompleteAdapter = getAutoCompleteAdapter(holder);
+
+        // Set it to the AutoCompleteTextView
+        holder.autoCompleteIngredient.setThreshold(1);
+        holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
+
+    }
+
+    @NonNull
+    private static ArrayAdapter<String> getAutoCompleteAdapter(@NonNull ViewHolder holder) {
         List<String> suggestions = new ArrayList<>();
 
         // Open DB and fill the suggestions
@@ -110,11 +122,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
                 android.R.layout.simple_dropdown_item_1line,
                 suggestions
         );
-
-        // Set it to the AutoCompleteTextView
-        holder.autoCompleteIngredient.setThreshold(1);
-        holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
-
+        return autoCompleteAdapter;
     }
 
     @Override
@@ -124,9 +132,9 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
 
     public void addItem(){
         // Add a blank item to the local list
-        items.add(new ShoppingListItem(items.size()+1, "", 0,  false, false));
-        // Notify the adapter that an item has been added
-        notifyDataSetChanged();
+        int newId = items.isEmpty() ? 1 : items.get(items.size() - 1).getShoppingListItemId() + 1;
+        items.add(new ShoppingListItem(newId, "", 0, false, false));        // Notify the adapter that an item has been added
+        notifyItemInserted(items.size() - 1);
     }
 
     public List<ShoppingListItem> getItems() {
