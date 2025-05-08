@@ -96,6 +96,8 @@ public class AIFragment extends Fragment {
         // Listener for the add ingredient button
         addIngredientButton.setOnClickListener(v -> {
             adapter.addItem();
+            // Scroll to the new item
+            recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         });
 
         // Listener for the expand button
