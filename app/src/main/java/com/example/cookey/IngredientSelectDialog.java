@@ -3,6 +3,8 @@ package com.example.cookey;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -16,6 +18,7 @@ public class IngredientSelectDialog extends Dialog {
     private RecyclerView recyclerView;
     private IngredientAdapter adapter;
     private OnIngredientSelectedListener listener;
+    private AutoCompleteTextView autoComplete;
 
     public interface OnIngredientSelectedListener {
         void onIngredientSelected(IngredientModel ingredient, double quantity);
@@ -31,33 +34,36 @@ public class IngredientSelectDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_select_ingredient);
 
+        autoComplete = findViewById(R.id.autoCompleteIngredient);
         recyclerView = findViewById(R.id.recyclerViewIngredients);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        List<IngredientModel> dummyIngredients = new ArrayList<>();
+        DBHandler dbHandler = new DBHandler(getContext());
+        List<IngredientModel> ingredients = dbHandler.getAllAddIngredients();
 
-        dummyIngredients.add(new IngredientModel(1, "Rice", "kg"));
-        dummyIngredients.add(new IngredientModel(2, "Salt", "g"));
-        dummyIngredients.add(new IngredientModel(3, "Water", "ml"));
-        dummyIngredients.add(new IngredientModel(4, "Flour", "kg"));
-        dummyIngredients.add(new IngredientModel(5, "Sugar", "g"));
-        dummyIngredients.add(new IngredientModel(5, "Butter", "g"));
-        dummyIngredients.add(new IngredientModel(5, "Egg", "kg"));
-        dummyIngredients.add(new IngredientModel(5, "Garlic", "g"));
-        dummyIngredients.add(new IngredientModel(5, "Cat", "kg"));
-        dummyIngredients.add(new IngredientModel(5, "Olive Oil", "ml"));
-        dummyIngredients.add(new IngredientModel(5, "Potato", "kg"));
-        dummyIngredients.add(new IngredientModel(5, "Celery", "g"));
-        dummyIngredients.add(new IngredientModel(5, "Carrot", "g"));
-        dummyIngredients.add(new IngredientModel(5, "Mushroom", "kg"));
-        dummyIngredients.add(new IngredientModel(5, "Lemon", "ml"));
-        dummyIngredients.add(new IngredientModel(5, "Parmesan", "g"));
-        dummyIngredients.add(new IngredientModel(5, "Cheddar", "g"));
+        adapter = new IngredientAdapter(ingredients, ingredient -> showQuantityDialog(ingredient));
 
-
-
-        adapter = new IngredientAdapter(dummyIngredients, ingredient -> showQuantityDialog(ingredient));
+        adapter = new IngredientAdapter(ingredients, ingredient -> showQuantityDialog(ingredient));
         recyclerView.setAdapter(adapter);
+
+        List<String> ingredientNames = new ArrayList<>();
+        for (IngredientModel ing : ingredients) {
+            ingredientNames.add(ing.getName());
+        }
+
+        ArrayAdapter<String> autoAdapter = new ArrayAdapter<>(
+                getContext(), android.R.layout.simple_dropdown_item_1line, ingredientNames);
+        autoComplete.setAdapter(autoAdapter);
+
+        autoComplete.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedName = (String) parent.getItemAtPosition(position);
+            for (IngredientModel ing : ingredients) {
+                if (ing.getName().equalsIgnoreCase(selectedName)) {
+                    showQuantityDialog(ing);
+                    break;
+                }
+            }
+        });
     }
 
     private void showQuantityDialog(IngredientModel ingredient) {

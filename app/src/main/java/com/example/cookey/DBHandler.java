@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "cookeyDB.db";
     private Context context;
 
@@ -120,6 +120,16 @@ public class DBHandler extends SQLiteOpenHelper {
                         "  PRIMARY KEY(AIRecipeId)\n" +
                         ");\n\n" +
 
+                        "CREATE TABLE RecipeIngredients (\n" +
+                        "  recipe_id INTEGER NOT NULL,\n" +
+                        "  ingredient_id INTEGER NOT NULL,\n" +
+                        "  quantity REAL,\n" +
+                        "  unit TEXT,\n" +
+                        "  PRIMARY KEY(recipe_id, ingredient_id),\n" +
+                        "  FOREIGN KEY(recipe_id) REFERENCES Recipe(idRecipe),\n" +
+                        "  FOREIGN KEY(ingredient_id) REFERENCES Ingredient(ingredientId)\n" +
+                        ");\n\n"+
+
                         "CREATE TABLE Ingredient (\n" +
                         "  ingredientId INTEGER NOT NULL,\n" +
                         "  ingredientName VARCHAR,\n" +
@@ -136,6 +146,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 db.execSQL(statement + ";");
             }
         }
+
+        populateDefaultIngredients(db);
     }
 
     @Override
@@ -152,9 +164,55 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS AIRecipe");
         db.execSQL("DROP TABLE IF EXISTS Ingredient");
 
+        db.execSQL("DROP TABLE IF EXISTS RecipeIngredients");
+
         // Recreate tables
         onCreate(db);
     }
+
+    public void populateDefaultIngredients(SQLiteDatabase db) {
+        String[] defaultIngredients = new String[]{
+                "Rice", "Salt", "Water", "Flour", "Sugar", "Butter", "Egg",
+                "Garlic", "Olive Oil", "Potato", "Celery", "Carrot",
+                "Mushroom", "Lemon", "Parmesan", "Cheddar"
+        };
+        String[] units = new String[]{
+                "kg", "g", "ml", "kg", "g", "g", "piece",
+                "g", "ml", "kg", "g", "g",
+                "kg", "ml", "g", "g"
+        };
+
+        for (int i = 0; i < defaultIngredients.length; i++) {
+            ContentValues values = new ContentValues();
+            values.put("ingredientName", defaultIngredients[i]);
+            values.put("quantity", 0); // default value
+            values.put("unitSystem", units[i]);
+            values.put("daysToSpoil", 10); // default value
+            values.put("checkIfSpoiledArray", ""); // optional
+
+            db.insert("Ingredient", null, values);
+        }
+    }
+
+    public List<IngredientModel> getAllAddIngredients() {
+        List<IngredientModel> ingredients = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT ingredientId, ingredientName, unitSystem FROM Ingredient", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow("ingredientId"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("ingredientName"));
+                String unit = cursor.getString(cursor.getColumnIndexOrThrow("unitSystem"));
+                ingredients.add(new IngredientModel(id, name, unit));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return ingredients;
+    }
+
+
 
 
     public void deleteIngredient(int ingredientId) {
