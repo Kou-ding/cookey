@@ -60,4 +60,12 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.TagViewHolder> {
             checkBox = itemView.findViewById(R.id.checkBoxTag);
         }
     }
+
+    public void setSelectedTags(List<String> tagsToSelect) {
+        selectedTags.clear();
+        if (tagsToSelect != null) {
+            selectedTags.addAll(tagsToSelect);
+        }
+        notifyDataSetChanged();
+    }
 }

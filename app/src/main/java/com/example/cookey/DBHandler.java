@@ -128,7 +128,7 @@ public class DBHandler extends SQLiteOpenHelper {
                         "  PRIMARY KEY(recipe_id, ingredient_id),\n" +
                         "  FOREIGN KEY(recipe_id) REFERENCES Recipe(idRecipe),\n" +
                         "  FOREIGN KEY(ingredient_id) REFERENCES Ingredient(ingredientId)\n" +
-                        ");\n\n"+
+                        ");\n\n" +
 
                         "CREATE TABLE Ingredient (\n" +
                         "  ingredientId INTEGER NOT NULL,\n" +
@@ -225,8 +225,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
         return ingredients;
     }
-
-
 
 
     public void deleteIngredient(int ingredientId) {
@@ -520,7 +518,7 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
 
-    public RecipeModel getRecipeId(int recipeId) {
+    public RecipeModel getRecipeId(long recipeId) {
         SQLiteDatabase db = this.getReadableDatabase();
         RecipeModel recipe = null;
 
@@ -622,7 +620,7 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
 
-    public void setFavorite(int recipeId, boolean isFavorite) {
+    public void setFavorite(long recipeId, boolean isFavorite) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("favourites", isFavorite ? 1 : 0);
@@ -654,7 +652,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return "Unknown";
     }
 
-    public List<String> getAllTags(){
+    public List<String> getAllTags() {
         List<String> tags = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT name FROM Tags", null);
@@ -668,6 +666,124 @@ public class DBHandler extends SQLiteOpenHelper {
         return tags;
     }
 
+    public void updateRecipe(long recipeId, String name, int timeToMake, String country, int mealNumber, String difficulty, byte[] photoBytes, boolean isFavorite) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("timeToMake", timeToMake);
+        values.put("country", country);
+        values.put("mealNumber", mealNumber);
+        values.put("difficulty", difficulty);
+        values.put("photo", photoBytes);
+        values.put("favourites", isFavorite ? 1 : 0);
+
+        // Update the recipe in the database
+        db.update("Recipe", values, "idRecipe = ?", new String[]{String.valueOf(recipeId)});
+        db.close();
+    }
+
+    public void updateIngredient(long id, String name, String unit, double quantity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("unit", unit);
+        values.put("quantity", quantity);
+
+        db.update("Ingredient", values, "idIngredient = ?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+    public void updateStep(long id, String description) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("description", description);
+
+        db.update("Step", values, "idStep = ?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+
+    public List<SelectedIngredient> getIngredientsForRecipe(long recipeId) {
+        List<SelectedIngredient> out = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery(
+                "SELECT i.ingredientId, i.ingredientName, ri.quantity, ri.unit\n" +
+                        "  FROM RecipeIngredients ri\n" +
+                        "  JOIN Ingredient       i ON i.ingredientId = ri.ingredient_id\n" +
+                        " WHERE ri.recipe_id = ?",
+                new String[]{ String.valueOf(recipeId) }
+        );
+        while (c.moveToNext()) {
+            long    id   = c.getLong(  c.getColumnIndexOrThrow("ingredientId"));
+            String  name = c.getString(c.getColumnIndexOrThrow("ingredientName"));
+            double  qty  = c.getDouble(c.getColumnIndexOrThrow("quantity"));
+            String  unit = c.getString(c.getColumnIndexOrThrow("unit"));
+            out.add(new SelectedIngredient(new IngredientModel(id, name, unit), qty));
+        }
+        c.close();
+        db.close();
+        return out;
+    }
+
+
+    public List<String> getTagsForRecipe(long recipeId) {
+        List<String> tags = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT t.name FROM Tags t " +
+                        "JOIN Recipe_has_Tags rt ON t.idTags = rt.Tags_idTags " +
+                        "WHERE rt.Recipe_idRecipe = ?",
+                new String[]{String.valueOf(recipeId)}
+        );
+
+        while (cursor.moveToNext()) {
+            tags.add(cursor.getString(0));
+        }
+
+        cursor.close();
+        db.close();
+        return tags;
+    }
+
+    public List<StepModel> getStepsForRecipe(long recipeId) {
+        List<StepModel> steps = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT s.text FROM Steps s " +
+                        "JOIN Recipe_has_Steps rhs ON s.idSteps = rhs.Steps_idSteps " +
+                        "WHERE rhs.Recipe_idRecipe = ? ORDER BY s.numberOfStep ASC",
+                new String[]{String.valueOf(recipeId)}
+        );
+
+        while (cursor.moveToNext()) {
+            steps.add(new StepModel(cursor.getString(0)));
+        }
+
+        cursor.close();
+        db.close();
+        return steps;
+    }
+
+    public void clearIngredientsOfRecipe(long recipeId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM RecipeIngredients WHERE recipe_id = " + recipeId);
+        db.close();
+    }
+
+    public void clearStepsOfRecipe(long recipeId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM Recipe_has_Steps WHERE Recipe_idRecipe = " + recipeId);
+        db.close();
+    }
+
+    public void clearTagsOfRecipe(long recipeId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM Recipe_has_Tags WHERE Recipe_idRecipe = " + recipeId);
+        db.close();
+    }
 
 
 }

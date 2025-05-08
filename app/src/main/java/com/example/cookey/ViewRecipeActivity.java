@@ -1,5 +1,4 @@
 package com.example.cookey;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,10 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -40,7 +42,10 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private List<StepModel> stepsList = new ArrayList<>();
 
     private DBHandler dbHandler;
-    private int recipeID = 7; //ULTRA DUMMY
+    private long recipeID = 8; //ULTRA DUMMY
+
+    private ActivityResultLauncher<Intent> editRecipeLauncher;
+
 
     @Override
     protected void onCreate(Bundle savedInstance){
@@ -73,6 +78,14 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
         dbHandler = new DBHandler(this);
 
+        editRecipeLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        recreate(); // Reload ViewRecipeActivity for real time update
+                    }
+                });
+
         //Get recipe from dB
         RecipeModel recipe = dbHandler.getRecipeId(recipeID);
 
@@ -97,7 +110,12 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
             // Country
             textViewCountry.setText(recipe.getCountryName());
-            Log.d("BRO",recipe.getCountryName());
+
+            // Added OnClick to display full country name if it is too big
+            textViewCountry.setOnClickListener(v -> {
+                Toast.makeText(this, recipe.getCountryName(), Toast.LENGTH_SHORT).show();
+            });
+            Log.d("Nice!",recipe.getCountryName());
 
             // Time (minutes)
             textViewTime.setText(recipe.getTimeToMake() + "'");
@@ -112,8 +130,8 @@ public class ViewRecipeActivity extends AppCompatActivity {
             recyclerViewSteps.setLayoutManager(new LinearLayoutManager(this));
             recyclerViewSteps.setAdapter(stepAdapter);
 
-            // Servings (προσθήκη από το RecipeModel - αν δεν υπάρχει, αφαίρεσε αυτή τη γραμμή)
-            // textViewServing.setText(recipe.getMealNumber() + " servings");
+            // Servings
+             textViewServing.setText(recipe.getMealNumber() + "");
 
             // Difficulty
             textViewDifficulty.setText(recipe.getDifficulty());
@@ -274,11 +292,19 @@ public class ViewRecipeActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ViewRecipeActivity.this, AddRecipeActivity.class));
+                startActivity(new Intent(ViewRecipeActivity.this, AddOrEditActivity.class));
             }
         });
 
-        // TODO: btnConsume, btnFavorite, btnEditRecipe
+        // TODO: btnConsume
+
+        btnEditRecipe.setOnClickListener(v -> {
+            // Get recipeId and send it to AddOrEditActivity
+            Intent intent = new Intent(ViewRecipeActivity.this, AddOrEditActivity.class);
+            intent.putExtra("RECIPE_ID", recipeID); // Add recipeId to Intent
+            editRecipeLauncher.launch(intent); // Start AddOrEditActivity
+            //instead of start(intent) because we want real time update after editing a recipe
+        });
     }
 
     /** @noinspection deprecation*/

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class RecipeModel {
 
-    private int id;
+    private long id;
     private String name;
     private int timeToMake;
     private String countryCode;
@@ -35,11 +35,11 @@ public class RecipeModel {
         this.steps = steps;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

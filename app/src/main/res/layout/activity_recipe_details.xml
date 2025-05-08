@@ -33,7 +33,9 @@
             android:layout_height="40dp"
             android:layout_margin="16dp"
             android:background="@drawable/circle_background"
+            android:backgroundTint="@color/teal_200"
             android:src="@drawable/arrow_back_24px"
+            app:tint="@color/white"
             android:layout_gravity="start|top"/>
 
         <LinearLayout
@@ -48,7 +50,10 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="@drawable/circle_background"
-                android:src="@drawable/cookie_40px"/>
+                android:backgroundTint="@color/pastelChocolate"
+                android:src="@drawable/cookie_40px"
+                app:tint="@color/chocolate"/>
+
 
             <ImageButton
                 android:id="@+id/btnFavorite"
@@ -56,8 +61,9 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/circle_background"
+                android:backgroundTint="@color/white"
                 android:src="@drawable/favorite_24px"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"/>
         </LinearLayout>
 
     </FrameLayout>
