@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 10;
     private static final String DATABASE_NAME = "cookeyDB.db";
     private Context context;
 
@@ -37,7 +37,7 @@ public class DBHandler extends SQLiteOpenHelper {
                         "  country VARCHAR,\n" +
                         "  mealNumber INTEGER,\n" +
                         "  difficulty ENUM,\n" +
-                        "  photo BLOB,\n" +
+                        "  photoPath TEXT,\n" +
                         "  favourites BOOL,\n" +
                         "  PRIMARY KEY(idRecipe)\n" +
                         ");\n\n" +
@@ -317,36 +317,19 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public long addRecipe(String name, int timeToMake, String country, int mealNumber, String difficulty, byte[] photoBytes, boolean isFavourite) {
+    public long addRecipe(String name, int timeToMake, String country, int mealNumber, String difficulty, String photoPath, boolean isFavourite) {
         SQLiteDatabase db = this.getWritableDatabase();
-        long newRecipeID = -1;
-
-        String sql = "INSERT INTO Recipe (name, timeToMake, country, mealNumber, difficulty, photo, favourites) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        SQLiteStatement statement = db.compileStatement(sql);
-
-        statement.bindString(1, name);
-        statement.bindLong(2, timeToMake);
-        statement.bindString(3, country);
-        statement.bindLong(4, mealNumber);
-        statement.bindString(5, difficulty);
-
-        if (photoBytes != null) {
-            statement.bindBlob(6, photoBytes);
-        } else {
-            statement.bindNull(6);
-        }
-
-        statement.bindLong(7, isFavourite ? 1 : 0);
-
-        try {
-            newRecipeID = statement.executeInsert();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            statement.close();
-            db.close();
-        }
-        return newRecipeID;
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("timeToMake", timeToMake);
+        values.put("country", country);
+        values.put("mealNumber", mealNumber);
+        values.put("difficulty", difficulty);
+        values.put("photoPath", photoPath);
+        values.put("favourites", isFavourite ? 1 : 0);
+        long id = db.insert("Recipe", null, values);
+        db.close();
+        return id;
     }
 
     //Add a step
@@ -525,7 +508,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         // Load all data except from the photo --> Fixing blob too big error
         Cursor cursor = db.rawQuery(
-                "SELECT idRecipe, name, timeToMake, country, mealNumber, difficulty, favourites " +
+                "SELECT idRecipe, name, timeToMake, country, mealNumber, difficulty, photoPath, favourites " +
                         "FROM Recipe WHERE idRecipe = ?",
                 new String[]{String.valueOf(recipeId)}
         );
@@ -536,6 +519,7 @@ public class DBHandler extends SQLiteOpenHelper {
             String countryCode = cursor.getString(cursor.getColumnIndexOrThrow("country"));
             int mealNumber = cursor.getInt(cursor.getColumnIndexOrThrow("mealNumber"));
             String difficulty = cursor.getString(cursor.getColumnIndexOrThrow("difficulty"));
+            String photoPath = cursor.getString(cursor.getColumnIndexOrThrow("photoPath"));
             boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow("favourites")) == 1;
 
             recipe = new RecipeModel();
@@ -545,22 +529,10 @@ public class DBHandler extends SQLiteOpenHelper {
             recipe.setCountryCode(countryCode);
             recipe.setMealNumber(mealNumber);
             recipe.setDifficulty(difficulty);
+            recipe.setPhotoPath(photoPath);
             recipe.setFavorite(isFavorite);
         }
         cursor.close();
-
-        //Load image WITH DIFFERENT query
-        if (recipe != null) {
-            Cursor photoCursor = db.rawQuery(
-                    "SELECT photo FROM Recipe WHERE idRecipe = ?",
-                    new String[]{String.valueOf(recipeId)}
-            );
-            if (photoCursor.moveToFirst()) {
-                byte[] photo = photoCursor.getBlob(0);
-                recipe.setPhoto(photo);
-            }
-            photoCursor.close();
-        }
 
         // 3. Tags
         List<String> tags = new ArrayList<>();
@@ -668,19 +640,16 @@ public class DBHandler extends SQLiteOpenHelper {
         return tags;
     }
 
-    public void updateRecipe(long recipeId, String name, int timeToMake, String country, int mealNumber, String difficulty, byte[] photoBytes, boolean isFavorite) {
+    public void updateRecipe(long recipeId, String name, int timeToMake, String country, int mealNumber, String difficulty, String photoPath, boolean isFavorite) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put("name", name);
         values.put("timeToMake", timeToMake);
         values.put("country", country);
         values.put("mealNumber", mealNumber);
         values.put("difficulty", difficulty);
-        values.put("photo", photoBytes);
+        values.put("photoPath", photoPath);
         values.put("favourites", isFavorite ? 1 : 0);
-
-        // Update the recipe in the database
         db.update("Recipe", values, "idRecipe = ?", new String[]{String.valueOf(recipeId)});
         db.close();
     }

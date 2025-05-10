@@ -32,7 +32,7 @@
                     android:layout_height="410dp"
                     android:background="@drawable/ic_circle_curve_top" />
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/imageRecipe"
                     android:layout_width="200dp"
                     android:layout_height="200dp"

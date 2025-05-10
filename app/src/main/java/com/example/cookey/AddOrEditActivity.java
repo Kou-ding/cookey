@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -29,6 +31,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -227,7 +232,7 @@ public class AddOrEditActivity extends AppCompatActivity {
         int timeToMake = selectedTimeMinutes;
         String difficulty = autoCompleteDifficulty.getText().toString().trim();
         int mealNumber = 0;
-        byte[] photoBytes = null;
+        String photoPath = null;
 
         String servingsText = editTextMealNumber.getText().toString().trim();
         if (!servingsText.isEmpty()) {
@@ -240,15 +245,18 @@ public class AddOrEditActivity extends AppCompatActivity {
         if (selectedImageUri != null) {
             try {
                 InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
-                photoBytes = new byte[inputStream.available()];
-                inputStream.read(photoBytes);
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                bitmap = rotateImageIfRequired(bitmap, selectedImageUri);
                 inputStream.close();
+
+                String filename = "recipe_photo_" + System.currentTimeMillis() + ".jpg";
+                photoPath = saveImageToFile(bitmap, filename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        long recipeId = dbHandler.addRecipe(recipeName, timeToMake, countryCode, mealNumber, difficulty, photoBytes, false);
+        long recipeId = dbHandler.addRecipe(recipeName, timeToMake, countryCode, mealNumber, difficulty, photoPath, false);
 
         for (SelectedIngredient sel : selectedIngredients) {
             dbHandler.addIngredientToRecipeIngredients(
@@ -278,7 +286,7 @@ public class AddOrEditActivity extends AppCompatActivity {
         int timeToMake = selectedTimeMinutes;
         String difficulty = autoCompleteDifficulty.getText().toString().trim();
         int mealNumber = 0;
-        byte[] photoBytes = null;
+        String photoPath = existingRecipe.getPhotoPath();
 
         // Servings
         String servingsText = editTextMealNumber.getText().toString().trim();
@@ -294,19 +302,22 @@ public class AddOrEditActivity extends AppCompatActivity {
         if (selectedImageUri != null) {
             try {
                 InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
-                photoBytes = new byte[inputStream.available()];
-                inputStream.read(photoBytes);
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                bitmap = rotateImageIfRequired(bitmap, selectedImageUri);
                 inputStream.close();
+
+                String filename = "recipe_photo_" + System.currentTimeMillis() + ".jpg";
+                photoPath = saveImageToFile(bitmap, filename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
+        }else {
             // if there is no image, keep old img
-            photoBytes = existingRecipe.getPhoto();
+            photoPath = existingRecipe.getPhotoPath();
         }
 
         // Update Recipe
-        dbHandler.updateRecipe(existingRecipe.getId(), recipeName, timeToMake, countryCode, mealNumber, difficulty, photoBytes, existingRecipe.isFavorite());
+        dbHandler.updateRecipe(existingRecipe.getId(), recipeName, timeToMake, countryCode, mealNumber, difficulty, photoPath, existingRecipe.isFavorite());
 
         // Delete previous data
         dbHandler.clearIngredientsOfRecipe(existingRecipe.getId());
@@ -360,9 +371,12 @@ public class AddOrEditActivity extends AppCompatActivity {
         btnSelectCountry.setTag(country);
         selectedCountryId = country.getId();
 
-        if (existingRecipe.getPhoto() != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(existingRecipe.getPhoto(), 0, existingRecipe.getPhoto().length);
-            imageRecipe.setImageBitmap(bitmap);
+        if (existingRecipe.getPhotoPath() != null && !existingRecipe.getPhotoPath().isEmpty()) {
+            File imgFile = new File(existingRecipe.getPhotoPath());
+            if (imgFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                imageRecipe.setImageBitmap(bitmap);
+            }
         }
 
         for (SelectedIngredient ing : dbHandler.getIngredientsForRecipe(existingRecipe.getId())) {
@@ -506,5 +520,44 @@ public class AddOrEditActivity extends AppCompatActivity {
 
         timeDialog.show();
     }
+
+    private String saveImageToFile(Bitmap bitmap, String filename) {
+        try {
+            File file = new File(getFilesDir(), filename);
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+            fos.close();
+            return file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Bitmap rotateImageIfRequired(Bitmap bitmap, Uri imageUri) throws IOException {
+        InputStream input = getContentResolver().openInputStream(imageUri);
+        ExifInterface exif = new ExifInterface(input);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        input.close();
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return rotateBitmap(bitmap, 90);
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return rotateBitmap(bitmap, 180);
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return rotateBitmap(bitmap, 270);
+            default:
+                return bitmap;
+        }
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
+
 
 }

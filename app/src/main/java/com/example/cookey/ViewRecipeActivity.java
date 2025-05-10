@@ -19,13 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 
 public class ViewRecipeActivity extends AppCompatActivity {
 
-    private ImageView imageViewRecipe, imageViewFlag, imageViewClock;
+    private ImageView imageViewRecipe, imageViewFlag;
     private ImageButton btnBack, btnConsume, btnFavorite;
     private TextView textViewRecipeName, textViewTags, textViewCountry, textViewTime;
     private TextView tabIngredients, tabSteps;
@@ -36,13 +36,11 @@ public class ViewRecipeActivity extends AppCompatActivity {
     ViewIngredientAdapter viewIngredientAdapter;
     private StepAdapter stepAdapter;
 
-    private List<ViewIngredientModel> ingredientsList;
 
     private TextView textViewServing, textViewDifficulty;
-    private List<StepModel> stepsList = new ArrayList<>();
 
     private DBHandler dbHandler;
-    private long recipeID = 1; //ULTRA DUMMY
+    private long recipeID = 2; //ULTRA DUMMY
 
     private ActivityResultLauncher<Intent> editRecipeLauncher;
 
@@ -58,7 +56,6 @@ public class ViewRecipeActivity extends AppCompatActivity {
         // Find-Init Views
         imageViewRecipe = findViewById(R.id.imageViewRecipe);
         imageViewFlag = findViewById(R.id.imageViewFlag);
-        imageViewClock = findViewById(R.id.imageViewClock);
         btnBack = findViewById(R.id.btnBack);
         btnConsume = findViewById(R.id.btnConsume);
         btnFavorite = findViewById(R.id.btnFavorite);
@@ -91,9 +88,13 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
         if (recipe != null) {
             // Image
-            if (recipe.getPhoto() != null && recipe.getPhoto().length > 0) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(recipe.getPhoto(), 0, recipe.getPhoto().length);
-                imageViewRecipe.setImageBitmap(bitmap);
+            String photoPath = recipe.getPhotoPath();
+            if (photoPath != null && !photoPath.isEmpty()) {
+                File imgFile = new File(photoPath);
+                if (imgFile.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(photoPath);
+                    imageViewRecipe.setImageBitmap(bitmap);
+                }
             } else {
                 imageViewRecipe.setImageResource(R.drawable.ic_placeholder);
             }
@@ -112,9 +113,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
             textViewCountry.setText(recipe.getCountryName());
 
             // Added OnClick to display full country name if it is too big
-            textViewCountry.setOnClickListener(v -> {
-                Toast.makeText(this, recipe.getCountryName(), Toast.LENGTH_SHORT).show();
-            });
+            textViewCountry.setOnClickListener(v -> Toast.makeText(this, recipe.getCountryName(), Toast.LENGTH_SHORT).show());
             Log.d("Nice!",recipe.getCountryName());
 
             // Time (minutes)
@@ -162,120 +161,19 @@ public class ViewRecipeActivity extends AppCompatActivity {
         tabIngredients.performClick();
 
 
-        /*
-        if(recipe != null){
-
-            //Image First
-            if(recipe.getPhoto() != null){
-                Bitmap bitmap = BitmapFactory.decodeByteArray(recipe.getPhoto(),0, recipe.getPhoto().length);
-                imageViewRecipe.setImageBitmap(bitmap);
-            }else{
-                imageViewRecipe.setImageResource(R.drawable.ic_placeholder); // if image doesnt exist, fill the photo with a placeholder
-            }
-
-            //Name
-            textViewRecipeName.setText(recipe.getName());
-
-            //Tags
-            if(recipe.getTags() != null && !recipe.getTags().isEmpty()){
-                textViewTags.setText(String.join(", ", recipe.getTags()));
-            }else{
-                textViewTags.setText("-");
-            }
-
-            //Country
-            textViewCountry.setText(recipe.getCountryName());
-
-            //Time
-            textViewTime.setText(recipe.getTimeToMake());
-
-            //Ingredients Recycler
-            viewIngredientAdapter = new ViewIngredientAdapter(recipe.getIngredients());
-            recyclerViewIngredients.setLayoutManager(new LinearLayoutManager(this));
-            recyclerViewIngredients.setAdapter(viewIngredientAdapter);
-
-            //Steps Recycler
-            stepAdapter = new StepAdapter(recipe.getSteps());
-            recyclerViewSteps.setLayoutManager(new LinearLayoutManager(this));
-            recyclerViewSteps.setAdapter(stepAdapter);
-
-            //Servings
-            textViewServing.setText(recipe.getMealNumber() + " servings");
-
-            //Difficulty
-            textViewDifficulty.setText(recipe.getDifficulty());
-        }
-
-
-         */
-
-        /*
-
-        /// Dummy Data - OLD
-        textViewRecipeName.setText("Kimchi");
-        textViewTags.setText("Vegan, Spicy, Traditional");
-        textViewCountry.setText("Korea");
-        textViewTime.setText("60'");
-
-        ingredientsList = new ArrayList<>();
-        ingredientsList.add(new ViewIngredientModel("Cabbage", "kg", 1));
-        ingredientsList.add(new ViewIngredientModel("Salt", "tbsp", 24));
-        ingredientsList.add(new ViewIngredientModel("Chili Powder", "tbsp", 65));
-        ingredientsList.add(new ViewIngredientModel("Sugar", "tsp", 19));
-        ingredientsList.add(new ViewIngredientModel("Cabbage", "kg", 98.6f));
-        ingredientsList.add(new ViewIngredientModel("Salt", "tbsp", 21));
-        ingredientsList.add(new ViewIngredientModel("Chili Powder", "tbsp", 165));
-        ingredientsList.add(new ViewIngredientModel("Sugar", "tsp", 69));
-
-        stepsList.add(new StepModel("Chop the cabbage finely."));
-        stepsList.add(new StepModel("Sprinkle salt and massage cabbage."));
-        stepsList.add(new StepModel("Mix with chili powder and sugar."));
-        stepsList.add(new StepModel("Ferment for 2-3 days at room temperature."));
-        stepsList.add(new StepModel("Chop the cabbage finely."));
-        stepsList.add(new StepModel("Sprinkle salt and massage cabbage."));
-        stepsList.add(new StepModel("Mix with chili powder and sugar."));
-        stepsList.add(new StepModel("Ferment for 2-3 days at room temperature."));
-
-        // Set up RecyclerViews
-        viewIngredientAdapter = new ViewIngredientAdapter(ingredientsList);
-        recyclerViewIngredients.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewIngredients.setAdapter(viewIngredientAdapter);
-
-        stepAdapter = new StepAdapter(stepsList);
-        recyclerViewSteps.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewSteps.setAdapter(stepAdapter);
-
-        // Tabs Click
-        tabIngredients.setOnClickListener(v -> {
-            recyclerViewIngredients.setVisibility(View.VISIBLE);
-            recyclerViewSteps.setVisibility(View.GONE);
-            highlightSelectedTab(tabIngredients, tabSteps);
-        });
-
-        tabSteps.setOnClickListener(v -> {
-            recyclerViewIngredients.setVisibility(View.GONE);
-            recyclerViewSteps.setVisibility(View.VISIBLE);
-            highlightSelectedTab(tabSteps, tabIngredients);
-        });
-
-        // Default tab
-        tabIngredients.performClick();
-        */
-
         btnConsume.setOnClickListener(view -> {
             new AlertDialog.Builder(this)
                     .setTitle("Consume?")
-                    .setMessage("Are you sure that you want to cosnume this recipe?")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        Toast.makeText(this, "Recipe Consumed!", Toast.LENGTH_SHORT).show();
+                    .setMessage(R.string.consume_recipe_warning_msg)
+                    .setPositiveButton(R.string.consume_recipe_yes_msg, (dialog, which) -> {
+                        Toast.makeText(this, R.string.recipe_consumed_msg, Toast.LENGTH_SHORT).show();
                     })
-                    .setNegativeButton("No", null)
+                    .setNegativeButton(R.string.consume_recipe_no_msg, null)
                     .show();
         });
 
-        final boolean[] isFav = {false}; //temp
-
         btnFavorite.setOnClickListener(view -> {
+            assert recipe != null;
             boolean newFavStatus = !recipe.isFavorite(); // toggle
             dbHandler.setFavorite(recipeID, newFavStatus); // update dB
 

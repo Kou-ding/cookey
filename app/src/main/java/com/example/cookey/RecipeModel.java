@@ -11,7 +11,7 @@ public class RecipeModel {
     private String countryName;
     private int mealNumber;
     private String difficulty;
-    private byte[] photo;
+    private String photoPath; // Changed from byte[]
     private boolean isFavorite;
     private List<String> tags;
     private List<ViewIngredientModel> ingredients;
@@ -21,14 +21,14 @@ public class RecipeModel {
     public RecipeModel() {
     }
 
-    public RecipeModel(int id, String name, int timeToMake, String countryName, String difficulty, byte[] photo, boolean isFavorite,
+    public RecipeModel(int id, String name, int timeToMake, String countryName, String difficulty, String photoPath, boolean isFavorite,
                        List<String> tags, List<ViewIngredientModel> ingredients, List<StepModel> steps) {
         this.id = id;
         this.name = name;
         this.timeToMake = timeToMake;
         this.countryName = countryName;
         this.difficulty = difficulty;
-        this.photo = photo;
+        this.photoPath = photoPath;
         this.isFavorite = isFavorite;
         this.tags = tags;
         this.ingredients = ingredients;
@@ -91,12 +91,12 @@ public class RecipeModel {
         this.difficulty = difficulty;
     }
 
-    public byte[] getPhoto() {
-        return photo;
+    public String getPhotoPath() {
+        return photoPath;
     }
 
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public boolean isFavorite() {

@@ -34,6 +34,7 @@
             android:layout_margin="16dp"
             android:background="@drawable/circle_background"
             android:backgroundTint="@color/teal_200"
+            android:contentDescription="@string/backbtndescription"
             android:src="@drawable/arrow_back_24px"
             app:tint="@color/white"
             android:layout_gravity="start|top"/>
@@ -51,6 +52,7 @@
                 android:layout_height="60dp"
                 android:background="@drawable/circle_background"
                 android:backgroundTint="@color/pastelChocolate"
+                android:contentDescription="@string/consumeBtnDescription"
                 android:src="@drawable/cookie_40px"
                 app:tint="@color/chocolate"/>
 
@@ -62,6 +64,7 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/circle_background"
                 android:backgroundTint="@color/white"
+                android:contentDescription="@string/favBtnDescription"
                 android:src="@drawable/favorite_24px"
                 android:scaleType="centerInside"/>
         </LinearLayout>
@@ -89,7 +92,7 @@
                 android:id="@+id/textViewRecipeName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kimchi"
+                android:text="@string/recipe_name_detail"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -100,7 +103,7 @@
                 android:id="@+id/textViewTags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Vegan, Spicy, Traditional"
+                android:text="@string/tags_name_detail"
                 android:gravity="center"
                 android:textSize="14sp"
                 android:layout_marginBottom="16dp"/>
@@ -117,6 +120,7 @@
                     android:id="@+id/imageViewFlag"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:contentDescription="@string/countryFlagIconDescription"
                     android:src="@drawable/flag_24px"
                     android:layout_marginEnd="8dp"/>
 
@@ -124,7 +128,7 @@
                     android:id="@+id/textViewCountry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Korea"
+                    android:text="@string/country_name_detail"
                     android:textSize="14sp"
                     android:layout_marginEnd="16dp"/>
 
@@ -132,6 +136,7 @@
                     android:id="@+id/imageViewClock"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:contentDescription="@string/clockIconDescription"
                     android:src="@drawable/timer_24px"
                     android:layout_marginEnd="8dp"/>
 
@@ -139,7 +144,7 @@
                     android:id="@+id/textViewTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="60'"
+                    android:text="@string/time_name_detail"
                     android:textSize="14sp"
                     android:layout_marginEnd="16dp"/>
 
@@ -147,6 +152,7 @@
                     android:id="@+id/imageViewServing"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:contentDescription="@string/servingIconDescription"
                     android:src="@drawable/dinner_dining_24px"
                     android:layout_marginEnd="8dp"/>
 
@@ -154,7 +160,7 @@
                     android:id="@+id/textViewServing"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2"
+                    android:text="@string/serving_num_name_detail"
                     android:textSize="14sp"
                     android:layout_marginEnd="16dp"/>
 
@@ -162,6 +168,7 @@
                     android:id="@+id/imageViewDifficulty"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:contentDescription="@string/difIconDescription"
                     android:src="@drawable/data_thresholding_24px"
                     android:layout_marginEnd="8dp"/>
 
@@ -169,7 +176,7 @@
                     android:id="@+id/textViewDifficulty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Medium"
+                    android:text="@string/dif__name_detail"
                     android:textSize="14sp"/>
 
 
@@ -198,7 +205,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Ingredients"
+                    android:text="@string/ingredients_name_detail"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
 
@@ -209,7 +216,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Steps"
+                    android:text="@string/steps_name_detail"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
             </LinearLayout>
@@ -238,7 +245,7 @@
         android:id="@+id/btnEditRecipe"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Edit Recipe"
+        android:text="@string/edit_recipe_name_detail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

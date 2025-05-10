@@ -1,33 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">cookey</string>
-    <string name="title_MyRecipes">My Recipes</string>
-    <string name="title_MyList">My List</string>
-    <string name="title_AI">AI</string>
-    <string name="title_MyShoppingList">My Shopping List</string>
-    <string name="title_Settings">Settings</string>
-    <string name="title_Search">Search</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="change_language">Change Language</string>
-    <string name="change_theme">Change Theme</string>
-    <string name="favorite">Favourite</string>
-    <string name="title_add_recipe">Add Recipe</string>
-    <string name="title_search_recipe">Search Recipes</string>
-    <string name="title_recipe_details">Recipe Details</string>
-    <string name="search_hint">Search recipes...</string>
-    <string name="search">Search</string>
-    <string name="filter_prompt">Select filter</string>
-    <string name="apply_filters">Apply</string>
-    <string name="filter_favorites">Favorites only</string>
-    <string name="filter_difficulty_easy">Easy</string>
-    <string name="filter_difficulty_medium">Medium</string>
-    <string name="filter_difficulty_hard">Hard</string>
-    <string name="recipe_image_desc">Recipe Picture</string>
-    <string name="recipe_title_desc">Recipe Title</string>
-    <string name="search_results_desc">Result List</string>
-    <string name="search_recipe_button">Search Button</string>
-    <string name="add_recipe_button">Add Recipe Button</string>
-    <string name="recipe_title_example">Recipe Title</string>
-    <string name="recipe_text_example">30 mins | Easy</string>
     <string name="recipe_name_hint">Recipe Name</string>
     <string name="ingredients_title_add">Ingredients</string>
     <string name="add_title_btn_add">Add +</string>
@@ -56,7 +28,5 @@
     <string name="steps_name_detail">Steps</string>
     <string name="edit_recipe_name_detail">Edit Recipe</string>
     <string name="consume_recipe_warning_msg">Are you sure that you want to consume this recipe?</string>
-    <string name="consume_recipe_yes_msg">Yes</string>
     <string name="recipe_consumed_msg">Recipe Consumed!</string>
-    <string name="consume_recipe_no_msg">No</string>
 </resources>
