@@ -29,7 +29,7 @@ public class MyIngredientsFragment extends Fragment {
 
     public void loadIngredients() {
         try(DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-            List<Ingredient> ingredients = db.getAllIngredients();
+            List<Ingredient> ingredients = db.getAllMyIngredients();
             adapter.setIngredients(ingredients);
         } catch (Exception e) {
             Log.e("MyIngredientsViewModel", "Error loading ingredients", e);

@@ -25,20 +25,18 @@ import java.util.List;
 
 
 public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdapter.ViewHolder> {
+    // List of ingredients
     private List<Ingredient> ingredients = new ArrayList<>();
-
-    // Forms the normal view
-    private boolean viewMode = true;
     // Forms the edit view
+    // !editMode == viewMode
     private boolean editMode = false;
-
+    private TextWatcher textWatcher;
     public void setMode(boolean mode) {
         this.editMode = mode;
-        this.viewMode = !mode;
         notifyItemRangeChanged(0, getItemCount());
     }
-    // Delete button
 
+    // Delete button
     /**
      * Interface for the delete button
      */
@@ -70,7 +68,7 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
      *  Class that holds the items to be displayed in the RecyclerView
      */
      class ViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTextView, quantityTextView, unitSystemTextView;
+        TextView nameTextView, unitSystemTextView;
         EditText quantityEditText;
         ImageButton deleteButton;
 
@@ -81,12 +79,29 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
         public ViewHolder(View view) {
             super(view);
             nameTextView = view.findViewById(R.id.ingredientName);
-            quantityTextView = view.findViewById(R.id.ingredientQuantity);
             unitSystemTextView = view.findViewById(R.id.ingredientUnitSystem);
             quantityEditText = view.findViewById(R.id.ingredientEditQuantity);
             deleteButton = view.findViewById(R.id.deleteIngredient);
 
-            if (viewMode) {
+            // Quantity text watcher
+            textWatcher = new TextWatcher(){
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+                @Override
+                public void afterTextChanged(Editable s) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        float newQuantity = Float.parseFloat(s.toString());
+                        ingredients.get(position).setQuantity(newQuantity);
+                    }
+                }
+            };
+
+            if (!editMode) {
                 view.setOnClickListener(v -> {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
@@ -132,9 +147,7 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
         // Editing mode Recycle View
         if (editMode) {
             // Visibility
-            holder.quantityTextView.setVisibility(View.GONE);
-            holder.quantityEditText.setVisibility(View.VISIBLE);
-            holder.unitSystemTextView.setVisibility(View.VISIBLE);
+            holder.quantityEditText.setEnabled(true);
             holder.deleteButton.setVisibility(View.VISIBLE);
 
             holder.deleteButton.setOnClickListener(v -> {
@@ -146,34 +159,16 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
             // Text
             holder.unitSystemTextView.setText(ingredient.getUnitSystem());
             holder.quantityEditText.setText(String.valueOf(ingredient.getQuantity()));
-            holder.quantityEditText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-                @Override
-                public void afterTextChanged(Editable s) {
-                    try {
-                        float newQuantity = Float.parseFloat(s.toString());
-                        ingredient.setQuantity(newQuantity);
-                    } catch (NumberFormatException e) {
-                        Log.e("MyIngredientsAdapter", "Error parsing quantity", e);
-                    }
-                }
-            });
+            holder.quantityEditText.addTextChangedListener(textWatcher);
         }
-        if (viewMode) {
+        if (!editMode) {
             // Visibility
-            holder.quantityTextView.setVisibility(View.VISIBLE);
-            holder.quantityEditText.setVisibility(View.GONE);
-            holder.unitSystemTextView.setVisibility(View.VISIBLE);
+            holder.quantityEditText.setEnabled(false);
             holder.deleteButton.setVisibility(View.GONE);
 
             // Text
             holder.unitSystemTextView.setText(ingredient.getUnitSystem());
-            holder.quantityTextView.setText(String.valueOf(ingredient.getQuantity()));
+            holder.quantityEditText.setText(String.valueOf(ingredient.getQuantity()));
         }
     }
 
