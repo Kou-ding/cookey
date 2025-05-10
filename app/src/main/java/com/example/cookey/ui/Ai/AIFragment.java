@@ -206,7 +206,7 @@ public class AIFragment extends Fragment {
             if (useMyIngredients) {
                 List<Ingredient> ingredients;
                 try (DBHandler db = new DBHandler(context, null, null, 1)) {
-                    ingredients = db.getAllIngredients();
+                    ingredients = db.getAllMyIngredients();
                 }
 
                 StringBuilder ingredientsString = new StringBuilder();
