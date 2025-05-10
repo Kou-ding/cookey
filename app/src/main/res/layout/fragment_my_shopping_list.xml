@@ -56,18 +56,18 @@
         android:textOn=""
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/refillIngredients"
-        app:layout_constraintEnd_toStartOf="@+id/editMode"
+        app:layout_constraintEnd_toStartOf="@+id/selectAll"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/addItem" />
 
     <Button
-        android:id="@+id/editMode"
-        android:layout_width="108dp"
+        android:id="@+id/selectAll"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/edit"
+        android:text="@string/all"
         app:cornerRadius="4dp"
-        app:icon="@drawable/ic_edit"
+        app:icon="@drawable/ic_select_check_box"
         app:layout_constraintBottom_toTopOf="@+id/refillIngredients"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
