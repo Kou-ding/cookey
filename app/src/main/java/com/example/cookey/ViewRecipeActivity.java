@@ -42,7 +42,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private List<StepModel> stepsList = new ArrayList<>();
 
     private DBHandler dbHandler;
-    private long recipeID = 8; //ULTRA DUMMY
+    private long recipeID = 1; //ULTRA DUMMY
 
     private ActivityResultLauncher<Intent> editRecipeLauncher;
 

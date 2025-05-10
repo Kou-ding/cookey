@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     private static final String DATABASE_NAME = "cookeyDB.db";
     private Context context;
 
@@ -205,6 +205,7 @@ public class DBHandler extends SQLiteOpenHelper {
             values.put("name", tag);
             db.insert("Tags", null, values);
         }
+        Log.d("DBHandler", "Adding default tags...");
     }
 
 
@@ -662,6 +663,7 @@ public class DBHandler extends SQLiteOpenHelper {
             }
             cursor.close();
         }
+        Log.d("DBHandler", "Tag count: " + tags.size());
         db.close();
         return tags;
     }

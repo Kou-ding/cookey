@@ -83,16 +83,18 @@ public class AddOrEditActivity extends AppCompatActivity {
         setupDifficultyDropdown();
         dbHandler = new DBHandler(this);
 
+        setupTagAdapter();
+
         if(isEditMode && editRecipeId != -1){
             existingRecipe = dbHandler.getRecipeId(editRecipeId);
 
             if (existingRecipe == null) {
                 Toast.makeText(this, "Recipe not found in database", Toast.LENGTH_SHORT).show();
-            //    finish(); // ή return;
+            //    finish();
                 return;
             }
 
-            setupTagAdapter();
+
             populateFieldsWithExistingData();
         }
 
@@ -340,8 +342,6 @@ public class AddOrEditActivity extends AppCompatActivity {
     private void populateFieldsWithExistingData() {
         if (existingRecipe == null) return;
 
-
-
         editTextRecipeName.setText(existingRecipe.getName());
         editTextMealNumber.setText(String.valueOf(existingRecipe.getMealNumber()));
         autoCompleteDifficulty.setText(existingRecipe.getDifficulty(),false);
@@ -349,7 +349,16 @@ public class AddOrEditActivity extends AppCompatActivity {
         btnSelectTime.setText("Time: " + existingRecipe.getTimeToMake() + "'");
         selectedTimeMinutes = existingRecipe.getTimeToMake();
 
-        btnSelectCountry.setText(existingRecipe.getCountryName());
+        CountryModel country = new CountryModel(
+                existingRecipe.getId(),
+                existingRecipe.getCountryName(),
+                existingRecipe.getCountryCode(),
+                0
+        );
+
+        btnSelectCountry.setText(country.getName());
+        btnSelectCountry.setTag(country);
+        selectedCountryId = country.getId();
 
         if (existingRecipe.getPhoto() != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(existingRecipe.getPhoto(), 0, existingRecipe.getPhoto().length);

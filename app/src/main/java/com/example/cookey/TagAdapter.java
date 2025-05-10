@@ -39,11 +39,18 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.TagViewHolder> {
     public void onBindViewHolder(@NonNull TagViewHolder holder, int position) {
         String tag = tags.get(position);
         holder.checkBox.setText(tag);
+
+        //Weird tag bug - fix?
+        holder.checkBox.setOnCheckedChangeListener(null);
+
         holder.checkBox.setChecked(selectedTags.contains(tag));
 
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) selectedTags.add(tag);
-            else selectedTags.remove(tag);
+            if (isChecked) {
+                selectedTags.add(tag);
+            } else {
+                selectedTags.remove(tag);
+            }
         });
     }
 
