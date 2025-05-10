@@ -33,7 +33,6 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
     }
     class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox ingredientCheckbox;
-        TextView itemQuantityText;
         EditText itemQuantityEdit;
         TextView itemUnitSystem;
         ImageButton deleteItem;
@@ -43,11 +42,11 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
         public ViewHolder(View view) {
             super(view);
             ingredientCheckbox = itemView.findViewById(R.id.ingredientCheckbox);
-            itemQuantityText = itemView.findViewById(R.id.itemQuantityText);
             itemQuantityEdit = itemView.findViewById(R.id.itemQuantityEdit);
             itemUnitSystem = itemView.findViewById(R.id.itemUnitSystem);
             deleteItem = itemView.findViewById(R.id.deleteItem);
             autoCompleteIngredient = itemView.findViewById(R.id.autoCompleteIngredient);
+
             // Initialize TextWatcher once in ViewHolder
             textWatcher = new TextWatcher() {
                 @Override
@@ -82,7 +81,6 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
         holder.ingredientCheckbox.setChecked(item.getIsChecked());
 
         holder.ingredientCheckbox.setText("");
-        holder.itemQuantityText.setVisibility(View.GONE);
         holder.itemQuantityEdit.setVisibility(View.GONE);
         holder.itemUnitSystem.setVisibility(View.GONE);
         holder.autoCompleteIngredient.setText(item.getShoppingListItemName());
@@ -110,7 +108,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
 
         // Open DB and fill the suggestions
         try (DBHandler db = new DBHandler(holder.itemView.getContext(), null, null, 1)) {
-            List<Ingredient> ingredients = db.getAllIngredients();
+            List<Ingredient> ingredients = db.getAllMyIngredients();
             for (Ingredient ingredient : ingredients) {
                 suggestions.add(ingredient.getIngredientName());
             }
