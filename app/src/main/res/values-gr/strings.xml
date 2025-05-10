@@ -23,4 +23,8 @@
     <string name="done">Done</string>
     <string name="save">Save</string>
     <string name="discard">Discard</string>
+    <string name="food">Food</string>
+    <string name="non_food">Non-Food</string>
+    <string name="all">All</string>
+    <string name="shortened_title_my_shopping_list">Shopping List</string>
 </resources>

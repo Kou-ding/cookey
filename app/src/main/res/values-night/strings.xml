@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">cookey</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_MyRecipes">MyRecipes</string>
-    <string name="title_MyIngredients">MyIngredients</string>
-    <string name="title_AI">AI</string>
-    <string name="title_MyShoppingList">MyShoppingList</string>
+    <string name="title_MyRecipes">My Recipes</string>
+    <string name="title_MyIngredients">My Ingredients</string>
+    <string name="title_AI">A.I.</string>
+    <string name="title_MyShoppingList">My Shopping List</string>
     <string name="title_Settings">Settings</string>
     <string name="title_Search"> </string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="ai_prompt">What would you like to cook today?</string>
     <string name="chef_hat_logo">Chef Hat logo</string>
+    <string name="ai_recipe">AI recipe</string>
     <string name="cook">Cook</string>
     <string name="add_ingredients">Add Ingredients</string>
     <string name="set_ingredient_quantity_to_0">Set ingredient quantity to 0</string>
@@ -22,4 +22,10 @@
     <string name="done">Done</string>
     <string name="save">Save</string>
     <string name="discard">Discard</string>
+    <string name="food">Food</string>
+    <string name="non_food">Non-Food</string>
+    <string name="all">All</string>
+    <string name="shortened_title_my_shopping_list">Shopping List</string>
+    <string name="shortened_title_my_ingredients">Ingredients</string>
+    <string name="shortened_title_my_recipes">Recipes</string>
 </resources>

@@ -3,12 +3,12 @@
     <item
         android:id="@+id/navigation_MyRecipes"
         android:icon="@drawable/ic_chef_hat"
-        android:title="@string/title_MyRecipes" />
+        android:title="@string/shortened_title_my_recipes" />
 
     <item
         android:id="@+id/navigation_MyIngredients"
         android:icon="@drawable/ic_grocery"
-        android:title="@string/title_MyIngredients" />
+        android:title="@string/shortened_title_my_ingredients" />
     <item
         android:id="@+id/navigation_AI"
         android:icon="@drawable/ic_wand_shine"
@@ -16,7 +16,7 @@
     <item
         android:id="@+id/navigation_MyShoppingList"
         android:icon="@drawable/ic_checklist"
-        android:title="@string/title_MyShoppingList" />
+        android:title="@string/shortened_title_my_shopping_list" />
     <item
         android:id="@+id/navigation_Settings"
         android:icon="@drawable/ic_settings"
