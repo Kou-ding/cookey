@@ -1,7 +1,7 @@
 package com.example.cookey;
 
 public class StepModel {
-    private String description;
+    private final String description;
 
     public StepModel(String description) {
         this.description = description;

@@ -1,6 +1,5 @@
 package com.example.cookey;
 
-import android.nfc.Tag;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,8 @@ import java.util.Set;
 
 public class TagAdapter extends RecyclerView.Adapter<TagAdapter.TagViewHolder> {
 
-    private List<String> tags;
-    private Set<String> selectedTags = new HashSet<>();
+    private final List<String> tags;
+    private final Set<String> selectedTags = new HashSet<>();
 
     public TagAdapter(List<String> tags){
         this.tags = tags;

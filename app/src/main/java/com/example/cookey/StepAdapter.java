@@ -5,17 +5,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder> {
-    private List<StepModel> steps;
+    private final List<StepModel> steps;
 
     public StepAdapter(List<StepModel> steps) {
         this.steps = steps;
     }
 
+    @NonNull
     @Override
     public StepViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_step, parent, false);

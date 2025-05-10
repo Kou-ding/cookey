@@ -29,11 +29,11 @@
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_margin="16dp"
             android:background="@drawable/circle_background"
-            android:backgroundTint="@color/teal_200"
+            android:backgroundTint="@color/teal_700"
             android:contentDescription="@string/backbtndescription"
             android:src="@drawable/arrow_back_24px"
             app:tint="@color/white"
@@ -51,16 +51,16 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="@drawable/circle_background"
-                android:backgroundTint="@color/pastelChocolate"
+                android:backgroundTint="@color/vampireGray"
                 android:contentDescription="@string/consumeBtnDescription"
                 android:src="@drawable/cookie_40px"
-                app:tint="@color/chocolate"/>
+                app:tint="@color/white"/>
 
 
             <ImageButton
                 android:id="@+id/btnFavorite"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/circle_background"
                 android:backgroundTint="@color/white"

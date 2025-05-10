@@ -20,12 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ViewRecipeActivity extends AppCompatActivity {
 
-    private ImageView imageViewRecipe, imageViewFlag;
+    private ImageView imageViewRecipe;
     private ImageButton btnBack, btnConsume, btnFavorite;
     private TextView textViewRecipeName, textViewTags, textViewCountry, textViewTime;
     private TextView tabIngredients, tabSteps;
@@ -40,7 +38,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private TextView textViewServing, textViewDifficulty;
 
     private DBHandler dbHandler;
-    private long recipeID = 2; //ULTRA DUMMY
+    private long recipeID = 1; //ULTRA DUMMY
 
     private ActivityResultLauncher<Intent> editRecipeLauncher;
 
@@ -50,12 +48,9 @@ public class ViewRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_recipe_details);
 
-        //Seeder - Used for testing
-      //  RecipeSeeder.seed(this);
 
         // Find-Init Views
         imageViewRecipe = findViewById(R.id.imageViewRecipe);
-        imageViewFlag = findViewById(R.id.imageViewFlag);
         btnBack = findViewById(R.id.btnBack);
         btnConsume = findViewById(R.id.btnConsume);
         btnFavorite = findViewById(R.id.btnFavorite);
@@ -114,7 +109,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
             // Added OnClick to display full country name if it is too big
             textViewCountry.setOnClickListener(v -> Toast.makeText(this, recipe.getCountryName(), Toast.LENGTH_SHORT).show());
-            Log.d("Nice!",recipe.getCountryName());
+            Log.d("CountryCheck!",recipe.getCountryName());
 
             // Time (minutes)
             textViewTime.setText(recipe.getTimeToMake() + "'");
@@ -137,10 +132,10 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
             // Favorite button state
             btnFavorite.setImageResource(
-                    recipe.isFavorite() ? R.drawable.ic_heart_filled : R.drawable.favorite_24px
+                    recipe.isFavorite() ? R.drawable.favorite_red_filled_24px : R.drawable.favorite_24px
             );
         } else {
-            Toast.makeText(this, "Recipe not found!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.recipe_not_found_text, Toast.LENGTH_SHORT).show();
         }
 
         // Tabs Click

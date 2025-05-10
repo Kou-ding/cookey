@@ -1,7 +1,5 @@
 package com.example.cookey;
 
-import static java.security.AccessController.getContext;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,11 +12,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
     private static final String DATABASE_NAME = "cookeyDB.db";
     private Context context;
 
@@ -372,43 +371,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    //Add Ingredient
-    // ITS BROKEN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public void addIngredientToRecipe(long recipeId, String ingredientName, double quantity, String unit, int daysToSpoil) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        long ingredientId = -1;
-
-        // Get ingredientId from the name
-        Cursor cursor = db.rawQuery("SELECT ingredientId FROM Ingredient WHERE ingredientName = ?", new String[]{ingredientName});
-        if (cursor.moveToFirst()) {
-            ingredientId = cursor.getLong(0);
-        } else {
-            // If it doesnt exist, add it
-            ContentValues values = new ContentValues();
-            values.put("ingredientName", ingredientName);
-            values.put("quantity", 0); // placeholder
-            values.put("unitSystem", unit);
-            values.put("daysToSpoil", 0); // default
-            values.put("checkIfSpoiledArray", "");
-
-            ingredientId = db.insert("Ingredient", null, values);
-        }
-        cursor.close();
-
-        // Add it to RecipeIngredients
-        if (ingredientId != -1) {
-            ContentValues values = new ContentValues();
-            values.put("recipe_id", recipeId);
-            values.put("ingredient_id", ingredientId);
-            values.put("quantity", quantity);
-            values.put("unit", unit);
-
-            db.insert("RecipeIngredients", null, values);
-        }
-
-        db.close();
-    }
-
     public void addIngredientToRecipeIngredients(long recipeId, String ingredientName, double quantity, String unit) {
         SQLiteDatabase db = this.getWritableDatabase();
         long ingredientId = -1;
@@ -487,16 +449,12 @@ public class DBHandler extends SQLiteOpenHelper {
     //Check if there is tagID
     private long getTagId(String tagName, SQLiteDatabase db) {
         long id = -1;
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("SELECT idTags FROM Tags WHERE name = ?", new String[]{tagName});
+        try (Cursor cursor = db.rawQuery("SELECT idTags FROM Tags WHERE name = ?", new String[]{tagName})) {
             if (cursor.moveToFirst()) {
                 id = cursor.getLong(0);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (cursor != null) cursor.close();
         }
         return id;
     }
@@ -609,7 +567,7 @@ public class DBHandler extends SQLiteOpenHelper {
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
-            String json = new String(buffer, "UTF-8");
+            String json = new String(buffer, StandardCharsets.UTF_8);
 
             JSONArray countries = new JSONArray(json);
             for (int i = 0; i < countries.length(); i++) {
@@ -651,28 +609,6 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put("photoPath", photoPath);
         values.put("favourites", isFavorite ? 1 : 0);
         db.update("Recipe", values, "idRecipe = ?", new String[]{String.valueOf(recipeId)});
-        db.close();
-    }
-
-    public void updateIngredient(long id, String name, String unit, double quantity) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put("name", name);
-        values.put("unit", unit);
-        values.put("quantity", quantity);
-
-        db.update("Ingredient", values, "idIngredient = ?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-    public void updateStep(long id, String description) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put("description", description);
-
-        db.update("Step", values, "idStep = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 

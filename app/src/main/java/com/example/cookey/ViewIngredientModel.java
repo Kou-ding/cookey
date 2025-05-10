@@ -1,8 +1,8 @@
 package com.example.cookey;
     public class ViewIngredientModel {
-        private String name;
-        private String unit;
-        private float quantity;
+        private final String name;
+        private final String unit;
+        private final float quantity;
 
         public ViewIngredientModel(String name, String unit, float quantity) {
             this.name = name;

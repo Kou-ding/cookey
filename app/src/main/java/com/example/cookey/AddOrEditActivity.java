@@ -28,17 +28,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class AddOrEditActivity extends AppCompatActivity {
 
@@ -127,7 +122,8 @@ public class AddOrEditActivity extends AppCompatActivity {
         String[] difficultyLevels = {"Easy","Medium","Hard"};
         ArrayAdapter<String> adapterDifficulty = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, difficultyLevels);
         autoCompleteDifficulty.setAdapter(adapterDifficulty);
-        autoCompleteDifficulty.setInputType(0);
+        autoCompleteDifficulty.setInputType(0); //disable keyboard
+        autoCompleteDifficulty.setFocusable(false); //don't focus on keyboard
         autoCompleteDifficulty.setOnTouchListener((v, event) -> {
             autoCompleteDifficulty.showDropDown();
             return false;

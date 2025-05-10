@@ -37,11 +37,14 @@
     <string name="enter_minutes_hint_text">Enter minutes</string>
     <string name="select_ingredient_text">Select Ingredient</string>
     <string name="enter_step_description_hint">Enter step description</string>
-    <string name="easy_dif">Easy</string>
-    <string name="hard_dif">Hard</string>
     <string name="recipe_saved_successfully_toast">Recipe saved successfully!</string>
     <string name="recipe_updated_successfully_toast">Recipe updated successfully!</string>
     <string name="time_btn_text">"Time: "</string>
     <string name="please_enter_the_step_description_toast">Please enter the step description</string>
     <string name="please_enter_the_time_in_minutes_toast">Please enter the time in minutes</string>
+    <string name="ingredient_name_text">Salt</string>
+    <string name="tag_name">Tag name</string>
+    <string name="recipe_not_found_text">Recipe not found!</string>
+    <string name="select_a_country_help_text">Select a country</string>
+    <string name="desc_add_ingredient">ADD+</string>
 </resources>

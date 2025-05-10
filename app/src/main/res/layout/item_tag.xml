@@ -3,6 +3,6 @@
     android:id="@+id/checkBoxTag"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Tag name"
+    android:text="@string/tag_name"
     android:textSize="14sp"
     android:padding="8dp" />

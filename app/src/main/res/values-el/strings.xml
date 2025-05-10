@@ -75,4 +75,11 @@
     <string name="time_btn_text">"Χρόνος: "</string>
     <string name="please_enter_the_step_description_toast">Εισαγάγετε την περιγραφή του βήματος</string>
     <string name="please_enter_the_time_in_minutes_toast">Εισαγάγετε έγκυρο χρόνο</string>
+    <string name="country_name_text">Όνομα χώρας</string>
+    <string name="imgviewflag_description">Σημαία χώρας</string>
+    <string name="ingredient_name_text">Υλικό</string>
+    <string name="tag_name">Ετικέτα</string>
+    <string name="recipe_not_found_text">Η συνταγή δεν βρέθηκε!</string>
+    <string name="select_a_country_help_text">Επέλεξε χώρα</string>
+    <string name="desc_add_ingredient">ADD+</string>
 </resources>

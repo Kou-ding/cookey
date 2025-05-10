@@ -1,10 +1,10 @@
 package com.example.cookey;
 
 public class CountryModel {
-    private long id;
-    private String name;
-    private String code;
-    private int flagResource;
+    private final long id;
+    private final String name;
+    private final String code;
+    private final int flagResource;
 
     public CountryModel(long id, String name, String code, int flagResource) {
         this.id = id;
