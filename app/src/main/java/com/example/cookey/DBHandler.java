@@ -152,8 +152,39 @@ public class DBHandler extends SQLiteOpenHelper {
 
     
     // Ingredients Section //
-    // Return an array of all my Ingredients
     public List<Ingredient> getAllIngredients() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Ingredient> ingredients = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM Ingredient";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    Ingredient ingredient = new Ingredient();
+                    ingredient.setIngredientId(cursor.getInt(0));
+                    ingredient.setIngredientName(cursor.getString(1));
+                    ingredient.setQuantity(cursor.getFloat(2));
+                    ingredient.setUnitSystem(cursor.getString(3));
+                    ingredient.setDaysToSpoil(cursor.getInt(4));
+                    ingredient.setCheckIfSpoiledArray(cursor.getString(5));
+
+                    ingredients.add(ingredient);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return ingredients;
+    }
+    // Return an array of all my Ingredients
+    public List<Ingredient> getAllMyIngredients() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Ingredient> ingredients = new ArrayList<>();
         Cursor cursor = null;
