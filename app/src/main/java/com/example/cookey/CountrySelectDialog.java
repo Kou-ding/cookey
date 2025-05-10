@@ -38,17 +38,6 @@ public class CountrySelectDialog extends Dialog {
         recyclerView = findViewById(R.id.recyclerViewCountries);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        /*
-
-        List<CountryModel> dummyCountries = new ArrayList<>();
-        dummyCountries.add(new CountryModel(1, "Korea", R.drawable.kr));
-        dummyCountries.add(new CountryModel(2, "Japan", R.drawable.jp));
-        dummyCountries.add(new CountryModel(3, "Germany", R.drawable.de));
-        dummyCountries.add(new CountryModel(4, "Italy", R.drawable.it));
-        dummyCountries.add(new CountryModel(5, "Greece", R.drawable.gr));
-
-         */
-
 
         List<CountryModel> countryList = loadCountriesFromJson(getContext());
         adapter = new CountryAdapter(countryList, country -> {

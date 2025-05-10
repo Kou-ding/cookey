@@ -18,7 +18,7 @@
             android:id="@+id/textViewStepNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="01"
+            android:text="@string/step_num_text"
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_marginEnd="12dp" />
@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="This is the description of the step."
+            android:text="@string/step_desc_text"
             android:textSize="16sp" />
 
     </LinearLayout>

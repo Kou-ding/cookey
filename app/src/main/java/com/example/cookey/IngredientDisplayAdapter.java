@@ -21,7 +21,7 @@ public class IngredientDisplayAdapter extends RecyclerView.Adapter<IngredientDis
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_ingredient, parent, false); // το αρχικό view-only layout
+                .inflate(R.layout.item_ingredient, parent, false);
         return new ViewHolder(view);
     }
 

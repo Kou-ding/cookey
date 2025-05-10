@@ -29,4 +29,19 @@
     <string name="edit_recipe_name_detail">Edit Recipe</string>
     <string name="consume_recipe_warning_msg">Are you sure that you want to consume this recipe?</string>
     <string name="recipe_consumed_msg">Recipe Consumed!</string>
+    <string name="please_select_an_ingredient_msg">Please select an ingredient</string>
+    <string name="please_enter_a_quantity_msg">Please enter a quantity</string>
+    <string name="invalid_quantity_msg">Invalid quantity</string>
+    <string name="step_num_text">01</string>
+    <string name="step_desc_text">This is the description of the step.</string>
+    <string name="enter_minutes_hint_text">Enter minutes</string>
+    <string name="select_ingredient_text">Select Ingredient</string>
+    <string name="enter_step_description_hint">Enter step description</string>
+    <string name="easy_dif">Easy</string>
+    <string name="hard_dif">Hard</string>
+    <string name="recipe_saved_successfully_toast">Recipe saved successfully!</string>
+    <string name="recipe_updated_successfully_toast">Recipe updated successfully!</string>
+    <string name="time_btn_text">"Time: "</string>
+    <string name="please_enter_the_step_description_toast">Please enter the step description</string>
+    <string name="please_enter_the_time_in_minutes_toast">Please enter the time in minutes</string>
 </resources>

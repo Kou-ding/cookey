@@ -124,7 +124,7 @@ public class AddOrEditActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupDifficultyDropdown() {
-        String[] difficultyLevels = {"Easy", "Medium", "Hard"};
+        String[] difficultyLevels = {"Easy","Medium","Hard"};
         ArrayAdapter<String> adapterDifficulty = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, difficultyLevels);
         autoCompleteDifficulty.setAdapter(adapterDifficulty);
         autoCompleteDifficulty.setInputType(0);
@@ -276,7 +276,7 @@ public class AddOrEditActivity extends AppCompatActivity {
             dbHandler.addTagToRecipe(recipeId, tag);
         }
 
-        Toast.makeText(this, "Recipe saved successfully!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.recipe_saved_successfully_toast, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
     }
@@ -345,7 +345,7 @@ public class AddOrEditActivity extends AppCompatActivity {
             dbHandler.addTagToRecipe(existingRecipe.getId(), tag);
         }
 
-        Toast.makeText(this, "Recipe updated successfully!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.recipe_updated_successfully_toast, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
     }
@@ -357,7 +357,7 @@ public class AddOrEditActivity extends AppCompatActivity {
         editTextMealNumber.setText(String.valueOf(existingRecipe.getMealNumber()));
         autoCompleteDifficulty.setText(existingRecipe.getDifficulty(),false);
 
-        btnSelectTime.setText("Time: " + existingRecipe.getTimeToMake() + "'");
+        btnSelectTime.setText(getString(R.string.time_btn_text) + existingRecipe.getTimeToMake() + "'");
         selectedTimeMinutes = existingRecipe.getTimeToMake();
 
         CountryModel country = new CountryModel(
@@ -492,7 +492,7 @@ public class AddOrEditActivity extends AppCompatActivity {
                 addSelectedStep(stepText);
                 stepDialog.dismiss();
             } else {
-                Toast.makeText(this, "Please enter the step description", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.please_enter_the_step_description_toast, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -510,11 +510,11 @@ public class AddOrEditActivity extends AppCompatActivity {
             String timeText = editTextTime.getText().toString().trim();
             if (!timeText.isEmpty()) {
                 int minutes = Integer.parseInt(timeText);
-                btnSelectTime.setText("Time: " + minutes + "'");
+                btnSelectTime.setText(getString(R.string.time_btn_text) + minutes + "'");
                 selectedTimeMinutes = minutes;
                 timeDialog.dismiss();
             } else {
-                Toast.makeText(this, "Please enter the time in minutes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.please_enter_the_time_in_minutes_toast, Toast.LENGTH_SHORT).show();
             }
         });
 

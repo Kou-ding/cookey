@@ -141,7 +141,6 @@ public class ViewRecipeActivity extends AppCompatActivity {
             );
         } else {
             Toast.makeText(this, "Recipe not found!", Toast.LENGTH_SHORT).show();
-         //   finish(); // Κλείνει την activity αν η συνταγή δεν βρέθηκε
         }
 
         // Tabs Click

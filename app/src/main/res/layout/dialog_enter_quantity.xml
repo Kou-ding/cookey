@@ -9,13 +9,13 @@
         android:id="@+id/editTextQuantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter quantity"
+        android:hint="@string/enter_quantity_hint"
         android:inputType="numberDecimal" />
 
     <Button
         android:id="@+id/buttonConfirmQuantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confirm" />
+        android:text="@string/confirm_title_add" />
 
 </LinearLayout>

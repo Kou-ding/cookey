@@ -9,13 +9,13 @@
         android:id="@+id/editTextTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter minutes"
+        android:hint="@string/enter_minutes_hint_text"
         android:inputType="number" />
 
     <Button
         android:id="@+id/buttonConfirmTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confirm"
+        android:text="@string/confirm_title_add"
         android:layout_marginTop="16dp" />
 </LinearLayout>

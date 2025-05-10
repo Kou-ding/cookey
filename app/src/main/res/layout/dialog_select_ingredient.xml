@@ -10,7 +10,7 @@
         android:id="@+id/autoCompleteIngredient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Select Ingredient"
+        android:hint="@string/select_ingredient_text"
         android:inputType="text"
         android:completionThreshold="1"
         android:layout_marginBottom="12dp" />
@@ -19,7 +19,7 @@
         android:id="@+id/editTextQuantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Quantity"
+        android:hint="@string/quantity_text"
         android:inputType="numberDecimal"
         android:layout_marginBottom="16dp" />
 </LinearLayout>

@@ -69,22 +69,22 @@ public class IngredientSelectDialog extends Dialog {
         });
 
         confirmButton = new Button(getContext());
-        confirmButton.setText("Confirm");
+        confirmButton.setText(R.string.confirm_title_add);
         confirmButton.setOnClickListener(v -> {
             if (selectedIngredient == null) {
-                Toast.makeText(getContext(), "Please select an ingredient", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(), R.string.please_select_an_ingredient_msg, Toast.LENGTH_SHORT).show();
                 return;
             }
             String qtyText = editTextQuantity.getText().toString().trim();
             if (qtyText.isEmpty()) {
-                Toast.makeText(getContext(), "Please enter a quantity", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(), R.string.please_enter_a_quantity_msg, Toast.LENGTH_SHORT).show();
                 return;
             }
             double quantity;
             try {
                 quantity = Double.parseDouble(qtyText);
             } catch (NumberFormatException e) {
-                Toast.makeText(getContext(), "Invalid quantity", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(), R.string.invalid_quantity_msg, Toast.LENGTH_SHORT).show();
                 return;
             }
 
