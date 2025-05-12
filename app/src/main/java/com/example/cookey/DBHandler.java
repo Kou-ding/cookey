@@ -388,9 +388,9 @@ public class DBHandler extends SQLiteOpenHelper {
         return items;
     }
 
-    public void deleteShoppingListItem(String shoppingListItemName){
+    public void deleteShoppingListItem(int shoppingListItemId){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM ShoppingList WHERE shoppingListItemName = '" + shoppingListItemName + "';";
+        String query = "DELETE FROM ShoppingList WHERE shoppingListItemId = '" + shoppingListItemId + "';";
         db.execSQL(query);
         db.close();
     }
