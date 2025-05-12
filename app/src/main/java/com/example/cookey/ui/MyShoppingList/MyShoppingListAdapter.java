@@ -101,32 +101,78 @@
                     itemUnitSystem.setText(unitSystem);
                 });
 
-                // Quantity edit text listen on "enter"
                 itemQuantityEdit.setOnEditorActionListener((v, actionId, event) -> {
-                    // This handles the "Done" button on soft keyboard
-                    if (actionId == EditorInfo.IME_ACTION_DONE ||
-                            (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
-
-                        // Make text uneditable and show edit button again in place of the delete button
-                        itemQuantityEdit.setEnabled(false);
-                        deleteItem.setVisibility(View.GONE);
-                        editItem.setVisibility(View.VISIBLE);
-
-                        // Save the quantity immediately on the list
+                    // Handle "Done" or "Enter" key press
+                    if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
                         int adapterPos = getAdapterPosition();
                         if (adapterPos != RecyclerView.NO_POSITION) {
+                            // Get the entered quantity (default to 0 if empty)
+                            String quantityStr = itemQuantityEdit.getText().toString();
+                            float quantity = quantityStr.isEmpty() ? 0 : Float.parseFloat(quantityStr);
 
-                            float quantity = itemQuantityEdit.getText().toString().isEmpty() ? 0 : Float.parseFloat(itemQuantityEdit.getText().toString());
+                            // If quantity is 0, clear the field to allow re-entry
+                            if (quantity == 0) {
+                                itemQuantityEdit.setText(""); // Clear the field
+                                itemQuantityEdit.requestFocus(); // Keep focus for new input
+                                return true; // Do not proceed with saving
+                            }
+
+                            // Save the quantity to the list
                             items.get(adapterPos).setPurchasedQuantity(quantity);
 
-                            // Save the quantity to the database
+                            // Save to database
                             try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
-                                db.setShoppingListItemQuantity(items.get(adapterPos).getShoppingListItemId(), quantity);
+                                db.setShoppingListItemQuantity(
+                                        items.get(adapterPos).getShoppingListItemId(),
+                                        quantity
+                                );
                             }
+
+                            // Disable editing and switch UI states
+                            itemQuantityEdit.setEnabled(false);
+                            deleteItem.setVisibility(View.GONE);
+                            editItem.setVisibility(View.VISIBLE);
                         }
                         return true;
                     }
                     return false;
+                });
+
+                // Handle edit button click
+                editItem.setOnClickListener(v -> {
+                    deleteItem.setVisibility(View.VISIBLE);
+                    editItem.setVisibility(View.GONE);
+                    itemQuantityEdit.setEnabled(true);
+                });
+
+                // Handle delete button click
+                deleteItem.setOnClickListener(v -> {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        // Store the name before removing
+                        int itemId = items.get(position).getShoppingListItemId();
+
+                        // Remove from list and notify adapter
+                        items.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, items.size());
+
+                        // Delete from DB
+                        try (DBHandler db = new DBHandler(v.getContext(), null, null, 1)) {
+                            db.deleteShoppingListItem(itemId);
+                        }
+                    }
+                });
+
+                // Handle checkbox state change
+                ingredientCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    // Update the checked status of the item
+                    items.get(getAdapterPosition()).setIsChecked(isChecked);
+
+                    // Update the database
+                    try (DBHandler db = new DBHandler(buttonView.getContext(), null, null, 1)) {
+                        db.setShoppingListItemChecked(items.get(getAdapterPosition()).getShoppingListItemId(), isChecked);
+                    }
                 });
 
                 // Initialize TextWatchers once
@@ -202,36 +248,8 @@
             holder.autoCompleteIngredient.addTextChangedListener(nameTextWatcher);
             holder.itemQuantityEdit.addTextChangedListener(quantityTextWatcher);
 
-
+            // Adapter for auto complete
             holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
-
-            // Handle edit button click
-            holder.editItem.setOnClickListener(v -> {
-                holder.deleteItem.setVisibility(View.VISIBLE);
-                holder.editItem.setVisibility(View.GONE);
-                holder.itemQuantityEdit.setEnabled(true);
-            });
-
-            // Handle delete button click
-            holder.deleteItem.setOnClickListener(v -> {
-                items.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, items.size());
-                // You may also want to delete it from DB here
-                try (DBHandler db = new DBHandler(v.getContext(), null, null, 1)) {
-                    db.deleteShoppingListItem(item.getShoppingListItemName());
-                }
-            });
-
-            // Handle checkbox state change
-            holder.ingredientCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                // Update the checked status of the item
-                item.setIsChecked(isChecked);
-                // Update the database
-                try (DBHandler db = new DBHandler(buttonView.getContext(), null, null, 1)) {
-                    db.setShoppingListItemChecked(item.getShoppingListItemId(), isChecked);
-                }
-            });
         }
 
         @NonNull

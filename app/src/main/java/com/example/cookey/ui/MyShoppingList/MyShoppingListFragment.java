@@ -86,8 +86,8 @@ public class MyShoppingListFragment extends Fragment {
         // New List Button Listener
         newListButton.setOnClickListener(v -> {
             new AlertDialog.Builder(getContext())
-                    .setTitle("Consume?")
-                    .setMessage("Are you sure that you want create a new Shopping List? All the items in your current Shopping List will be deleted!")
+                    .setTitle("New List?")
+                    .setMessage("Are you sure that you want create a new Shopping List? (All the items in your current Shopping List will be deleted!)")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         Toast.makeText(requireContext(), "New List created!", Toast.LENGTH_SHORT).show();
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
