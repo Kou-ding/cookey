@@ -472,13 +472,13 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public void addFoodItem(int Id){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', 0, 1, 0);";
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', NULL, 1, 0);";
         db.execSQL(query);
         db.close();
     }
     public void addNonFoodItem(int Id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', 0, 0, 0);";
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', NULL, 0, 0);";
         db.execSQL(query);
         db.close();
     }
@@ -569,6 +569,33 @@ public class DBHandler extends SQLiteOpenHelper {
     public void setShoppingListItemChecked(int Id, boolean isChecked){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE ShoppingList SET isChecked = " + isChecked + " WHERE shoppingListItemId = " + Id + ";";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void setShoppingListItemName(int Id,String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE ShoppingList SET shoppingListItemName = '" + name + "' WHERE shoppingListItemId = '" + Id + "';";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void setShoppingListItemQuantity(int Id, float quantity){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE ShoppingList SET purchasedQuantity = " + quantity + " WHERE shoppingListItemId = " + Id + ";";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void massCheck(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE ShoppingList SET isChecked = 1;";
+        db.execSQL(query);
+        db.close();
+    }
+    public void massUncheck() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE ShoppingList SET isChecked = 0;";
         db.execSQL(query);
         db.close();
     }

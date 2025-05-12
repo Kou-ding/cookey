@@ -1,11 +1,14 @@
     package com.example.cookey.ui.MyShoppingList;
 
+    import android.content.Context;
     import android.text.Editable;
     import android.text.TextWatcher;
     import android.util.Log;
+    import android.view.KeyEvent;
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
+    import android.view.inputmethod.EditorInfo;
     import android.widget.ArrayAdapter;
     import android.widget.AutoCompleteTextView;
     import android.widget.CheckBox;
@@ -26,137 +29,188 @@
     import java.util.List;
 
     public class MyShoppingListAdapter extends RecyclerView.Adapter<MyShoppingListAdapter.ViewHolder>{
-
         private List<ShoppingListItem> items;
+        private ArrayAdapter<String> autoCompleteAdapter;
 
-        public boolean viewMode = true;
-        public boolean editMode = false;
-        public MyShoppingListAdapter(List<ShoppingListItem> items) {
+        public MyShoppingListAdapter(List<ShoppingListItem> items, Context context) {
             this.items = items;
+            this.autoCompleteAdapter = createAutoCompleteAdapter(context);
         }
-
+        private ArrayAdapter<String> createAutoCompleteAdapter(Context context) {
+            List<String> suggestions = new ArrayList<>();
+            try (DBHandler db = new DBHandler(context, null, null, 1)) {
+                for (Ingredient ingredient : db.getAllIngredients()) {
+                    suggestions.add(ingredient.getIngredientName());
+                }
+            }
+            return new ArrayAdapter<>(
+                    context,
+                    android.R.layout.simple_dropdown_item_1line,
+                    suggestions
+            );
+        }
+        private TextWatcher nameTextWatcher;
+        private TextWatcher quantityTextWatcher;
         class ViewHolder extends RecyclerView.ViewHolder {
             CheckBox ingredientCheckbox;
             AutoCompleteTextView autoCompleteIngredient;
             ImageButton deleteItem;
+            ImageButton editItem;
             TextView itemUnitSystem;
-            TextView itemQuantityText;
             EditText itemQuantityEdit;
-
 
             public ViewHolder(View view) {
                 super(view);
                 ingredientCheckbox = itemView.findViewById(R.id.ingredientCheckbox);
                 autoCompleteIngredient = itemView.findViewById(R.id.autoCompleteIngredient);
                 deleteItem = itemView.findViewById(R.id.deleteItem);
+                editItem = itemView.findViewById(R.id.editItem);
                 itemUnitSystem = itemView.findViewById(R.id.itemUnitSystem);
-                itemQuantityText = itemView.findViewById(R.id.itemQuantityText);
                 itemQuantityEdit = itemView.findViewById(R.id.itemQuantityEdit);
+
+                // Set it to the AutoCompleteTextView
+                autoCompleteIngredient.setThreshold(1);
+
+                // Listen for when an item is selected from dropdown
+                autoCompleteIngredient.setOnItemClickListener((parent, dropdownView, position, id) -> {
+                    // When an item is selected from dropdown:
+                    autoCompleteIngredient.setEnabled(false);  // Make text uneditable
+                    itemQuantityEdit.setEnabled(true);         // Enable quantity field
+                    itemQuantityEdit.requestFocus();           // Move focus to quantity
+
+                    autoCompleteIngredient.setVisibility(View.GONE);  // Hide the auto complete text
+                    ingredientCheckbox.setVisibility(View.VISIBLE);  // Show the prettier checkbox text
+                    ingredientCheckbox.setText((String) parent.getItemAtPosition(position));  // Set the checkbox text to the selected item
+
+                    // Save the item name immediately on the list
+                    String selectedItem = (String) parent.getItemAtPosition(position);
+                    int adapterPos = getAdapterPosition();
+                    if (adapterPos != RecyclerView.NO_POSITION) {
+                        items.get(adapterPos).setShoppingListItemName(selectedItem);
+                    }
+                    // Save the item name to the database
+                    try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
+                        db.setShoppingListItemName(items.get(adapterPos).getShoppingListItemId(), selectedItem);
+                    }
+
+                    // Fetch the correct unit system
+                    String unitSystem;
+                    try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
+                        unitSystem = db.getUnitSystem((String) parent.getItemAtPosition(position));
+                    }
+                    itemUnitSystem.setText(unitSystem);
+                });
+
+                // Quantity edit text listen on "enter"
+                itemQuantityEdit.setOnEditorActionListener((v, actionId, event) -> {
+                    // This handles the "Done" button on soft keyboard
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                            (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
+
+                        // Make text uneditable and show edit button again in place of the delete button
+                        itemQuantityEdit.setEnabled(false);
+                        deleteItem.setVisibility(View.GONE);
+                        editItem.setVisibility(View.VISIBLE);
+
+                        // Save the quantity immediately on the list
+                        int adapterPos = getAdapterPosition();
+                        if (adapterPos != RecyclerView.NO_POSITION) {
+
+                            float quantity = itemQuantityEdit.getText().toString().isEmpty() ? 0 : Float.parseFloat(itemQuantityEdit.getText().toString());
+                            items.get(adapterPos).setPurchasedQuantity(quantity);
+
+                            // Save the quantity to the database
+                            try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
+                                db.setShoppingListItemQuantity(items.get(adapterPos).getShoppingListItemId(), quantity);
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // Initialize TextWatchers once
+                nameTextWatcher = new TextWatcher() {
+                    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                    @Override public void afterTextChanged(Editable s) {
+                        int pos = getAdapterPosition();
+                        if (pos != RecyclerView.NO_POSITION) {
+                            items.get(pos).setShoppingListItemName(s.toString());
+                        }
+                    }
+                };
+                quantityTextWatcher = new TextWatcher() {
+                    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                    @Override public void afterTextChanged(Editable s) {
+                        int pos = getAdapterPosition();
+                        if (pos != RecyclerView.NO_POSITION) {
+                            try {
+                                float quantity = s.toString().isEmpty() ? 0 : Float.parseFloat(s.toString());
+                                items.get(pos).setPurchasedQuantity(quantity);
+                            } catch (NumberFormatException e) {
+                                Log.e("Adapter", "Error parsing quantity", e);
+                            }
+                        }
+                    }
+                };
             }
         }
 
         @NonNull
         @Override
-        public MyShoppingListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public MyShoppingListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_layout, parent, false);
             return new MyShoppingListAdapter.ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        public void onBindViewHolder(MyShoppingListAdapter.ViewHolder holder, int position) {
             ShoppingListItem item = items.get(position);
+
             // Set the checkbox state based on the item 'checked' property
             holder.ingredientCheckbox.setChecked(item.getIsChecked());
 
-            if (viewMode) {
-                holder.autoCompleteIngredient.setVisibility(View.GONE);
-                holder.ingredientCheckbox.setText(item.getShoppingListItemName());
-                holder.deleteItem.setVisibility(View.GONE);
-                String unitSystem;
-                try (DBHandler db = new DBHandler(holder.itemView.getContext(), null, null, 1)) {
-                    unitSystem = db.getUnitSystem(item.getShoppingListItemName());
-                }
-                holder.itemUnitSystem.setText(unitSystem);
-                holder.itemQuantityText.setText(String.valueOf(item.getPurchasedQuantity()));
-                holder.itemQuantityEdit.setVisibility(View.GONE);
-                holder.itemQuantityText.setVisibility(View.VISIBLE);
-
-
-            }
-            if (editMode) {
+            // Set different app behaviour for new items based on the fact that they start with null text
+            if (item.getShoppingListItemName() == null || item.getShoppingListItemName().isEmpty()) {
                 holder.autoCompleteIngredient.setVisibility(View.VISIBLE);
                 holder.ingredientCheckbox.setText("");
-                holder.deleteItem.setVisibility(View.VISIBLE);
-                holder.autoCompleteIngredient.setText(item.getShoppingListItemName());
-                holder.itemQuantityText.setVisibility(View.GONE);
-                holder.itemQuantityEdit.setVisibility(View.VISIBLE);
-
-                // Item Edit Text logic
-                holder.autoCompleteIngredient.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        try {
-                            String newName = s.toString();
-                            item.setShoppingListItemName(newName);
-                        } catch (NumberFormatException e) {
-                            Log.e("MyShoppingListAdapter", "Error parsing item quantity", e);
-                        }
-                    }
-                });
-
-                // Quantity Edit text logic
-                holder.itemQuantityEdit.setText(String.valueOf(item.getPurchasedQuantity()));
-                holder.itemQuantityEdit.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    }
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        try {
-                            float newQuantity = Float.parseFloat(s.toString());
-                            item.setPurchasedQuantity(newQuantity);
-                        } catch (NumberFormatException e) {
-                            Log.e("MyShoppingListAdapter", "Error parsing item quantity", e);
-                        }
-                    }
-                });
+                holder.autoCompleteIngredient.requestFocus(); // optionally focus it
+            } else {
+                holder.autoCompleteIngredient.setVisibility(View.GONE);
+                holder.ingredientCheckbox.setVisibility(View.VISIBLE);
+                holder.ingredientCheckbox.setText(item.getShoppingListItemName());
             }
 
-            // Create the suggestions list
-            List<String> suggestions = new ArrayList<>();
+            // Quantity edit text
+            holder.itemQuantityEdit.setText(String.valueOf(item.getPurchasedQuantity()));
+            holder.itemQuantityEdit.setEnabled(false);
 
-            // Open DB and fill the suggestions
+            // Edit and Delete Item buttons
+            holder.editItem.setVisibility(View.VISIBLE);
+            holder.deleteItem.setVisibility(View.GONE);
+
+            // Unit system
+            String unitSystem;
             try (DBHandler db = new DBHandler(holder.itemView.getContext(), null, null, 1)) {
-                List<Ingredient> ingredients = db.getAllIngredients();
-                for (Ingredient ingredient : ingredients) {
-                    suggestions.add(ingredient.getIngredientName());
-                }
+                unitSystem = db.getUnitSystem(item.getShoppingListItemName());
             }
+            holder.itemUnitSystem.setText(unitSystem);
 
-            // Now create the ArrayAdapter using the suggestions
-            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(
-                    holder.itemView.getContext(),
-                    android.R.layout.simple_dropdown_item_1line,
-                    suggestions
-            );
+            // Text watchers for quantity and ingredient name
+            holder.autoCompleteIngredient.addTextChangedListener(nameTextWatcher);
+            holder.itemQuantityEdit.addTextChangedListener(quantityTextWatcher);
 
-            // Set it to the AutoCompleteTextView
-            holder.autoCompleteIngredient.setThreshold(1);
+
             holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
 
+            // Handle edit button click
+            holder.editItem.setOnClickListener(v -> {
+                holder.deleteItem.setVisibility(View.VISIBLE);
+                holder.editItem.setVisibility(View.GONE);
+                holder.itemQuantityEdit.setEnabled(true);
+            });
 
             // Handle delete button click
             holder.deleteItem.setOnClickListener(v -> {
@@ -179,6 +233,28 @@
                 }
             });
         }
+
+        @NonNull
+        private static ArrayAdapter<String> getAutoCompleteAdapter(View itemView) {
+            List<String> suggestions = new ArrayList<>();
+
+            // Open DB and fill the suggestions
+            try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
+                List<Ingredient> ingredients = db.getAllIngredients();
+                for (Ingredient ingredient : ingredients) {
+                    suggestions.add(ingredient.getIngredientName());
+                }
+            }
+
+            // Now create the ArrayAdapter using the suggestions
+            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(
+                    itemView.getContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    suggestions
+            );
+            return autoCompleteAdapter;
+        }
+
         @Override
         public int getItemCount() {
             return items.size();
@@ -191,15 +267,14 @@
         // Implementing getCheckedItems function
         public List<ShoppingListItem> getCheckedItems() {
             List<ShoppingListItem> checkedItems = new ArrayList<>();
-
+            // Iterate through the items and add the checked ones to the list
             for (ShoppingListItem item : items) {
                 // Check if the checkbox is ticked
                 if (item.getIsChecked()) {
                     checkedItems.add(item);
                 }
             }
-
+            // Return the list of checked items
             return checkedItems;
         }
-
     }

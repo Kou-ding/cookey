@@ -30,6 +30,7 @@ public class MyShoppingListFragment extends Fragment {
 
     private boolean foodMode = true;
     private boolean nonFoodMode = false;
+    private boolean checkAll = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,13 +46,13 @@ public class MyShoppingListFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.listItemsRecyclerView);
         TextView foodType = view.findViewById(R.id.foodType);
         Button addItemButton = view.findViewById(R.id.addItem);
-        MaterialButton editModeButton = view.findViewById(R.id.editMode);
+        MaterialButton selectAllButton = view.findViewById(R.id.selectAll);
         Button refillIngredientsButton = view.findViewById(R.id.refillIngredients);
         Button newListButton = view.findViewById(R.id.newList);
         ToggleButton toggleTypeButton = view.findViewById(R.id.toggleType);
 
         // Set the initial text for the food type
-        foodType.setText("Food");
+        foodType.setText(R.string.food);
 
         // Initialize the database handler
         List<ShoppingListItem> listItems;
@@ -61,7 +62,7 @@ public class MyShoppingListFragment extends Fragment {
         }
 
         // Initialize the adapter
-        adapter = new MyShoppingListAdapter(listItems);
+        adapter = new MyShoppingListAdapter(listItems, getContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         // Set up the recycler view
@@ -70,13 +71,12 @@ public class MyShoppingListFragment extends Fragment {
         // Item Type Toggle Listener
         toggleTypeButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                foodType.setText("Food");
+                foodType.setText(R.string.food);
                 foodMode = true;
                 nonFoodMode = false;
                 loadItems();
-
             } else {
-                foodType.setText("Non-Food");
+                foodType.setText(R.string.non_food);
                 foodMode = false;
                 nonFoodMode = true;
                 loadItems();
@@ -101,39 +101,35 @@ public class MyShoppingListFragment extends Fragment {
                     .show();
         });
 
-        // Delete Mode Button Listener
-        editModeButton.setOnClickListener(v -> {
-            // Toggle the edit mode inside the adapter
-            adapter.editMode = !adapter.editMode;
-            adapter.notifyDataSetChanged();
-
-            // Change the edit text into done
-            if (adapter.editMode) {
-                editModeButton.setText(R.string.done);
-            } else {
-                editModeButton.setText(R.string.edit);
-            }
+        // Select All Button Listener
+        selectAllButton.setOnClickListener(v -> {
             // Change the button icon
             Drawable newIcon = ContextCompat.getDrawable(
                     requireContext(),
-                    adapter.editMode
-                            ? R.drawable.ic_check
-                            : R.drawable.ic_edit
+                    checkAll
+                            ? R.drawable.ic_check_box_outline_blank
+                            : R.drawable.ic_select_check_box
             );
-            editModeButton.setIcon(newIcon);
-            if (!adapter.editMode) {
-                try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-                    for (ShoppingListItem item : adapter.getItems()) {
-                        db.setNewItemNameAndQuantity(item.getShoppingListItemId(), item.getShoppingListItemName(), item.getPurchasedQuantity());
-                    }
-                    loadItems();
-                }
+            selectAllButton.setIcon(newIcon);
+
+            // Implement the checking/unchecking logic
+            if (checkAll) {
+                checkAllItems();
+                loadItems();
             }
+            if (!checkAll) {
+                uncheckAllItems();
+                loadItems();
+            }
+
+            // Change the state of the button
+            checkAll = !checkAll;
         });
 
         // Add Item Button Listener
         addItemButton.setOnClickListener(v -> {
             addItem(foodMode);
+            recyclerView.smoothScrollToPosition(adapter.getItemCount());
             loadItems();
         });
 
@@ -183,6 +179,18 @@ public class MyShoppingListFragment extends Fragment {
             } else {
                 db.addNonFoodItem(db.getNextUnusedShoppingListItemId());
             }
+        }
+    }
+    public void checkAllItems(){
+        // Save on the database
+        try (DBHandler db = new DBHandler(getContext(), null, null, 1)) {
+            db.massCheck();
+        }
+    }
+    public void uncheckAllItems(){
+        // Save on the database
+        try (DBHandler db = new DBHandler(getContext(), null, null, 1)) {
+            db.massUncheck();
         }
     }
 
