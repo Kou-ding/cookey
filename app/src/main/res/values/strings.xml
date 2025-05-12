@@ -80,5 +80,5 @@
     <string name="tag_name">Tag name</string>
     <string name="recipe_not_found_text">Recipe not found!</string>
     <string name="select_a_country_help_text">Select a country</string>
-    <string name="desc_add_ingredient">ADD+</string>
+    <string name="unnamed_recipe_text">Unnamed Recipe</string>
 </resources>

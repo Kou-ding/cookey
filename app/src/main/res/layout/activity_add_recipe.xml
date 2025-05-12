@@ -114,7 +114,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/add_title_btn_add"
-                        android:contentDescription="@string/desc_add_ingredient"
+                        android:contentDescription="@string/add_title_btn_add"
                         android:layout_gravity="end"
                         android:layout_marginTop="8dp" />
 

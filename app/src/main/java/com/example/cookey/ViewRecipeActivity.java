@@ -94,8 +94,9 @@ public class ViewRecipeActivity extends AppCompatActivity {
                 imageViewRecipe.setImageResource(R.drawable.ic_placeholder);
             }
 
-            // Name
-            textViewRecipeName.setText(recipe.getName());
+            // Name. If it cannot get a name, write unnamed. It was a bug that i cannot reproduce
+            textViewRecipeName.setText((recipe.getName() != null && !recipe.getName().isEmpty()) ? recipe.getName() : getString(R.string.unnamed_recipe_text));
+
 
             // Tags
             if (recipe.getTags() != null && !recipe.getTags().isEmpty()) {

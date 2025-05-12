@@ -423,9 +423,46 @@ public class AddOrEditActivity extends AppCompatActivity {
             refreshStepNumbers();
         });
 
+
+
         container.addView(textViewNumber);
         container.addView(textViewStep);
         container.addView(btnRemove);
+
+        if (existingRecipe != null) {
+            ImageButton btnEdit = new ImageButton(this);
+            btnEdit.setImageResource(R.drawable.edit_24px);
+            btnEdit.setBackground(null);
+            LinearLayout.LayoutParams editParams = new LinearLayout.LayoutParams(60, 60);
+            editParams.setMargins(16, 0, 0, 0);
+            btnEdit.setLayoutParams(editParams);
+
+            btnEdit.setOnClickListener(v -> {
+                Dialog editDialog = new Dialog(this);
+                editDialog.setContentView(R.layout.dialog_enter_step);
+
+                EditText editTextStep = editDialog.findViewById(R.id.editTextStep);
+                Button buttonConfirmStep = editDialog.findViewById(R.id.buttonConfirmStep);
+
+                editTextStep.setText(step.getDescription());
+
+                buttonConfirmStep.setOnClickListener(btn -> {
+                    String newText = editTextStep.getText().toString().trim();
+                    if (!newText.isEmpty()) {
+                        step.setDescription(newText);
+                        textViewStep.setText(newText); // update TextView
+                        editDialog.dismiss();
+                    } else {
+                        Toast.makeText(this, R.string.please_enter_the_step_description_toast, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                editDialog.show();
+            });
+            container.addView(btnEdit);
+        }
+
+
 
         stepsLayout.addView(container);
 

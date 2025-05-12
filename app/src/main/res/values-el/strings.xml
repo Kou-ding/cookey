@@ -81,5 +81,5 @@
     <string name="tag_name">Ετικέτα</string>
     <string name="recipe_not_found_text">Η συνταγή δεν βρέθηκε!</string>
     <string name="select_a_country_help_text">Επέλεξε χώρα</string>
-    <string name="desc_add_ingredient">ADD+</string>
+    <string name="unnamed_recipe_text">Συνταγή χωρίς όνομα</string>
 </resources>
