@@ -1,6 +1,7 @@
 package com.example.cookey.ui.MyShoppingList;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -12,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -74,12 +78,14 @@ public class MyShoppingListFragment extends Fragment {
                 foodType.setText(R.string.food);
                 foodMode = true;
                 nonFoodMode = false;
-                loadItems();
+                refillIngredientsButton.setVisibility(View.VISIBLE);
+                loadItemsFromDB();
             } else {
                 foodType.setText(R.string.non_food);
                 foodMode = false;
                 nonFoodMode = true;
-                loadItems();
+                refillIngredientsButton.setVisibility(View.INVISIBLE);
+                loadItemsFromDB();
             }
         });
 
@@ -92,7 +98,7 @@ public class MyShoppingListFragment extends Fragment {
                         Toast.makeText(requireContext(), "New List created!", Toast.LENGTH_SHORT).show();
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
                             db.newShoppingList();
-                            loadItems();
+                            loadItemsFromDB();
                         }
                     })
                     .setNegativeButton("No", (dialog, which) -> {
@@ -100,6 +106,25 @@ public class MyShoppingListFragment extends Fragment {
                     })
                     .show();
         });
+
+        // Check if all are checked and use the correct initial icon
+        boolean areAllChecked = true;
+        for (ShoppingListItem item : adapter.getItems()){
+            if (!item.getIsChecked()){
+                areAllChecked = false;
+                break;
+            }
+        }
+        if (areAllChecked){
+            checkAll = false;
+        }
+        Drawable initialIcon = ContextCompat.getDrawable(
+                requireContext(),
+                areAllChecked
+                        ? R.drawable.ic_check_box_outline_blank // All checked → show "uncheck all" icon
+                        : R.drawable.ic_select_check_box        // Not all checked → show "check all" icon
+        );
+        selectAllButton.setIcon(initialIcon);
 
         // Select All Button Listener
         selectAllButton.setOnClickListener(v -> {
@@ -115,11 +140,11 @@ public class MyShoppingListFragment extends Fragment {
             // Implement the checking/unchecking logic
             if (checkAll) {
                 checkAllItems();
-                loadItems();
+                loadItemsFromDB();
             }
             if (!checkAll) {
                 uncheckAllItems();
-                loadItems();
+                loadItemsFromDB();
             }
 
             // Change the state of the button
@@ -130,7 +155,7 @@ public class MyShoppingListFragment extends Fragment {
         addItemButton.setOnClickListener(v -> {
             addItem(foodMode);
             recyclerView.smoothScrollToPosition(adapter.getItemCount());
-            loadItems();
+            loadItemsFromDB();
         });
 
         // Refill Ingredients Button Listener
@@ -140,20 +165,25 @@ public class MyShoppingListFragment extends Fragment {
                     .setMessage("Are you sure that you want to include all the checked items in your Ingredients?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         Toast.makeText(requireContext(), "Ingredients Refilled!", Toast.LENGTH_SHORT).show();
+                        // Perform the refilling in the database
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                            // Refill food items
                             db.refillIngredients(adapter.getCheckedItems());
+                            // Create new list
+                            db.newShoppingList();
+                            loadItemsFromDB();
                         }
+
                     })
                     .setNegativeButton("No", (dialog, which) -> {
                         Toast.makeText(requireContext(), "No changes made", Toast.LENGTH_SHORT).show();
                     })
                     .show();
-
-            loadItems();
         });
         return view;
     }
-    public void loadItems() {
+
+    public void loadItemsFromDB() {
         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
             List<ShoppingListItem> listItems = null;
             if (foodMode) {

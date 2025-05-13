@@ -9,6 +9,7 @@
     import android.view.View;
     import android.view.ViewGroup;
     import android.view.inputmethod.EditorInfo;
+    import android.view.inputmethod.InputMethodManager;
     import android.widget.ArrayAdapter;
     import android.widget.AutoCompleteTextView;
     import android.widget.CheckBox;
@@ -76,7 +77,13 @@
                     // When an item is selected from dropdown:
                     autoCompleteIngredient.setEnabled(false);  // Make text uneditable
                     itemQuantityEdit.setEnabled(true);         // Enable quantity field
+                    itemQuantityEdit.setText("");              // Clear quantity field
                     itemQuantityEdit.requestFocus();           // Move focus to quantity
+                    // Show the keyboard
+                    InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.showSoftInput(itemQuantityEdit, InputMethodManager.SHOW_IMPLICIT);
+                    }
 
                     autoCompleteIngredient.setVisibility(View.GONE);  // Hide the auto complete text
                     ingredientCheckbox.setVisibility(View.VISIBLE);  // Show the prettier checkbox text
@@ -143,6 +150,15 @@
                     deleteItem.setVisibility(View.VISIBLE);
                     editItem.setVisibility(View.GONE);
                     itemQuantityEdit.setEnabled(true);
+                    // Move focus to quantity
+                    itemQuantityEdit.requestFocus();
+                    // Move cursor to end
+                    itemQuantityEdit.setSelection(itemQuantityEdit.getText().length());
+                    // Show the keyboard
+                    InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.showSoftInput(itemQuantityEdit, InputMethodManager.SHOW_IMPLICIT);
+                    }
                 });
 
                 // Handle delete button click
@@ -192,12 +208,8 @@
                     @Override public void afterTextChanged(Editable s) {
                         int pos = getAdapterPosition();
                         if (pos != RecyclerView.NO_POSITION) {
-                            try {
-                                float quantity = s.toString().isEmpty() ? 0 : Float.parseFloat(s.toString());
-                                items.get(pos).setPurchasedQuantity(quantity);
-                            } catch (NumberFormatException e) {
-                                Log.e("Adapter", "Error parsing quantity", e);
-                            }
+                            float quantity = s.toString().isEmpty() ? 0 : Float.parseFloat(s.toString());
+                            items.get(pos).setPurchasedQuantity(quantity);
                         }
                     }
                 };
@@ -250,27 +262,6 @@
 
             // Adapter for auto complete
             holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
-        }
-
-        @NonNull
-        private static ArrayAdapter<String> getAutoCompleteAdapter(View itemView) {
-            List<String> suggestions = new ArrayList<>();
-
-            // Open DB and fill the suggestions
-            try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
-                List<Ingredient> ingredients = db.getAllIngredients();
-                for (Ingredient ingredient : ingredients) {
-                    suggestions.add(ingredient.getIngredientName());
-                }
-            }
-
-            // Now create the ArrayAdapter using the suggestions
-            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(
-                    itemView.getContext(),
-                    android.R.layout.simple_dropdown_item_1line,
-                    suggestions
-            );
-            return autoCompleteAdapter;
         }
 
         @Override
