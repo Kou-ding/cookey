@@ -87,24 +87,13 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="Add Ingredients to the Recipe prompt."
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/expandButton"
+        app:layout_constraintEnd_toStartOf="@+id/addIngredientAI"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/useMyIngredients" />
-
-    <Button
-        android:id="@+id/addIngredientAI"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:contentDescription="Adds an ingredient to the recipe prompt."
-        android:text="Add"
-        app:cornerRadius="4dp"
-        app:icon="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="@+id/includeIngredientsRecyclerView"
-        app:layout_constraintStart_toEndOf="@+id/includeIngredientsRecyclerView" />
 
     <CheckBox
         android:id="@+id/useMyIngredients"
@@ -114,5 +103,14 @@
         app:layout_constraintEnd_toEndOf="@+id/expandButton"
         app:layout_constraintStart_toStartOf="@+id/expandButton"
         app:layout_constraintTop_toBottomOf="@+id/expandButton" />
+
+    <ImageButton
+        android:id="@+id/addIngredientAI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/includeIngredientsRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

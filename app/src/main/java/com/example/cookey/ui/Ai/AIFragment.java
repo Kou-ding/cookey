@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import com.example.cookey.AIRecipeEditActivity;
@@ -65,7 +66,7 @@ public class AIFragment extends Fragment {
         Button cookButton = view.findViewById(R.id.generate_ai_recipe);
         MaterialButton expandButton = view.findViewById(R.id.expandButton);
         RecyclerView recyclerView = view.findViewById(R.id.includeIngredientsRecyclerView);
-        Button addIngredientButton = view.findViewById(R.id.addIngredientAI);
+        ImageButton addIngredientButton = view.findViewById(R.id.addIngredientAI);
         CheckBox useMyIngredientsCheckbox = view.findViewById(R.id.useMyIngredients);
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);

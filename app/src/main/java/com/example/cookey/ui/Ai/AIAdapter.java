@@ -28,14 +28,31 @@ import java.util.List;
 
 public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
     private List<ShoppingListItem> items;
+    private ArrayAdapter<String> autoCompleteAdapter;
+
     public AIAdapter(Context context) {
+
         items = new ArrayList<>();
+        this.autoCompleteAdapter = createAutoCompleteAdapter(context);
+    }
+    private ArrayAdapter<String> createAutoCompleteAdapter(Context context) {
+        List<String> suggestions = new ArrayList<>();
+        try (DBHandler db = new DBHandler(context, null, null, 1)) {
+            for (Ingredient ingredient : db.getAllIngredients()) {
+                suggestions.add(ingredient.getIngredientName());
+            }
+        }
+        return new ArrayAdapter<>(
+                context,
+                android.R.layout.simple_dropdown_item_1line,
+                suggestions
+        );
     }
     class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox ingredientCheckbox;
         EditText itemQuantityEdit;
         TextView itemUnitSystem;
-        ImageButton deleteItem;
+        ImageButton deleteItem, editItem;
         AutoCompleteTextView autoCompleteIngredient;
         private TextWatcher textWatcher;
 
@@ -45,6 +62,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
             itemQuantityEdit = itemView.findViewById(R.id.itemQuantityEdit);
             itemUnitSystem = itemView.findViewById(R.id.itemUnitSystem);
             deleteItem = itemView.findViewById(R.id.deleteItem);
+            editItem = itemView.findViewById(R.id.editItem);
             autoCompleteIngredient = itemView.findViewById(R.id.autoCompleteIngredient);
 
             // Initialize TextWatcher once in ViewHolder
@@ -64,6 +82,8 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
                 }
             };
             autoCompleteIngredient.addTextChangedListener(textWatcher);
+            // Set the auto complete threshold to 1
+            autoCompleteIngredient.setThreshold(1);
         }
     }
     @NonNull
@@ -81,6 +101,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
         holder.ingredientCheckbox.setChecked(item.getIsChecked());
 
         holder.ingredientCheckbox.setText("");
+        holder.editItem.setVisibility(View.GONE);
         holder.itemQuantityEdit.setVisibility(View.GONE);
         holder.itemUnitSystem.setVisibility(View.GONE);
         holder.autoCompleteIngredient.setText(item.getShoppingListItemName());
@@ -93,34 +114,9 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
             notifyItemRangeChanged(position, items.size());
         });
 
-        // Create the suggestions list
-        ArrayAdapter<String> autoCompleteAdapter = getAutoCompleteAdapter(holder);
-
-        // Set it to the AutoCompleteTextView
-        holder.autoCompleteIngredient.setThreshold(1);
+        // Auto complete adapter
         holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
 
-    }
-
-    @NonNull
-    private static ArrayAdapter<String> getAutoCompleteAdapter(@NonNull ViewHolder holder) {
-        List<String> suggestions = new ArrayList<>();
-
-        // Open DB and fill the suggestions
-        try (DBHandler db = new DBHandler(holder.itemView.getContext(), null, null, 1)) {
-            List<Ingredient> ingredients = db.getAllMyIngredients();
-            for (Ingredient ingredient : ingredients) {
-                suggestions.add(ingredient.getIngredientName());
-            }
-        }
-
-        // Now create the ArrayAdapter using the suggestions
-        ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(
-                holder.itemView.getContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                suggestions
-        );
-        return autoCompleteAdapter;
     }
 
     @Override
@@ -131,7 +127,7 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
     public void addItem(){
         // Add a blank item to the local list
         int newId = items.isEmpty() ? 1 : items.get(items.size() - 1).getShoppingListItemId() + 1;
-        items.add(new ShoppingListItem(newId, "", 0, false, false));        // Notify the adapter that an item has been added
+        items.add(new ShoppingListItem(newId, "", 0, false, false)); // Notify the adapter that an item has been added
         notifyItemInserted(items.size() - 1);
     }
 
