@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
 import com.example.cookey.IngredientActivity;
 import com.example.cookey.R;
@@ -25,57 +26,27 @@ import java.util.List;
 
 
 public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdapter.ViewHolder> {
-    // List of ingredients
-    private List<Ingredient> ingredients = new ArrayList<>();
-    // Forms the edit view
-    // !editMode == viewMode
-    private boolean editMode = false;
-    private TextWatcher textWatcher;
-    public void setMode(boolean mode) {
-        this.editMode = mode;
-        notifyItemRangeChanged(0, getItemCount());
-    }
-
-    // Delete button
-    /**
-     * Interface for the delete button
-     */
-    public interface OnDeleteClickListener {
-        void onDeleteClick(Ingredient ingredient);
-
-    }
-    // Instance of the interface
-    private OnDeleteClickListener onDeleteClickListener;
-
-    /**
-     * Sets the listener for the delete button
-     * @param listener The listener to set
-     */
-    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
-        this.onDeleteClickListener = listener;
-    }
-
-    public void setIngredients(List<Ingredient> ingredients) {
+    // Constructor
+    public MyIngredientsAdapter(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
-        notifyDataSetChanged(); // change to something smarter
     }
 
-    public List<Ingredient> getIngredients() {
-        return ingredients;
+    // List of ingredients
+    private List<Ingredient> ingredients;
+    // Forms the edit view
+    private boolean editMode; // !editMode == viewMode
+    private TextWatcher textWatcher;
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+        notifyDataSetChanged();
     }
 
-    /**
-     *  Class that holds the items to be displayed in the RecyclerView
-     */
-     class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, unitSystemTextView;
         EditText quantityEditText;
         ImageButton deleteButton;
 
-        /** Constructor for the ViewHolder:
-         * Connects the ui elements from the layout xml to their view variables.
-         * @param view The view in which the ViewHolder is contained
-         */
         public ViewHolder(View view) {
             super(view);
             nameTextView = view.findViewById(R.id.ingredientName);
@@ -83,47 +54,23 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
             quantityEditText = view.findViewById(R.id.ingredientEditQuantity);
             deleteButton = view.findViewById(R.id.deleteIngredient);
 
-            // Quantity text watcher
-            textWatcher = new TextWatcher(){
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            // Delete button click listener
+            deleteButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                // Delete from db
+                try (DBHandler db = new DBHandler(v.getContext(), null, null, 1)) {
+                    db.deleteIngredient(ingredients.get(position).getIngredientId());
+                } catch (Exception e) {
+                    Log.e("MyIngredientsViewModel", "Error deleting ingredient", e);
                 }
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-                @Override
-                public void afterTextChanged(Editable s) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        float newQuantity = Float.parseFloat(s.toString());
-                        ingredients.get(position).setQuantity(newQuantity);
-                    }
-                }
-            };
-
-            if (!editMode) {
-                view.setOnClickListener(v -> {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        Ingredient ingredient = ingredients.get(position);
-
-                        // Launch IngredientActivity with the ingredient name
-                        Intent intent = new Intent(v.getContext(), IngredientActivity.class);
-                        intent.putExtra("ingredientName", ingredient.getIngredientName());
-                        v.getContext().startActivity(intent);
-
-                        // Optional transition animation
-                        ((Activity) v.getContext()).overridePendingTransition(
-                                android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
-                });
-            }
+                // Delete from list
+                ingredients.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, ingredients.size());
+            });
         }
     }
 
-    /**
-     *
-     */
     @NonNull
     @Override
     public MyIngredientsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -131,52 +78,80 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
         return new ViewHolder(view);
     }
 
-    /**
-     * Populate Views in the ViewHolder with data
-     * @param holder The ViewHolder which should be updated to represent the contents of the
-     *        item at the given position in the data set.
-     * @param position The position of the item within the adapter's data set.
-     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Visibility regardless of mode
         Ingredient ingredient = ingredients.get(position);
-        // Test regardless of mode
         holder.nameTextView.setText(ingredient.getIngredientName());
+        holder.unitSystemTextView.setText(ingredient.getUnitSystem());
 
-        // Editing mode Recycle View
+        // Remove existing text watcher
+        if (holder.quantityEditText.getTag() instanceof TextWatcher) {
+            holder.quantityEditText.removeTextChangedListener((TextWatcher) holder.quantityEditText.getTag());
+        }
+
+        holder.quantityEditText.setText(String.valueOf(ingredient.getQuantity()));
+
         if (editMode) {
-            // Visibility
             holder.quantityEditText.setEnabled(true);
             holder.deleteButton.setVisibility(View.VISIBLE);
 
-            holder.deleteButton.setOnClickListener(v -> {
-                if (onDeleteClickListener != null) {
-                    onDeleteClickListener.onDeleteClick(ingredient);
-                }
-            });
+            holder.itemView.setOnClickListener(null); // Disable navigation in edit mode
 
-            // Text
-            holder.unitSystemTextView.setText(ingredient.getUnitSystem());
-            holder.quantityEditText.setText(String.valueOf(ingredient.getQuantity()));
-            holder.quantityEditText.addTextChangedListener(textWatcher);
-        }
-        if (!editMode) {
-            // Visibility
+            TextWatcher watcher = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String text = s.toString().trim();
+                    if (!text.isEmpty()) {
+                        try {
+                            float newQuantity = Float.parseFloat(text);
+                            ingredient.setQuantity(newQuantity);
+                        } catch (NumberFormatException e) {
+                            Log.e("MyIngredientsAdapter", "Invalid number format", e);
+                        }
+                    }
+                }
+            };
+
+            holder.quantityEditText.addTextChangedListener(watcher);
+            holder.quantityEditText.setTag(watcher);
+        } else {
             holder.quantityEditText.setEnabled(false);
             holder.deleteButton.setVisibility(View.GONE);
 
-            // Text
-            holder.unitSystemTextView.setText(ingredient.getUnitSystem());
-            holder.quantityEditText.setText(String.valueOf(ingredient.getQuantity()));
+            // 🔓 Allow navigation when NOT in edit mode
+            holder.itemView.setOnClickListener(v -> {
+                int pos = holder.getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                    Ingredient ing = ingredients.get(pos);
+                    Intent intent = new Intent(v.getContext(), IngredientActivity.class);
+                    intent.putExtra("ingredientName", ing.getIngredientName());
+                    v.getContext().startActivity(intent);
+                    ((Activity) v.getContext()).overridePendingTransition(
+                            android.R.anim.fade_in, android.R.anim.fade_out);
+                }
+            });
         }
     }
 
-    /** The number of Ingredients in the list
-     * @return The total number of items in the data set held by the adapter.
-     */
+
     @Override
     public int getItemCount() {
         return ingredients.size();
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients){
+        this.ingredients = ingredients;
     }
 }

@@ -23,37 +23,8 @@ import com.google.android.material.button.MaterialButton;
 import java.util.List;
 
 public class MyIngredientsFragment extends Fragment {
-
     private MyIngredientsAdapter adapter;
     private boolean editMode = false;
-
-    public void loadIngredients() {
-        try(DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-            List<Ingredient> ingredients = db.getAllMyIngredients();
-            adapter.setIngredients(ingredients);
-        } catch (Exception e) {
-            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
-        }
-    }
-
-    public void updateIngredient(String ingredientName, float newQuantity) {
-        try(DBHandler db = new DBHandler(requireContext(),null,null,1)){
-            db.setNewQuantity(ingredientName, newQuantity);
-        } catch (Exception e) {
-            Log.e("MyIngredientsViewModel", "Error updating ingredient", e);
-        }
-        loadIngredients(); // Reload after update
-    }
-
-    public void deleteIngredient(Ingredient ingredient) {
-        int ingredientId = ingredient.getIngredientId();
-        try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-            db.deleteIngredient(ingredientId);
-        } catch (Exception e) {
-            Log.e("MyIngredientsViewModel", "Error deleting ingredient", e);
-        }
-        loadIngredients(); // Reload after delete
-    }
 
     @Nullable
     @Override
@@ -70,23 +41,27 @@ public class MyIngredientsFragment extends Fragment {
         MaterialButton editButton = view.findViewById(R.id.editButton);
 
         // Initialize the adapter with callback methods that delegate to the ViewModel
-        adapter = new MyIngredientsAdapter();
+        List<Ingredient> ingredients;
+        try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+            ingredients = db.getAllMyIngredients();
+        }
+        adapter = new MyIngredientsAdapter(ingredients);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
-
-        // Load the ingredients from the database
-        loadIngredients();
 
         // Set the edit button click listener
         editButton.setOnClickListener(v -> {
             editMode = !editMode;
+            adapter.setEditMode(editMode);
             if (!editMode) {
-                for (Ingredient i : adapter.getIngredients()) {
-                    updateIngredient(i.getIngredientName(), i.getQuantity());
+                try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                    // Update the quantities of the Ingredients in the database
+                    List<Ingredient> ings = adapter.getIngredients();
+                    for (Ingredient ing : ings) {
+                        db.setNewQuantity(ing.getIngredientName(), ing.getQuantity());
+                    }
                 }
             }
-            adapter.setMode(editMode);
-
             // Update the button text
             editButton.setText(editMode ? getString(R.string.done) : getString(R.string.edit));
 
@@ -99,19 +74,15 @@ public class MyIngredientsFragment extends Fragment {
             );
             editButton.setIcon(newIcon);
         });
-        // Set the delete button click listener
-        adapter.setOnDeleteClickListener(ingredient -> {
-            deleteIngredient(ingredient);
-            loadIngredients();
-        });
 
         return view;
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Refresh ingredients data when fragment resumes
-        loadIngredients();
+    public void loadIngredients(){
+        List<Ingredient> ingredients;
+        try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+            ingredients = db.getAllMyIngredients();
+        }
+        adapter.setIngredients(ingredients);
+        adapter.notifyDataSetChanged();
     }
 }
