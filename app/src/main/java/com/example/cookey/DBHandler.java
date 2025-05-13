@@ -550,10 +550,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 db.update("Ingredient", values, "ingredientName = ?", new String[]{name});
             }
             cursor.close();
-
-            // Delete the item from the shopping list
-            String deleteQuery = "DELETE FROM ShoppingList WHERE shoppingListItemName = ?";
-            db.execSQL(deleteQuery, new Object[]{name});
         }
 
         db.close();
