@@ -250,37 +250,6 @@ public class DBHandler extends SQLiteOpenHelper {
 
         db.close();
     }
-    public String[] similarIngredients(String searchIngredient){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM Ingredient " +
-                "WHERE ingredientName LIKE '%" + searchIngredient + "%';";
-        Cursor cursor = db.rawQuery(query, null);
-        int ingredientCount = cursor.getCount();
-        Ingredient[] ingredients = new Ingredient[ingredientCount];
-        int i = 0;
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                Ingredient ingredient = new Ingredient();
-                ingredient.setIngredientId(Integer.parseInt(cursor.getString(0)));
-                ingredient.setIngredientName(cursor.getString(1));
-                ingredient.setQuantity(Float.parseFloat(cursor.getString(2)));
-                ingredient.setUnitSystem(cursor.getString(3));
-                ingredient.setDaysToSpoil(Integer.parseInt(cursor.getString(4)));
-                ingredients[i] = ingredient;
-                cursor.moveToNext();
-                i++;
-            }
-        }
-        cursor.close();
-        db.close();
-
-        String[] ingredientNames = new String[ingredients.length];
-        for (int j = 0; j < ingredients.length; j++){
-            ingredientNames[j] = ingredients[j].getIngredientName();
-        }
-
-        return ingredientNames;
-    }
     public void setNewQuantity(String ingredientName, float newQuantity){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE Ingredient SET quantity = " + newQuantity + " WHERE ingredientName = '" + ingredientName + "';";
@@ -550,6 +519,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 db.update("Ingredient", values, "ingredientName = ?", new String[]{name});
             }
             cursor.close();
+            // Delete from shopping list
+            db.execSQL("DELETE FROM ShoppingList WHERE shoppingListItemId = " + item.getShoppingListItemId() + ";");
         }
 
         db.close();
