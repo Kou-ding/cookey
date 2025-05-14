@@ -79,12 +79,14 @@ public class MyShoppingListFragment extends Fragment {
                 foodMode = true;
                 nonFoodMode = false;
                 refillIngredientsButton.setVisibility(View.VISIBLE);
+                adapter.setFoodMode(true);
                 loadItemsFromDB();
             } else {
                 foodType.setText(R.string.non_food);
                 foodMode = false;
                 nonFoodMode = true;
                 refillIngredientsButton.setVisibility(View.INVISIBLE);
+                adapter.setFoodMode(false);
                 loadItemsFromDB();
             }
         });
@@ -161,19 +163,17 @@ public class MyShoppingListFragment extends Fragment {
         // Refill Ingredients Button Listener
         refillIngredientsButton.setOnClickListener(v -> {
             new AlertDialog.Builder(getContext())
-                    .setTitle("Consume?")
-                    .setMessage("Are you sure that you want to include all the checked items in your Ingredients?")
+                    .setTitle("Refill Ingredients?")
+                    .setMessage("Are you sure that you want to add all the checked items in your Ingredients?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         Toast.makeText(requireContext(), "Ingredients Refilled!", Toast.LENGTH_SHORT).show();
                         // Perform the refilling in the database
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
                             // Refill food items
                             db.refillIngredients(adapter.getCheckedItems());
-                            // Create new list
-                            db.newShoppingList();
+                            // Reload the items from the database to reflect the changes
                             loadItemsFromDB();
                         }
-
                     })
                     .setNegativeButton("No", (dialog, which) -> {
                         Toast.makeText(requireContext(), "No changes made", Toast.LENGTH_SHORT).show();

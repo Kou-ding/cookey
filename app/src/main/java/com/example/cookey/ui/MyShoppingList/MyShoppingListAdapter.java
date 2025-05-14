@@ -1,7 +1,10 @@
     package com.example.cookey.ui.MyShoppingList;
 
     import android.content.Context;
+    import android.os.Handler;
+    import android.os.Looper;
     import android.text.Editable;
+    import android.text.InputType;
     import android.text.TextWatcher;
     import android.util.Log;
     import android.view.KeyEvent;
@@ -32,6 +35,8 @@
     public class MyShoppingListAdapter extends RecyclerView.Adapter<MyShoppingListAdapter.ViewHolder>{
         private List<ShoppingListItem> items;
         private ArrayAdapter<String> autoCompleteAdapter;
+
+        private boolean foodMode = true;
 
         public MyShoppingListAdapter(List<ShoppingListItem> items, Context context) {
             this.items = items;
@@ -108,6 +113,70 @@
                     itemUnitSystem.setText(unitSystem);
                 });
 
+                // Make "enter" viable for non food entries
+                autoCompleteIngredient.setOnEditorActionListener((v, actionId, event) -> {
+                    // Handle both soft keyboard "Done" action and physical Enter key
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                            (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
+                                    event.getAction() == KeyEvent.ACTION_DOWN)) {
+
+                        String selectedText = autoCompleteIngredient.getText().toString().trim();
+                        if (!selectedText.isEmpty()) {
+                            // 1. First clear focus from current view
+                            autoCompleteIngredient.clearFocus();
+
+                            // 2. Prevent new line from being created
+                            autoCompleteIngredient.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+
+                            // 3. Execute the focus change after a small delay
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                // Hide the AutoCompleteTextView
+                                autoCompleteIngredient.setVisibility(View.GONE);
+
+                                // Show the checkbox with selected text
+                                ingredientCheckbox.setVisibility(View.VISIBLE);
+                                ingredientCheckbox.setText(selectedText);
+
+                                // Prepare quantity field
+                                itemQuantityEdit.setText("");
+                                itemQuantityEdit.setEnabled(true);
+
+                                // Force focus to quantity field
+                                itemQuantityEdit.requestFocusFromTouch();
+
+                                // Show keyboard for quantity field
+                                InputMethodManager imm = (InputMethodManager) itemView.getContext()
+                                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                                if (imm != null) {
+                                    imm.showSoftInput(itemQuantityEdit, InputMethodManager.SHOW_IMPLICIT);
+                                }
+
+                                // Save to list and database
+                                int adapterPos = getAdapterPosition();
+                                if (adapterPos != RecyclerView.NO_POSITION) {
+                                    items.get(adapterPos).setShoppingListItemName(selectedText);
+                                    try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
+                                        db.setShoppingListItemName(items.get(adapterPos).getShoppingListItemId(), selectedText);
+
+                                        // Fetch unit system
+                                        String unitSystem = db.getUnitSystem(selectedText);
+                                        itemUnitSystem.setText(unitSystem);
+                                    }
+                                }
+                            }, 50); // Small delay to ensure smooth transition
+
+                            return true; // Consume the event
+                        }
+                    }
+                    return false;
+                });
+
+                // Also add this to your AutoCompleteTextView setup to prevent multi-line input
+                autoCompleteIngredient.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                        InputType.TYPE_TEXT_VARIATION_FILTER);
+                autoCompleteIngredient.setSingleLine(true);
+
+                // Handle "enter" during editing the quantity
                 itemQuantityEdit.setOnEditorActionListener((v, actionId, event) -> {
                     // Handle "Done" or "Enter" key press
                     if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
@@ -261,14 +330,21 @@
             holder.itemQuantityEdit.addTextChangedListener(quantityTextWatcher);
 
             // Adapter for auto complete
-            holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
+            if (foodMode) {
+                holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
+            } else {
+                holder.autoCompleteIngredient.setAdapter(null);
+                holder.autoCompleteIngredient.setText(""); // Clear the previous food name
+            }
         }
 
         @Override
         public int getItemCount() {
             return items.size();
         }
-
+        public void setFoodMode(boolean foodMode) {
+            this.foodMode = foodMode;
+        }
         public List<ShoppingListItem> getItems() {
             return items;
         }
