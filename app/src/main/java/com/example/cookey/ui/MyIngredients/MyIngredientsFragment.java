@@ -2,19 +2,15 @@ package com.example.cookey.ui.MyIngredients;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
 import com.example.cookey.R;
@@ -76,13 +72,5 @@ public class MyIngredientsFragment extends Fragment {
         });
 
         return view;
-    }
-    public void loadIngredients(){
-        List<Ingredient> ingredients;
-        try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-            ingredients = db.getAllMyIngredients();
-        }
-        adapter.setIngredients(ingredients);
-        adapter.notifyDataSetChanged();
     }
 }

@@ -1,15 +1,11 @@
 package com.example.cookey;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -64,14 +60,14 @@ public class IngredientActivity extends AppCompatActivity {
 
             // If no dates, show a message
             if (datesArray.length() == 0) {
-                ingredientExpirationDatesTextView.setText("No expiration dates");
+                ingredientExpirationDatesTextView.setText(R.string.no_expiration_dates);
             } else {
                 ingredientExpirationDatesTextView.setText(formattedDates.toString());
             }
         } catch (JSONException e) {
             // Handle parsing error
             Log.e("ExpirationDates", "Error parsing JSON: " + e.getMessage());
-            ingredientExpirationDatesTextView.setText("Error displaying dates");
+            ingredientExpirationDatesTextView.setText(R.string.error_displaying_dates);
         }
 
     }

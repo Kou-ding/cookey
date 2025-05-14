@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Objects;
+
 public class AIRecipeEditActivity extends AppCompatActivity {
 
     @Override
@@ -32,7 +34,7 @@ public class AIRecipeEditActivity extends AppCompatActivity {
             AIRecipe recipe = new AIRecipe();
 
             // Fetch the recipe from the EditText field
-            String AiRecipeText = recipeInput.getText().toString().trim();
+            String AiRecipeText = Objects.requireNonNull(recipeInput.getText()).toString().trim();
 
             // Save the recipe to the database
             int AiRecipeId;

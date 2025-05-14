@@ -6,7 +6,6 @@
     import android.text.Editable;
     import android.text.InputType;
     import android.text.TextWatcher;
-    import android.util.Log;
     import android.view.KeyEvent;
     import android.view.LayoutInflater;
     import android.view.View;
@@ -19,16 +18,12 @@
     import android.widget.EditText;
     import android.widget.ImageButton;
     import android.widget.TextView;
-
     import androidx.annotation.NonNull;
     import androidx.recyclerview.widget.RecyclerView;
-
     import com.example.cookey.DBHandler;
     import com.example.cookey.Ingredient;
     import com.example.cookey.R;
     import com.example.cookey.ShoppingListItem;
-    import com.google.android.material.textfield.TextInputLayout;
-
     import java.util.ArrayList;
     import java.util.List;
 

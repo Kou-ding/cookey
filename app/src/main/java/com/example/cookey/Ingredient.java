@@ -1,7 +1,5 @@
 package com.example.cookey;
 
-import java.util.List;
-
 public class Ingredient {
     private int ingredientId; // id of the ingredient
     private String ingredientName; // name of the ingredient
@@ -14,7 +12,7 @@ public class Ingredient {
     public Ingredient(){
         // empty constructor
     }
-    public Ingredient(int ingredientId, String ingredientName, float quantity, String unitSystem, int daysToSpoil, String purchaseDate){
+    public Ingredient(int ingredientId, String ingredientName, float quantity, String unitSystem, int daysToSpoil){
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
         this.quantity = quantity;

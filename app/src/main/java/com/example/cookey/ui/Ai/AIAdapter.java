@@ -3,7 +3,6 @@ package com.example.cookey.ui.Ai;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
 import com.example.cookey.R;
 import com.example.cookey.ShoppingListItem;
-import com.example.cookey.ui.MyShoppingList.MyShoppingListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

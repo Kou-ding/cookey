@@ -1,6 +1,5 @@
 package com.example.cookey;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -10,10 +9,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.cookey.databinding.ActivityMainBinding;
-import com.google.android.material.navigation.NavigationBarView;
-
 import android.database.sqlite.SQLiteDatabase;
-
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;

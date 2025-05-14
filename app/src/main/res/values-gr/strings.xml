@@ -27,4 +27,6 @@
     <string name="non_food">Non-Food</string>
     <string name="all">All</string>
     <string name="shortened_title_my_shopping_list">Shopping List</string>
+    <string name="no_expiration_dates">No expiration dates</string>
+    <string name="error_displaying_dates">Error displaying dates</string>
 </resources>

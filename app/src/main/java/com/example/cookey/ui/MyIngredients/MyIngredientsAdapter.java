@@ -11,19 +11,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
 import com.example.cookey.IngredientActivity;
 import com.example.cookey.R;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.ArrayList;
 import java.util.List;
-
 
 public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdapter.ViewHolder> {
     // Constructor
@@ -35,7 +29,6 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
     private List<Ingredient> ingredients;
     // Forms the edit view
     private boolean editMode; // !editMode == viewMode
-    private TextWatcher textWatcher;
 
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
@@ -140,18 +133,11 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
             });
         }
     }
-
-
     @Override
     public int getItemCount() {
         return ingredients.size();
     }
-
     public List<Ingredient> getIngredients() {
         return ingredients;
-    }
-
-    public void setIngredients(List<Ingredient> ingredients){
-        this.ingredients = ingredients;
     }
 }

@@ -1,31 +1,23 @@
 package com.example.cookey.ui.MyShoppingList;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import com.example.cookey.DBHandler;
 import com.example.cookey.R;
 import com.example.cookey.ShoppingListItem;
 import com.google.android.material.button.MaterialButton;
-
 import java.util.List;
 
 public class MyShoppingListFragment extends Fragment {
