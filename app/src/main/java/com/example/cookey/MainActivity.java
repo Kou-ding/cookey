@@ -12,6 +12,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.cookey.databinding.ActivityMainBinding;
+
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private DBHandler dbHandler;
@@ -27,30 +30,52 @@ public class MainActivity extends AppCompatActivity {
     }
     private void checkAndInsertSampleData() {
         // Έλεγχος αν υπάρχουν ήδη συνταγές
+        dbHandler.dropDatabase();
         if (dbHandler.getAllRecipes().isEmpty()) {
             addSampleRecipes();
         }
     }
+    // Στο MainActivity.java, στη μέθοδο addSampleRecipes()
+
     private void addSampleRecipes() {
         try {
-            // Χρήση της ίδιας εικόνας για όλες τις συνταγές (προσαρμόστε αν χρειάζεται)
+            Log.d("SAMPLE_DATA", "Adding sample recipes...");
             Bitmap defaultBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lunch_dining_24px);
-            // Προσθήκη συνταγών με την ενημερωμένη μέθοδο addRecipe
-            long id1 =dbHandler.addRecipe(
-                    new MyRecipes("Spaghetti Carbonara", "20 mins | Medium", R.drawable.lunch_dining_24px),
-                    defaultBitmap
-            );
+
+            // 1. Spaghetti Carbonara
+            RecipeFull carbonara = new RecipeFull();
+            carbonara.setTitle("Spaghetti Carbonara");
+            carbonara.setCharacteristic("20 mins | Medium");
+            carbonara.addIngredient("Spaghetti");
+            carbonara.addIngredient("Eggs");
+            carbonara.addIngredient("Pancetta");
+            carbonara.addStep("Boil spaghetti");
+            carbonara.addStep("Fry pancetta");
+            carbonara.addTag("Italian");
+            carbonara.addTag("Pasta");
+            long id1 = dbHandler.addFullRecipe(carbonara, defaultBitmap);
             dbHandler.updateRecipeFavoriteStatus((int)id1, true);
-            long id2=dbHandler.addRecipe(
-                    new MyRecipes("Greek Salad", "15 mins | Easy", R.drawable.lunch_dining_24px),
-                    defaultBitmap
-            );
+
+            // 2. Greek Salad
+            RecipeFull salad = new RecipeFull();
+            salad.setTitle("Greek Salad");
+            salad.setCharacteristic("15 mins | Easy");
+            salad.addIngredient("Tomatoes");
+            salad.addIngredient("Cucumber");
+            salad.addIngredient("Feta Cheese");
+            salad.addStep("Chop vegetables");
+            salad.addStep("Combine ingredients");
+            salad.addTag("Greek");
+            salad.addTag("Vegetarian");
+            long id2 = dbHandler.addFullRecipe(salad, defaultBitmap);
             dbHandler.updateRecipeFavoriteStatus((int)id2, false);
-            long id3=dbHandler.addRecipe(
-                    new MyRecipes("Chocolate Cake", "60 mins | Hard", R.drawable.lunch_dining_24px),
-                    defaultBitmap
-            );
-            dbHandler.updateRecipeFavoriteStatus((int)id3, true);
+
+            Log.d("SAMPLE_DATA", "Added Carbonara with ID: " + id1);
+            Log.d("SAMPLE_DATA", "Added Salad with ID: " + id2);
+
+            // Επιβεβαίωση ότι οι συνταγές προστέθηκαν
+            List<MyRecipes> allRecipes = dbHandler.getAllRecipes();
+            Log.d("SAMPLE_DATA", "Total recipes in DB: " + allRecipes.size());
         } catch (Exception e) {
             Log.e("MainActivity", "Error adding sample recipes", e);
         }

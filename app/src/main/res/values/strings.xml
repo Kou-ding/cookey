@@ -28,4 +28,11 @@
     <string name="add_recipe_button">Add Recipe Button</string>
     <string name="recipe_title_example">Recipe Title</string>
     <string name="recipe_text_example">30 mins | Easy</string>
+    <string name="AIRecipeButton">Ai Recipe Button</string>
+    <string name="title_ai_recipe">AI Recipe</string>
+    <string name="all_filter">All filters</string>
+    <string name="favorites_only">Favorites</string>
+    <string name="easy_difficulty">Easy</string>
+    <string name="medium_difficulty">Medium</string>
+    <string name="hard_difficulty">Hard</string>
 </resources>

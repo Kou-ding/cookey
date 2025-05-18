@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "cookeyDB.db";
     public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -27,9 +27,9 @@ public class DBHandler extends SQLiteOpenHelper {
                         "  timeToMake INTEGER,\n" +
                         "  country INTEGER,\n" +
                         "  mealNumber INTEGER,\n" +
-                        "  difficulty ENUM,\n" +
+                        "  difficulty TEXT,\n" +
                         "  photo BLOB,\n" +
-                        "  favorites INTEGER DEFAULT 0,\n" +
+                        "  favourites BOOL,\n" +
                         "  PRIMARY KEY(idRecipe)\n" +
                         ");\n\n" +
 
@@ -95,7 +95,9 @@ public class DBHandler extends SQLiteOpenHelper {
                         ");\n\n" +
 
                         "CREATE INDEX Recipe_has_Steps_FKIndex1 ON Recipe_has_Steps (Recipe_idRecipe);\n" +
-                        "CREATE INDEX Recipe_has_Steps_FKIndex2 ON Recipe_has_Steps (Steps_idSteps);\n\n";
+                        "CREATE INDEX Recipe_has_Steps_FKIndex2 ON Recipe_has_Steps (Steps_idSteps);\n\n"+
+                        "CREATE INDEX Recipe_favourites_index ON Recipe(favourites);"+
+                        "CREATE INDEX Recipe_name_index ON Recipe(name)";
         // Split and run each statement
         for (String statement : DATABASE_CREATE_SCRIPT.split(";")) {
             statement = statement.trim();
@@ -103,8 +105,17 @@ public class DBHandler extends SQLiteOpenHelper {
                 db.execSQL(statement + ";");
             }
         }
+        initializeDefaultTags(db);
     }
 
+    private void initializeDefaultTags(SQLiteDatabase db) {
+        String[] defaultTags = {"Gluten-Free", "Vegan", "Vegetarian", "Low-Carb", "Keto"};
+        for (String tag : defaultTags) {
+            ContentValues values = new ContentValues();
+            values.put("name", tag);
+            db.insert("Tags", null, values);
+        }
+    }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Handle upgrades
@@ -122,12 +133,33 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void dropDatabase(){
+    public DBHandler(Context context) {
+        super(context, "cookeyDB.db", null, 1);
+        initializeDefaultTags();
+    }
+
+    public void dropDatabase() {
         SQLiteDatabase db = this.getWritableDatabase();
-        // Remove all ingredients from the Ingredient table
-        db.execSQL("DELETE FROM Ingredient;");
-        db.execSQL("DELETE FROM ShoppingList;");
-        db.close();
+        try {
+            // Διαγραφή όλων των πινάκων
+            db.execSQL("DROP TABLE IF EXISTS Recipe_has_Tags;");
+            db.execSQL("DROP TABLE IF EXISTS Recipe_has_Ingredient;");
+            db.execSQL("DROP TABLE IF EXISTS Recipe_has_Steps;");
+            db.execSQL("DROP TABLE IF EXISTS Tags;");
+            db.execSQL("DROP TABLE IF EXISTS Steps;");
+            db.execSQL("DROP TABLE IF EXISTS Ingredient;");
+            db.execSQL("DROP TABLE IF EXISTS Recipe;");
+            db.execSQL("DROP TABLE IF EXISTS ShoppingList;");
+
+            // Επαναδημιουργία των πινάκων
+            onCreate(db);  // Καλεί την onCreate() που έχει τον SQL κώδικα δημιουργίας των πινάκων
+            initializeDefaultTags(db);
+            Log.d("DB_DEBUG", "Database recreated successfully!");
+        } catch (Exception e) {
+            Log.e("DB_DEBUG", "Error recreating database", e);
+        } finally {
+            db.close();
+        }
     }
     // Execute a command on the database
     public void executeCommand(String command){
@@ -146,7 +178,8 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         try {
-            String query = "SELECT idRecipe, name, timeToMake, difficulty FROM Recipe";
+            // Προσθήκη του favourites στο query
+            String query = "SELECT idRecipe, name, timeToMake, difficulty, favourites FROM Recipe";;
             cursor = db.rawQuery(query, null);
             if (cursor != null && cursor.moveToFirst()) {
                 do {
@@ -191,40 +224,121 @@ public class DBHandler extends SQLiteOpenHelper {
     // Μέθοδος για λήψη όλων των συνταγών
     public List<MyRecipes> getAllRecipes() {
         List<MyRecipes> recipes = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = null;
         Cursor cursor = null;
 
         try {
-            String query = "SELECT idRecipe, name, timeToMake, difficulty, photo FROM Recipe";
+            db = this.getReadableDatabase();
+            String query = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites FROM Recipe";
             cursor = db.rawQuery(query, null);
+
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     MyRecipes recipe = new MyRecipes();
                     recipe.setRecipeId(cursor.getInt(0));
                     recipe.setTitle(cursor.getString(1));
-                    int time = cursor.getInt(2);
-                    String difficulty = cursor.getString(3);
-                    recipe.setCharacteristic(time + " mins | " + difficulty);
-                    // Ανάγνωση εικόνας από BLOB
-                    byte[] imageBytes = cursor.getBlob(4);
-                    if (imageBytes != null && imageBytes.length > 0) {
-                        // Αποθήκευση του byte array για μελλοντική χρήση
-                        recipe.setImageBytes(imageBytes);
+                    recipe.setCharacteristic(cursor.getInt(2) + " mins | " + cursor.getString(3));
+
+                    if (!cursor.isNull(4)) {
+                        recipe.setImageBytes(cursor.getBlob(4));
                     } else {
-                        recipe.setImageResId(R.drawable.lunch_dining_24px); // Default εικόνα
+                        recipe.setImageResId(R.drawable.lunch_dining_24px);
                     }
+
+                    recipe.setFavorite(cursor.getInt(5) == 1);
                     recipes.add(recipe);
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.e("DBHandler", "Error getting recipes", e);
+            Log.e("DB_ERROR", "Error getting recipes", e);
         } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
+            if (cursor != null) cursor.close();
+            if (db != null) db.close();
         }
         return recipes;
+    }
+
+    // Στην κλάση DBHandler προσθέτουμε:
+
+    public RecipeFull getFullRecipe(int recipeId) {
+        RecipeFull recipeFull = new RecipeFull(getRecipe(recipeId));
+
+        // Get ingredients
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT i.name FROM Ingredient i " +
+                        "JOIN Recipe_has_Ingredient ri ON i.ingredientId = ri.Ingredient_ingredientId " +
+                        "WHERE ri.Recipe_idRecipe = ?",
+                new String[]{String.valueOf(recipeId)});
+
+        while (cursor.moveToNext()) {
+            recipeFull.addIngredient(cursor.getString(0));
+        }
+        cursor.close();
+
+        // Get steps
+        cursor = db.rawQuery(
+                "SELECT s.text FROM Steps s " +
+                        "JOIN Recipe_has_Steps rs ON s.idSteps = rs.Steps_idSteps " +
+                        "WHERE rs.Recipe_idRecipe = ? ORDER BY s.numberOfStep",
+                new String[]{String.valueOf(recipeId)});
+
+        while (cursor.moveToNext()) {
+            recipeFull.addStep(cursor.getString(0));
+        }
+        cursor.close();
+
+        // Get tags
+        cursor = db.rawQuery(
+                "SELECT t.name FROM Tags t " +
+                        "JOIN Recipe_has_Tags rt ON t.idTags = rt.Tags_idTags " +
+                        "WHERE rt.Recipe_idRecipe = ?",
+                new String[]{String.valueOf(recipeId)});
+
+        while (cursor.moveToNext()) {
+            recipeFull.addTag(cursor.getString(0));
+        }
+        cursor.close();
+
+        db.close();
+        return recipeFull;
+    }
+
+    public long addFullRecipe(RecipeFull recipe, Bitmap image) {
+        long recipeId = addRecipe(recipe.toBasicRecipe(), image);
+
+        if (recipeId != -1) {
+            // Add ingredients
+            for (String ingredient : recipe.getIngredients()) {
+                executeCommand(
+                        "INSERT INTO Ingredient (ingredientId, name) VALUES (NULL, '" + ingredient + "'); " +
+                                "INSERT INTO Recipe_has_Ingredient (Recipe_idRecipe, Ingredient_ingredientId) " +
+                                "VALUES (" + recipeId + ", (SELECT MAX(ingredientId) FROM Ingredient));"
+                );
+            }
+
+            // Add steps
+            int stepNumber = 1;
+            for (String step : recipe.getSteps()) {
+                executeCommand(
+                        "INSERT INTO Steps (idSteps, text, numberOfStep) VALUES (NULL, '" + step + "', " + stepNumber + "); " +
+                                "INSERT INTO Recipe_has_Steps (Recipe_idRecipe, Steps_idSteps) " +
+                                "VALUES (" + recipeId + ", (SELECT MAX(idSteps) FROM Steps));"
+                );
+                stepNumber++;
+            }
+
+            // Add tags
+            for (String tag : recipe.getTags()) {
+                executeCommand(
+                        "INSERT OR IGNORE INTO Tags (idTags, name) VALUES (NULL, '" + tag + "'); " +
+                                "INSERT INTO Recipe_has_Tags (Recipe_idRecipe, Tags_idTags) " +
+                                "VALUES (" + recipeId + ", (SELECT idTags FROM Tags WHERE name = '" + tag + "'));"
+                );
+            }
+        }
+
+        return recipeId;
     }
 
     // Μέθοδος για λήψη συγκεκριμένης συνταγής
@@ -233,12 +347,13 @@ public class DBHandler extends SQLiteOpenHelper {
         MyRecipes recipe = null;
         Cursor cursor = null;
         try {
-            String query = "SELECT idRecipe, name, timeToMake, difficulty, photo FROM Recipe WHERE idRecipe = ?";
+            String query = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites FROM Recipe WHERE idRecipe = ?";
             cursor = db.rawQuery(query, new String[]{String.valueOf(recipeId)});
             if (cursor != null && cursor.moveToFirst()) {
                 recipe = new MyRecipes();
                 recipe.setRecipeId(cursor.getInt(0));
                 recipe.setTitle(cursor.getString(1));
+                recipe.setFavorite(cursor.getInt(5)==1);
                 int time = cursor.getInt(2);
                 String difficulty = cursor.getString(3);
                 recipe.setCharacteristic(time + " mins | " + difficulty);
@@ -284,17 +399,11 @@ public class DBHandler extends SQLiteOpenHelper {
         return "Medium";
     }
 
-    public DBHandler(Context context) {
-        super(context, "cookeyDB.db", null, 1);
-    }
     public List<MyRecipes> getRecipesByDifficulty(String difficulty) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<MyRecipes> results = new ArrayList<>();
-        Cursor cursor = db.rawQuery(
-                "SELECT * FROM Recipe WHERE favorites = 1",
-                null
+        Cursor cursor = db.rawQuery("SELECT * FROM Recipe WHERE favourites = 1 AND difficulty = ?", new String[]{difficulty}
         );
-
         if (cursor.moveToFirst()) {
             do {
                 MyRecipes recipe = new MyRecipes();
@@ -319,26 +428,90 @@ public class DBHandler extends SQLiteOpenHelper {
         return results;
     }
 
-    public List<MyRecipes> searchRecipes(String query) {
+    // Επιστρέφει όλα τα διαθέσιμα tags από τη βάση
+    public List<String> getAllTags() {
+        List<String> tags = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        List<MyRecipes> results = new ArrayList<>();
-        Cursor cursor = db.rawQuery(
-                "SELECT * FROM Recipe WHERE name LIKE ?",
-                new String[]{"%" + query + "%"}
-        );
-
+        Cursor cursor = db.rawQuery("SELECT name FROM Tags", null);
         if (cursor.moveToFirst()) {
             do {
-                MyRecipes recipe = new MyRecipes();
-                recipe.setRecipeId(cursor.getInt(0));
-                recipe.setTitle(cursor.getString(1));
-                recipe.setCharacteristic(cursor.getInt(2) + " mins | " + cursor.getString(3));
-                recipe.setFavorite(cursor.getInt(7) == 1);
-                results.add(recipe);
+                tags.add(cursor.getString(0));
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
+        return tags;
+    }
+
+    public void initializeDefaultTags() {
+        String[] defaultTags = {"Gluten-Free", "Vegan", "Vegetarian", "Low-Carb", "Keto"};
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (String tag : defaultTags) {
+            // Ελέγχουμε πρώτα αν υπάρχει ήδη το tag
+            Cursor cursor = db.rawQuery("SELECT name FROM Tags WHERE name = ?", new String[]{tag});
+            if (cursor.getCount() == 0) {
+                ContentValues values = new ContentValues();
+                values.put("name", tag);
+                db.insert("Tags", null, values);
+            }
+            cursor.close();
+        }
+    }
+
+
+    // Αναζήτηση συνταγών βάσει tag
+    public List<MyRecipes> getRecipesByTag(String tagName) {
+        String sql = "SELECT r.idRecipe, r.name, r.timeToMake, r.difficulty, r.photo, r.favourites " +
+                "FROM Recipe r " +
+                "JOIN Recipe_has_Tags rt ON r.idRecipe = rt.Recipe_idRecipe " +
+                "JOIN Tags t ON rt.Tags_idTags = t.idTags " +
+                "WHERE t.name = ?";
+        return executeSearch(sql, new String[]{tagName});
+    }
+
+    public List<MyRecipes> searchRecipes(String query) {
+        String sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+                "FROM Recipe WHERE LOWER(name) LIKE LOWER(?)";
+        return executeSearch(sql, new String[]{"%" + query + "%"});
+    }
+
+    private List<MyRecipes> executeSearch(String sql, String[] params) {
+        List<MyRecipes> results = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, params);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    MyRecipes recipe = new MyRecipes();
+                    recipe.setRecipeId(cursor.getInt(0));
+                    recipe.setTitle(cursor.getString(1));
+
+                    // Χαρακτηριστικό (χρόνος + δυσκολία)
+                    int time = cursor.getInt(2);
+                    String difficulty = cursor.getString(3);
+                    recipe.setCharacteristic(time + " mins | " + difficulty);
+
+                    // Εικόνα
+                    if (!cursor.isNull(4)) {
+                        byte[] imageBytes = cursor.getBlob(4);
+                        recipe.setImageBytes(imageBytes);
+                    }
+
+                    // Favourites status
+                    recipe.setFavorite(cursor.getInt(5) == 1);
+
+                    results.add(recipe);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DB_SEARCH", "Search failed", e);
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
+
         return results;
     }
 
@@ -346,28 +519,27 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         List<MyRecipes> results = new ArrayList<>();
         Cursor cursor = null;
-
         try {
             cursor = db.rawQuery(
-                    "SELECT idRecipe, name, timeToMake, difficulty, photo FROM Recipe WHERE favorites = 1",
+                    "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites FROM Recipe WHERE favourites = 1",
                     null
             );
-
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     MyRecipes recipe = new MyRecipes();
                     recipe.setRecipeId(cursor.getInt(0));
                     recipe.setTitle(cursor.getString(1));
                     recipe.setCharacteristic(cursor.getInt(2) + " mins | " + cursor.getString(3));
-                    // Ανάκτηση εικόνας
-                    byte[] imageBytes = cursor.getBlob(4);
-                    recipe.setImageBytes(imageBytes);
-
+                    if (!cursor.isNull(4)) {
+                        byte[] imageBytes = cursor.getBlob(4);
+                        recipe.setImageBytes(imageBytes);
+                    }
+                    recipe.setFavorite(cursor.getInt(5) == 1);
                     results.add(recipe);
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.e("DB_ERROR", "Failed to get favorites", e);
+            Log.e("DB_ERROR", "Failed to get favourites", e);
             return new ArrayList<>(); // Fallback σε άδεια λίστα
         } finally {
             if (cursor != null) cursor.close();
@@ -377,41 +549,29 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     public List<MyRecipes> searchRecipesWithFilter(String query, String filter) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        List<MyRecipes> results = new ArrayList<>();
-        String sqlQuery;
-        String[] selectionArgs;
+        String sql;
+        String[] params;
+
         switch (filter) {
             case "Favorites only":
-                sqlQuery = "SELECT * FROM Recipe WHERE name LIKE ? AND favorites = 1";
-                selectionArgs = new String[]{"%" + query + "%"};
+                sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+                        "FROM Recipe WHERE LOWER(name) LIKE LOWER(?) AND favourites = 1";
+                params = new String[]{"%" + query + "%"};
                 break;
             case "Easy":
             case "Medium":
             case "Hard":
-                sqlQuery = "SELECT * FROM Recipe WHERE name LIKE ? AND difficulty = ?";
-                selectionArgs = new String[]{"%" + query + "%", filter};
+                sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+                        "FROM Recipe WHERE LOWER(name) LIKE LOWER(?) AND difficulty = ?";
+                params = new String[]{"%" + query + "%", filter};
                 break;
             default:
-                sqlQuery = "SELECT * FROM Recipe WHERE name LIKE ?";
-                selectionArgs = new String[]{"%" + query + "%"};
+                sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+                        "FROM Recipe WHERE LOWER(name) LIKE LOWER(?)";
+                params = new String[]{"%" + query + "%"};
         }
-        Cursor cursor = db.rawQuery(sqlQuery, selectionArgs);
-        if (cursor.moveToFirst()) {
-            do {
-                MyRecipes recipe = new MyRecipes();
-                recipe.setRecipeId(cursor.getInt(0));
-                recipe.setTitle(cursor.getString(1));
-                recipe.setCharacteristic(cursor.getInt(2) + " mins | " + cursor.getString(3));
-                // Ανάκτηση εικόνας
-                byte[] imageBytes = cursor.getBlob(4);
-                recipe.setImageBytes(imageBytes);
-                results.add(recipe);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return results;
+
+        return executeSearch(sql, params);
     }
 
 
@@ -421,17 +581,25 @@ public class DBHandler extends SQLiteOpenHelper {
         try {
             db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("favorites", isFavorite ? 1 : 0);
-            // Debug log
-            Log.d("DB_UPDATE", "Updating recipe " + recipeId + " favorites to " + isFavorite);
-            int rowsAffected = db.update("Recipe", values, "idRecipe = ?",
-                    new String[]{String.valueOf(recipeId)});
+            values.put("favourites", isFavorite ? 1 : 0);
+            Log.d("DB_UPDATE", "Updating recipe " + recipeId + " favourites to " + isFavorite);
+            int rowsAffected = db.update(
+                    "Recipe",
+                    values,
+                    "idRecipe = ?",
+                    new String[]{String.valueOf(recipeId)}
+            );
             Log.d("DB_UPDATE", "Rows affected: " + rowsAffected);
+            if (rowsAffected == 0) {
+                Log.w("DB_UPDATE", "No rows affected - recipe ID might not exist");
+            }
         } catch (Exception e) {
-            Log.e("DB_UPDATE", "Error updating favorite", e);
-            throw e; // Προσθήκη αυτής της γραμμής για να δεις το stack trace
+            Log.e("DB_UPDATE", "Error updating favourite status", e);
+            throw new RuntimeException("Failed to update favourite status", e);
         } finally {
-            if (db != null) db.close();
+            if (db != null) {
+                db.close();
+            }
         }
     }
 }

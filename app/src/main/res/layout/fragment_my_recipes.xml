@@ -10,6 +10,7 @@
         android:id="@+id/recipesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         android:contentDescription="@string/search_results_desc"
         tools:listitem="@layout/item_recipe" />
 
@@ -22,6 +23,7 @@
         android:orientation="horizontal"
         android:gravity="center">
 
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabSearchRecipe"
             android:layout_width="wrap_content"
@@ -29,16 +31,29 @@
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/search_recipe_button"
             android:src="@drawable/search_24px"
+            app:elevation="0dp"
             app:tint="@android:color/white" />
 
-        <!-- Add Recipe FAB -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddRecipe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:contentDescription="@string/add_recipe_button"
             android:src="@drawable/add_24px"
+            app:elevation="0dp"
             app:tint="@android:color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAIRecipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/AIRecipeButton"
+            android:src="@drawable/wand_shine_24px"
+            app:elevation="0dp"
+            app:tint="@android:color/white" />
+
     </LinearLayout>
 
 </RelativeLayout>

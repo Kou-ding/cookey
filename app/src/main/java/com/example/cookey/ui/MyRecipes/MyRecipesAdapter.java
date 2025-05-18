@@ -33,6 +33,8 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.Reci
                 .inflate(R.layout.item_recipe, parent, false);
         return new RecipeViewHolder(view);
     }
+
+    /*
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         MyRecipes recipe = recipes.get(position);
@@ -65,6 +67,57 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.Reci
             }
         });
     }
+    */
+
+    @Override
+    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
+        MyRecipes recipe = recipes.get(position);
+        if (recipe == null) return;
+
+        holder.recipeTitle.setText(recipe.getTitle());
+        holder.recipeCharacteristic.setText(recipe.getCharacteristic());
+
+        // Φόρτωση εικόνας
+        if (recipe.getImageBytes() != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(
+                    recipe.getImageBytes(),
+                    0,
+                    recipe.getImageBytes().length
+            );
+            holder.recipeImage.setImageBitmap(bitmap);
+        } else {
+            holder.recipeImage.setImageResource(recipe.getImageResId());
+        }
+
+        // Χειρισμός favorites
+        int iconRes = recipe.isFavorite() ?
+                R.drawable.favorite_24px : R.drawable.heart_check_24px;
+        holder.favoriteButton.setImageResource(iconRes);
+
+        holder.favoriteButton.setOnClickListener(v -> {
+            try {
+                boolean newState = !recipe.isFavorite();
+                recipe.setFavorite(newState);
+                holder.favoriteButton.setImageResource(
+                        newState ? R.drawable.favorite_24px : R.drawable.heart_check_24px
+                );
+                if (listener != null) {
+                    listener.onFavoriteClick(recipe, newState);
+                }
+            } catch (Exception e) {
+                Log.e("ADAPTER", "Favorite click error", e);
+            }
+        });
+
+        // Χειρισμός κλικ στη συνταγή
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRecipeClick(recipe);
+            }
+        });
+    }
+
+
     private void updateFavoriteIcon(ImageButton button, boolean isFavorite) {
         button.setImageResource(
                 isFavorite ? R.drawable.favorite_24px : R.drawable.heart_check_24px

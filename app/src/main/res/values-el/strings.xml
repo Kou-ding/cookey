@@ -25,8 +25,15 @@
     <string name="recipe_image_desc">Εικόνα Συνταγής</string>
     <string name="recipe_title_desc">Τίτλος Συνταγής</string>
     <string name="search_results_desc">Λίστα αποτελεσμάτων αναζήτησης</string>
-    <string name="search_recipe_button">Search Button</string>
-    <string name="add_recipe_button">Add Recipe Button</string>
-    <string name="recipe_title_example">Recipe Title</string>
-    <string name="recipe_text_example">30 mins | Easy</string>
+    <string name="search_recipe_button">Κουμπί για αναζήτηση</string>
+    <string name="add_recipe_button">Κουμπί για προσθήκη αναζήτησης</string>
+    <string name="recipe_title_example">Τίτλος συνταγής</string>
+    <string name="recipe_text_example">30 λεπτά | Εύκολη</string>
+    <string name="AIRecipeButton">Κουμπί για συνταγές AI</string>
+    <string name="title_ai_recipe">AI συνταγές</string>
+    <string name="all_filter">Όλα τα φίλτρα</string>
+    <string name="favorites_only">Αγαπημένα</string>
+    <string name="easy_difficulty">Εύκολο</string>
+    <string name="medium_difficulty">Μέτριο</string>
+    <string name="hard_difficulty">Δύσκολο</string>
 </resources>

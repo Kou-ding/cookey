@@ -1,5 +1,6 @@
 package com.example.cookey;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +19,7 @@ import com.example.cookey.ui.MyRecipes.MyRecipesAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SearchRecipeActivity extends AppCompatActivity {
     private EditText searchInput;
@@ -33,41 +35,55 @@ public class SearchRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_recipe);
 
+        // Initialize database handler first
+        dbHandler = new DBHandler(this);
+
         // Initialize views
         searchInput = findViewById(R.id.searchInput);
-        searchButton = findViewById(R.id.searchButton);
+        //searchButton = findViewById(R.id.searchButton);
         filterSpinner = findViewById(R.id.filterSpinner);
         applyFiltersButton = findViewById(R.id.applyFiltersButton);
         resultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
 
         // Setup RecyclerView
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MyRecipesAdapter(new ArrayList<>(),null); // Use your existing adapter
+        adapter = new MyRecipesAdapter(new ArrayList<>(), new MyRecipesAdapter.OnRecipeClickListener() {
+            @Override
+            public void onRecipeClick(MyRecipes recipe) {
+                if (recipe != null) {
+                    openRecipeDetails(recipe);
+                }
+            }
+
+            @Override
+            public void onFavoriteClick(MyRecipes recipe, boolean isFavorite) {
+                try {
+                    if (recipe != null && dbHandler != null) {
+                        dbHandler.updateRecipeFavoriteStatus(recipe.getRecipeId(), isFavorite);
+                    }
+                } catch (Exception e) {
+                    Log.e("SEARCH_ACTIVITY", "Error updating favorite", e);
+                    Toast.makeText(SearchRecipeActivity.this,
+                            "Error updating favorite", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         resultsRecyclerView.setAdapter(adapter);
 
-        // Initialize database handler
-        dbHandler = new DBHandler(this);
-
         // Setup filter spinner
-        ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.filter_options,
-                android.R.layout.simple_spinner_item
-        );
-        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        filterSpinner.setAdapter(filterAdapter);
+        setupCombinedSpinner();
 
         // Set click listeners
-        searchButton.setOnClickListener(v -> performSearch());
+        //searchButton.setOnClickListener(v -> performSearch());
         applyFiltersButton.setOnClickListener(v -> applyFilters());
 
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
             @Override
             public void afterTextChanged(Editable s) {
                 performSearch();
@@ -75,47 +91,122 @@ public class SearchRecipeActivity extends AppCompatActivity {
         });
     }
 
-    private void performSearch() {
-        String query = searchInput.getText().toString().trim();
-        String selectedFilter = filterSpinner.getSelectedItem().toString();
-        List<MyRecipes> results;
-        if (selectedFilter.equals("All")) {
-            results = dbHandler.searchRecipes(query); // Απλή αναζήτηση
-        } else {
-            // Συνδυασμός αναζήτησης και φίλτρου
-            results = dbHandler.searchRecipesWithFilter(query, selectedFilter);
+    private void openRecipeDetails(MyRecipes recipe) {
+        if (recipe == null) return;
+
+        try {
+            Intent intent = new Intent(this, RecipeDetailsActivity.class);
+            intent.putExtra("recipe_id", recipe.getRecipeId());
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.e("SEARCH_ACTIVITY", "Error opening recipe details", e);
+            Toast.makeText(this, "Error opening recipe", Toast.LENGTH_SHORT).show();
         }
-        adapter.updateData(results);
+    }
+
+    private void setupCombinedSpinner() {
+        if (filterSpinner == null || dbHandler == null) return;
+
+        List<String> filters = new ArrayList<>();
+        // Προσθήκη βασικών κατηγοριών
+        filters.add(getString(R.string.all_filter));
+
+        // Προσθήκη επιλογών για αγαπημένα και δυσκολία
+        filters.add(getString(R.string.favorites_only));
+        filters.add(getString(R.string.easy_difficulty));
+        filters.add(getString(R.string.medium_difficulty));
+        filters.add(getString(R.string.hard_difficulty));
+
+        // Προσθήκη separator για tags
+        filters.add("--- Tags ---");
+
+        // Προσθήκη tags από τη βάση
+        List<String> tags = dbHandler.getAllTags();
+        if (tags != null && !tags.isEmpty()) {
+            filters.addAll(tags);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                filters
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterSpinner.setAdapter(adapter);
+    }
+
+    private void performSearch() {
+        if (searchInput == null || filterSpinner == null || dbHandler == null || adapter == null) return;
+
+        String query = searchInput.getText().toString().trim();
+        String selectedOption = filterSpinner.getSelectedItem().toString();
+        List<MyRecipes> results = new ArrayList<>();
+
+        try {
+            if (selectedOption.equals(getString(R.string.all_filter))) {
+                results = dbHandler.searchRecipes(query);
+            }
+            // Ελέγχουμε αν είναι tag
+            else if (dbHandler.getAllTags().contains(selectedOption)) {
+                results = dbHandler.getRecipesByTag(selectedOption);
+                // Εφαρμογή επιπλέον φίλτρου αναζήτησης αν υπάρχει query
+                if (!query.isEmpty() && results != null) {
+                    results = results.stream()
+                            .filter(recipe -> recipe != null && recipe.getTitle() != null &&
+                                    recipe.getTitle().toLowerCase().contains(query.toLowerCase()))
+                            .collect(Collectors.toList());
+                }
+            } else {
+                // Αλλιώς είναι difficulty/favorites
+                results = dbHandler.searchRecipesWithFilter(query, selectedOption);
+            }
+
+            if (results != null) {
+                adapter.updateData(results);
+            } else {
+                adapter.updateData(new ArrayList<>());
+                Toast.makeText(this, "No results found", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            Log.e("SEARCH_ERROR", "Search failed", e);
+            Toast.makeText(this, "Search failed", Toast.LENGTH_SHORT).show();
+            adapter.updateData(new ArrayList<>());
+        }
     }
 
     private void applyFilters() {
         String selectedFilter = filterSpinner.getSelectedItem().toString();
+        String query = searchInput.getText().toString().trim();
         List<MyRecipes> filteredResults = new ArrayList<>();
+
         try {
-            switch (selectedFilter) {
-                case "Favorites only":
-                    filteredResults = dbHandler.getFavoriteRecipes();
-                    Log.d("FILTER_DEBUG", "Favorites count: " + filteredResults.size());
-                    break;
-                case "Easy":
-                    filteredResults = dbHandler.getRecipesByDifficulty("Easy");
-                    break;
-                case "Medium":
-                    filteredResults = dbHandler.getRecipesByDifficulty("Medium");
-                    break;
-                case "Hard":
-                    filteredResults = dbHandler.getRecipesByDifficulty("Hard");
-                    break;
-                default:
-                    filteredResults = dbHandler.getAllRecipes();
+            if (selectedFilter.equals(getString(R.string.favorites_only))) {
+                filteredResults = dbHandler.getFavoriteRecipes();
+            } else if (selectedFilter.equals(getString(R.string.easy_difficulty))) {
+                filteredResults = dbHandler.getRecipesByDifficulty("Easy");
+            } else if (selectedFilter.equals(getString(R.string.medium_difficulty))) {
+                filteredResults = dbHandler.getRecipesByDifficulty("Medium");
+            } else if (selectedFilter.equals(getString(R.string.hard_difficulty))) {
+                filteredResults = dbHandler.getRecipesByDifficulty("Hard");
+            } else if (dbHandler.getAllTags().contains(selectedFilter)) {
+                filteredResults = dbHandler.getRecipesByTag(selectedFilter);
+            } else {
+                filteredResults = dbHandler.getAllRecipes();
             }
-            if (filteredResults.isEmpty()) {
-                Toast.makeText(this, "No recipes found", Toast.LENGTH_SHORT).show();
+
+            // Εφαρμογή αναζήτησης αν υπάρχει query
+            if (!query.isEmpty()) {
+                filteredResults = filteredResults.stream()
+                        .filter(recipe -> recipe != null && recipe.getTitle() != null &&
+                                recipe.getTitle().toLowerCase().contains(query.toLowerCase()))
+                        .collect(Collectors.toList());
             }
+
             adapter.updateData(filteredResults);
         } catch (Exception e) {
-            Log.e("FILTER_ERROR", "Filter crash: " + e.getMessage());
-            Toast.makeText(this, "Filter error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e("FILTER_ERROR", "Error applying filters", e);
+            Toast.makeText(this, "Error applying filters", Toast.LENGTH_SHORT).show();
         }
     }
 
