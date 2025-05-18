@@ -34,49 +34,12 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.Reci
         return new RecipeViewHolder(view);
     }
 
-    /*
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         MyRecipes recipe = recipes.get(position);
         if (recipe == null) return;
         holder.recipeTitle.setText(recipe.getTitle());
         holder.recipeCharacteristic.setText(recipe.getCharacteristic());
-        // Χρήση conditional operator για τα drawables
-        int iconRes = recipe.isFavorite() ?
-                R.drawable.favorite_24px :
-                R.drawable.heart_check_24px;
-
-        holder.favoriteButton.setImageResource(iconRes);
-        holder.favoriteButton.setOnClickListener(v -> {
-            try{
-                boolean newState = !recipe.isFavorite();
-                recipe.setFavorite(newState);
-                holder.favoriteButton.setImageResource(
-                        newState ? R.drawable.favorite_24px : R.drawable.heart_check_24px
-                );
-                if (listener != null){
-                    listener.onFavoriteClick(recipe, newState);
-                }
-            } catch (Exception e){
-                Log.e("ADAPTER", "Favorite click error", e);
-            }
-        });
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onRecipeClick(recipe); // Θα καλέσει τη μέθοδο στο Fragment
-            }
-        });
-    }
-    */
-
-    @Override
-    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        MyRecipes recipe = recipes.get(position);
-        if (recipe == null) return;
-
-        holder.recipeTitle.setText(recipe.getTitle());
-        holder.recipeCharacteristic.setText(recipe.getCharacteristic());
-
         // Φόρτωση εικόνας
         if (recipe.getImageBytes() != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(

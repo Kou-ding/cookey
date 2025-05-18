@@ -69,12 +69,9 @@ public class SearchRecipeActivity extends AppCompatActivity {
             }
         });
         resultsRecyclerView.setAdapter(adapter);
-
         // Setup filter spinner
         setupCombinedSpinner();
-
         // Set click listeners
-        //searchButton.setOnClickListener(v -> performSearch());
         applyFiltersButton.setOnClickListener(v -> applyFilters());
 
         searchInput.addTextChangedListener(new TextWatcher() {

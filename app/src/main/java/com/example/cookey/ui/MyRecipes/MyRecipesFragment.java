@@ -69,7 +69,6 @@ public class MyRecipesFragment extends Fragment {
         fabSearchRecipe.setOnClickListener(v -> openSearchRecipeActivity());
         return root;
     }
-
     private void openAIRecipeActivity(){
         try{
             startActivity(new Intent(getActivity(), AIRecipeActivity.class));

@@ -105,7 +105,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 db.execSQL(statement + ";");
             }
         }
-        initializeDefaultTags(db);
     }
 
     private void initializeDefaultTags(SQLiteDatabase db) {
@@ -151,8 +150,7 @@ public class DBHandler extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS Recipe;");
             db.execSQL("DROP TABLE IF EXISTS ShoppingList;");
 
-            // Επαναδημιουργία των πινάκων
-            onCreate(db);  // Καλεί την onCreate() που έχει τον SQL κώδικα δημιουργίας των πινάκων
+            onCreate(db);
             initializeDefaultTags(db);
             Log.d("DB_DEBUG", "Database recreated successfully!");
         } catch (Exception e) {
@@ -257,9 +255,6 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return recipes;
     }
-
-    // Στην κλάση DBHandler προσθέτουμε:
-
     public RecipeFull getFullRecipe(int recipeId) {
         RecipeFull recipeFull = new RecipeFull(getRecipe(recipeId));
 

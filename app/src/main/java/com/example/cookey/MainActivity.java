@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
             addSampleRecipes();
         }
     }
-    // Στο MainActivity.java, στη μέθοδο addSampleRecipes()
 
     private void addSampleRecipes() {
         try {
