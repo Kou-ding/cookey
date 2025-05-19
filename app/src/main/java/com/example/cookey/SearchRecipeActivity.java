@@ -1,5 +1,4 @@
 package com.example.cookey;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -34,27 +33,24 @@ public class SearchRecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_recipe);
-
         // Initialize database handler first
         dbHandler = new DBHandler(this);
-
         // Initialize views
         searchInput = findViewById(R.id.searchInput);
         //searchButton = findViewById(R.id.searchButton);
         filterSpinner = findViewById(R.id.filterSpinner);
         applyFiltersButton = findViewById(R.id.applyFiltersButton);
         resultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
-
         // Setup RecyclerView
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MyRecipesAdapter(new ArrayList<>(), new MyRecipesAdapter.OnRecipeClickListener() {
+        List<MyRecipes> initialRecipes=dbHandler.getAllRecipes();
+        adapter = new MyRecipesAdapter(initialRecipes, new MyRecipesAdapter.OnRecipeClickListener() {
             @Override
             public void onRecipeClick(MyRecipes recipe) {
                 if (recipe != null) {
                     openRecipeDetails(recipe);
                 }
             }
-
             @Override
             public void onFavoriteClick(MyRecipes recipe, boolean isFavorite) {
                 try {
@@ -73,7 +69,6 @@ public class SearchRecipeActivity extends AppCompatActivity {
         setupCombinedSpinner();
         // Set click listeners
         applyFiltersButton.setOnClickListener(v -> applyFilters());
-
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -103,26 +98,21 @@ public class SearchRecipeActivity extends AppCompatActivity {
 
     private void setupCombinedSpinner() {
         if (filterSpinner == null || dbHandler == null) return;
-
         List<String> filters = new ArrayList<>();
         // Προσθήκη βασικών κατηγοριών
         filters.add(getString(R.string.all_filter));
-
         // Προσθήκη επιλογών για αγαπημένα και δυσκολία
         filters.add(getString(R.string.favorites_only));
         filters.add(getString(R.string.easy_difficulty));
         filters.add(getString(R.string.medium_difficulty));
         filters.add(getString(R.string.hard_difficulty));
-
         // Προσθήκη separator για tags
         filters.add("--- Tags ---");
-
         // Προσθήκη tags από τη βάση
         List<String> tags = dbHandler.getAllTags();
         if (tags != null && !tags.isEmpty()) {
             filters.addAll(tags);
         }
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -134,11 +124,9 @@ public class SearchRecipeActivity extends AppCompatActivity {
 
     private void performSearch() {
         if (searchInput == null || filterSpinner == null || dbHandler == null || adapter == null) return;
-
         String query = searchInput.getText().toString().trim();
         String selectedOption = filterSpinner.getSelectedItem().toString();
         List<MyRecipes> results = new ArrayList<>();
-
         try {
             if (selectedOption.equals(getString(R.string.all_filter))) {
                 results = dbHandler.searchRecipes(query);
@@ -158,7 +146,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
                 results = dbHandler.searchRecipesWithFilter(query, selectedOption);
             }
 
-            if (results != null) {
+            if (results != null && !results.isEmpty()) {
                 adapter.updateData(results);
             } else {
                 adapter.updateData(new ArrayList<>());
@@ -176,7 +164,6 @@ public class SearchRecipeActivity extends AppCompatActivity {
         String selectedFilter = filterSpinner.getSelectedItem().toString();
         String query = searchInput.getText().toString().trim();
         List<MyRecipes> filteredResults = new ArrayList<>();
-
         try {
             if (selectedFilter.equals(getString(R.string.favorites_only))) {
                 filteredResults = dbHandler.getFavoriteRecipes();
@@ -191,7 +178,6 @@ public class SearchRecipeActivity extends AppCompatActivity {
             } else {
                 filteredResults = dbHandler.getAllRecipes();
             }
-
             // Εφαρμογή αναζήτησης αν υπάρχει query
             if (!query.isEmpty()) {
                 filteredResults = filteredResults.stream()
@@ -199,7 +185,6 @@ public class SearchRecipeActivity extends AppCompatActivity {
                                 recipe.getTitle().toLowerCase().contains(query.toLowerCase()))
                         .collect(Collectors.toList());
             }
-
             adapter.updateData(filteredResults);
         } catch (Exception e) {
             Log.e("FILTER_ERROR", "Error applying filters", e);

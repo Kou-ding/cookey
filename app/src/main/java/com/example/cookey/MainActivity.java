@@ -69,6 +69,20 @@ public class MainActivity extends AppCompatActivity {
             long id2 = dbHandler.addFullRecipe(salad, defaultBitmap);
             dbHandler.updateRecipeFavoriteStatus((int)id2, false);
 
+            // 3. Salad
+            RecipeFull salad2 = new RecipeFull();
+            salad2.setTitle("Salad");
+            salad2.setCharacteristic("15 mins | Easy");
+            salad2.addIngredient("Tomatoes");
+            salad2.addIngredient("Cucumber");
+            salad2.addIngredient("Feta Cheese");
+            salad2.addStep("Chop vegetables");
+            salad2.addStep("Combine ingredients");
+            salad2.addTag("Greek");
+            salad2.addTag("Vegetarian");
+            long id3 = dbHandler.addFullRecipe(salad2, defaultBitmap);
+            dbHandler.updateRecipeFavoriteStatus((int)id3, true);
+
             Log.d("SAMPLE_DATA", "Added Carbonara with ID: " + id1);
             Log.d("SAMPLE_DATA", "Added Salad with ID: " + id2);
 
