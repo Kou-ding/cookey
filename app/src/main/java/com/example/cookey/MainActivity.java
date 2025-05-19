@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     }
     private void checkAndInsertSampleData() {
         // Έλεγχος αν υπάρχουν ήδη συνταγές
-        dbHandler.dropDatabase();
         if (dbHandler.getAllRecipes().isEmpty()) {
             addSampleRecipes();
         }
@@ -54,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             carbonara.addTag("Pasta");
             long id1 = dbHandler.addFullRecipe(carbonara, defaultBitmap);
             dbHandler.updateRecipeFavoriteStatus((int)id1, true);
+
 
             // 2. Greek Salad
             RecipeFull salad = new RecipeFull();
@@ -88,7 +88,11 @@ public class MainActivity extends AppCompatActivity {
 
             // Επιβεβαίωση ότι οι συνταγές προστέθηκαν
             List<MyRecipes> allRecipes = dbHandler.getAllRecipes();
-            Log.d("SAMPLE_DATA", "Total recipes in DB: " + allRecipes.size());
+            Log.d("DB_DEBUG", "Total recipes after insertion: " + allRecipes.size());
+            for (MyRecipes r : allRecipes) {
+                Log.d("DB_DEBUG", "Recipe: " + r.getTitle() + " ID: " + r.getRecipeId());
+            }
+
         } catch (Exception e) {
             Log.e("MainActivity", "Error adding sample recipes", e);
         }

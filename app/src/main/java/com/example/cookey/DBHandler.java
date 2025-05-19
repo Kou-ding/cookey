@@ -13,10 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 25;
     private static final String DATABASE_NAME = "cookeyDB.db";
-    public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    private Context context;
+    public DBHandler(Context context) {
+        super(context, "cookeyDB.db", null, DATABASE_VERSION);
+        initializeDefaultTags();
+        Log.d("DB_VERSION", "Using DB version: " + DATABASE_VERSION);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -25,10 +28,10 @@ public class DBHandler extends SQLiteOpenHelper {
                         "  idRecipe INTEGER NOT NULL,\n" +
                         "  name VARCHAR,\n" +
                         "  timeToMake INTEGER,\n" +
-                        "  country INTEGER,\n" +
+                        "  country VARCHAR,\n" +
                         "  mealNumber INTEGER,\n" +
-                        "  difficulty TEXT,\n" +
-                        "  photo BLOB,\n" +
+                        "  difficulty ENUM,\n" +
+                        "  photoPath TEXT,\n" +
                         "  favourites BOOL,\n" +
                         "  PRIMARY KEY(idRecipe)\n" +
                         ");\n\n" +
@@ -94,6 +97,16 @@ public class DBHandler extends SQLiteOpenHelper {
                         "      ON UPDATE NO ACTION\n" +
                         ");\n\n" +
 
+                        "CREATE TABLE Ingredient (\n" +
+                        "  ingredientId INTEGER NOT NULL,\n" +
+                        "  ingredientName VARCHAR,\n" +
+                        "  quantity FLOAT,\n" +
+                        "  unitSystem VARCHAR,\n" +
+                        "  daysToSpoil INTEGER,\n" +
+                        "  checkIfSpoiledArray VARCHAR,\n" +
+                        "  PRIMARY KEY(ingredientId)\n" +
+                        ");"+
+
                         "CREATE INDEX Recipe_has_Steps_FKIndex1 ON Recipe_has_Steps (Recipe_idRecipe);\n" +
                         "CREATE INDEX Recipe_has_Steps_FKIndex2 ON Recipe_has_Steps (Steps_idSteps);\n\n"+
                         "CREATE INDEX Recipe_favourites_index ON Recipe(favourites);"+
@@ -106,6 +119,7 @@ public class DBHandler extends SQLiteOpenHelper {
             }
         }
     }
+
 
     private void initializeDefaultTags(SQLiteDatabase db) {
         String[] defaultTags = {"Gluten-Free", "Vegan", "Vegetarian", "Low-Carb", "Keto"};
@@ -132,10 +146,13 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /*
     public DBHandler(Context context) {
-        super(context, "cookeyDB.db", null, 1);
+        super(context, "cookeyDB.db", null, DATABASE_VERSION);
         initializeDefaultTags();
     }
+
+     */
 
     public void dropDatabase() {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -177,7 +194,7 @@ public class DBHandler extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             // Προσθήκη του favourites στο query
-            String query = "SELECT idRecipe, name, timeToMake, difficulty, favourites FROM Recipe";;
+            String query = "SELECT idRecipe, name, timeToMake, difficulty, favourites FROM Recipe";
             cursor = db.rawQuery(query, null);
             if (cursor != null && cursor.moveToFirst()) {
                 do {
@@ -221,13 +238,14 @@ public class DBHandler extends SQLiteOpenHelper {
 
     // Μέθοδος για λήψη όλων των συνταγών
     public List<MyRecipes> getAllRecipes() {
+        Log.d("DB_DEBUG", "Getting all recipes...");
         List<MyRecipes> recipes = new ArrayList<>();
         SQLiteDatabase db = null;
         Cursor cursor = null;
 
         try {
             db = this.getReadableDatabase();
-            String query = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites FROM Recipe";
+            String query = "SELECT idRecipe, name, timeToMake, difficulty, photoPath, favourites FROM Recipe";
             cursor = db.rawQuery(query, null);
 
             if (cursor != null && cursor.moveToFirst()) {
@@ -253,6 +271,7 @@ public class DBHandler extends SQLiteOpenHelper {
             if (cursor != null) cursor.close();
             if (db != null) db.close();
         }
+        Log.d("DB_DEBUG", "Found " + recipes.size() + " recipes");
         return recipes;
     }
     public RecipeFull getFullRecipe(int recipeId) {
@@ -306,7 +325,7 @@ public class DBHandler extends SQLiteOpenHelper {
             // Add ingredients
             for (String ingredient : recipe.getIngredients()) {
                 executeCommand(
-                        "INSERT INTO Ingredient (ingredientId, name) VALUES (NULL, '" + ingredient + "'); " +
+                        "INSERT INTO Ingredient (ingredientId, ingredientName) VALUES (NULL, '" + ingredient + "'); " +
                                 "INSERT INTO Recipe_has_Ingredient (Recipe_idRecipe, Ingredient_ingredientId) " +
                                 "VALUES (" + recipeId + ", (SELECT MAX(ingredientId) FROM Ingredient));"
                 );
@@ -342,7 +361,7 @@ public class DBHandler extends SQLiteOpenHelper {
         MyRecipes recipe = null;
         Cursor cursor = null;
         try {
-            String query = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites FROM Recipe WHERE idRecipe = ?";
+            String query = "SELECT idRecipe, name, timeToMake, difficulty, photoPath, favourites FROM Recipe WHERE idRecipe = ?";
             cursor = db.rawQuery(query, new String[]{String.valueOf(recipeId)});
             if (cursor != null && cursor.moveToFirst()) {
                 recipe = new MyRecipes();
@@ -464,7 +483,7 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     public List<MyRecipes> searchRecipes(String query) {
-        String sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+        String sql = "SELECT idRecipe, name, timeToMake, difficulty, photoPath, favourites " +
                 "FROM Recipe WHERE LOWER(name) LIKE LOWER(?)";
         return executeSearch(sql, new String[]{"%" + query + "%"});
     }
@@ -516,7 +535,7 @@ public class DBHandler extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             cursor = db.rawQuery(
-                    "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites FROM Recipe WHERE favourites = 1",
+                    "SELECT idRecipe, name, timeToMake, difficulty, photoPath, favourites FROM Recipe WHERE favourites = 1",
                     null
             );
             if (cursor != null && cursor.moveToFirst()) {
@@ -549,19 +568,19 @@ public class DBHandler extends SQLiteOpenHelper {
 
         switch (filter) {
             case "Favorites only":
-                sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+                sql = "SELECT idRecipe, name, timeToMake, difficulty, photoPath, favourites " +
                         "FROM Recipe WHERE LOWER(name) LIKE LOWER(?) AND favourites = 1";
                 params = new String[]{"%" + query + "%"};
                 break;
             case "Easy":
             case "Medium":
             case "Hard":
-                sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+                sql = "SELECT idRecipe, name, timeToMake, difficulty, photoPath, favourites " +
                         "FROM Recipe WHERE LOWER(name) LIKE LOWER(?) AND difficulty = ?";
                 params = new String[]{"%" + query + "%", filter};
                 break;
             default:
-                sql = "SELECT idRecipe, name, timeToMake, difficulty, photo, favourites " +
+                sql = "SELECT idRecipe, name, timeToMake, difficulty, photoPath, favourites " +
                         "FROM Recipe WHERE LOWER(name) LIKE LOWER(?)";
                 params = new String[]{"%" + query + "%"};
         }

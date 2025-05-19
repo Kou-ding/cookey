@@ -146,7 +146,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
                 results = dbHandler.searchRecipesWithFilter(query, selectedOption);
             }
 
-            if (results != null && !results.isEmpty()) {
+            if (results != null) {
                 adapter.updateData(results);
             } else {
                 adapter.updateData(new ArrayList<>());
