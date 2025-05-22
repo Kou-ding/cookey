@@ -25,7 +25,7 @@
             android:layout_gravity="center"
             app:shapeAppearanceOverlay="@style/CircularImage"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_placeholder" />
+            android:src="@drawable/cookie_40px" />
 
     <!--
     <ImageButton
@@ -71,7 +71,20 @@
             android:scaleType="centerInside"/>
     </LinearLayout>
 
-</FrameLayout>
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|top"
+            android:layout_margin="16dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/chocolate"
+            android:contentDescription="@string/deleteBtnDescription"
+            android:src="@drawable/delete_24px"
+            app:tint="@color/white"/>
+
+
+    </FrameLayout>
 
 <!-- Scrollable Content -->
     <ScrollView

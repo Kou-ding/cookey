@@ -92,4 +92,9 @@
     <string name="please_add_at_least_one_ingredient">적어도 하나의 재료를 추가해주세요</string>
     <string name="please_add_at_least_one_step">적어도 하나의 단계를 추가해주세요</string>
     <string name="consume_question_mark">소비하시겠습니까?</string>
+
+    <string name="deleteBtnDescription">레시피_삭제_버튼_설명</string>
+    <string name="delete_recipe_title">레시피 삭제</string>
+    <string name="delete_recipe_message">이 레시피를 삭제하시겠습니까?</string>
+    <string name="recipe_deleted">레시피가 삭제되었습니다!</string>
 </resources>

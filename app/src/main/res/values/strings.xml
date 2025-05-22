@@ -43,7 +43,7 @@
     <string name="backbtndescription">backBtnDescription</string>
     <string name="consumeBtnDescription">consumeBtnDescription</string>
     <string name="favBtnDescription">favBtnDescription</string>
-    <string name="recipe_name_detail">Kimchi</string>
+    <string name="recipe_name_detail">-</string>
     <string name="tags_name_detail">Tags</string>
     <string name="countryFlagIconDescription">countryFlagIconDescription</string>
     <string name="country_name_detail">Country</string>
@@ -52,7 +52,7 @@
     <string name="servingIconDescription">servingIconDescription</string>
     <string name="serving_num_name_detail">2</string>
     <string name="difIconDescription">difIconDescription</string>
-    <string name="dif__name_detail">Medium</string>
+    <string name="dif__name_detail">Difficulty</string>
     <string name="ingredients_name_detail">Ingredients</string>
     <string name="steps_name_detail">Steps</string>
     <string name="edit_recipe_name_detail">Edit Recipe</string>
@@ -93,4 +93,9 @@
     <string name="please_add_at_least_one_ingredient">Please add at least one ingredient</string>
     <string name="please_add_at_least_one_step">Please add at least one step</string>
     <string name="consume_question_mark">Consume?</string>
+
+    <string name="deleteBtnDescription">delete_recipe_btn_desc</string>
+    <string name="delete_recipe_title">Delete Recipe</string>
+    <string name="delete_recipe_message">Are you sure you want to delete this recipe?</string>
+    <string name="recipe_deleted">Recipe deleted!</string>
 </resources>

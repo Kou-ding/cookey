@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.io.File;
 
 public class ViewRecipeActivity extends AppCompatActivity {
@@ -73,6 +75,8 @@ public class ViewRecipeActivity extends AppCompatActivity {
         recyclerViewSteps = findViewById(R.id.recyclerViewSteps);
         btnEditRecipe = findViewById(R.id.btnEditRecipe);
 
+
+        ImageButton btnDelete = findViewById(R.id.btnDelete);
 
 
         dbHandler = new DBHandler(this);
@@ -186,6 +190,15 @@ public class ViewRecipeActivity extends AppCompatActivity {
             );
         });
 
+        btnDelete.setOnClickListener(view ->{
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.delete_recipe_title)        // π.χ.  «Διαγραφή»
+                    .setMessage(R.string.delete_recipe_message)    // «Σίγουρα;»
+                    .setPositiveButton(R.string.consume_recipe_yes_msg, (d, w) -> deleteRecipe())
+                    .setNegativeButton(R.string.consume_recipe_no_msg, null)
+                    .show();
+        });
+
 
 
         // Back Button
@@ -200,6 +213,8 @@ public class ViewRecipeActivity extends AppCompatActivity {
         });
 
          */
+
+
 
         // TODO: btnConsume
 
@@ -218,5 +233,11 @@ public class ViewRecipeActivity extends AppCompatActivity {
         selectedTab.setTextColor(getResources().getColor(android.R.color.white));
         unselectedTab.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         unselectedTab.setTextColor(getResources().getColor(R.color.white));
+    }
+
+    private void deleteRecipe() {
+        dbHandler.deleteRecipe(recipeID);
+        Toast.makeText(this, R.string.recipe_deleted, Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

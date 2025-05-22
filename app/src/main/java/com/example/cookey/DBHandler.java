@@ -853,4 +853,10 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
         return ingredients;
     }
+
+    public void deleteRecipe(long recipeID) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.delete("Recipe", "idRecipe=?", new String[]{ String.valueOf(recipeID)});
+        db.close();
+    }
 }
