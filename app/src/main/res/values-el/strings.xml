@@ -93,4 +93,5 @@
     <string name="please_enter_the_preparation_time">Please enter the preparation time</string>
     <string name="please_add_at_least_one_ingredient">Please add at least one ingredient</string>
     <string name="please_add_at_least_one_step">Please add at least one step</string>
+    <string name="consume_question_mark">Να καταναλωθεί;</string>
 </resources>

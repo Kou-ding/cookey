@@ -166,7 +166,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
         btnConsume.setOnClickListener(view -> {
             new AlertDialog.Builder(this)
-                    .setTitle("Consume?")
+                    .setTitle(R.string.consume_question_mark)
                     .setMessage(R.string.consume_recipe_warning_msg)
                     .setPositiveButton(R.string.consume_recipe_yes_msg, (dialog, which) -> {
                         Toast.makeText(this, R.string.recipe_consumed_msg, Toast.LENGTH_SHORT).show();

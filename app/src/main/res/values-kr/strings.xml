@@ -91,4 +91,5 @@
     <string name="please_enter_the_preparation_time">준비 시간을 입력해주세요</string>
     <string name="please_add_at_least_one_ingredient">적어도 하나의 재료를 추가해주세요</string>
     <string name="please_add_at_least_one_step">적어도 하나의 단계를 추가해주세요</string>
+    <string name="consume_question_mark">소비하시겠습니까?</string>
 </resources>
