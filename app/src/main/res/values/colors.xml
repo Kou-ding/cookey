@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Cookie Colors -->
+    <color name="lightBrownCookie">#E6CEA0</color>
+    <color name="darkBrownCookie">#4D3E3C</color>
+    <color name="chocolate">#3D2622</color>
+    <color name="pastelChocolate">#A7796D</color>
+    <color name="pastelTaupe">#75655A</color>
+
+    <!-- Base colors -->
+    <color name="vampireGray">#565051</color>
 </resources>

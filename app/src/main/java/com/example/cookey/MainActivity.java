@@ -1,7 +1,5 @@
 package com.example.cookey;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -13,7 +11,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.cookey.databinding.ActivityMainBinding;
 
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -25,78 +22,9 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         dbHandler = new DBHandler(this);
-        checkAndInsertSampleData();
         setupBottomNavigation();
     }
-    private void checkAndInsertSampleData() {
-        // Έλεγχος αν υπάρχουν ήδη συνταγές
-        if (dbHandler.getAllRecipes().isEmpty()) {
-            addSampleRecipes();
-        }
-    }
 
-    private void addSampleRecipes() {
-        try {
-            Log.d("SAMPLE_DATA", "Adding sample recipes...");
-            Bitmap defaultBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lunch_dining_24px);
-
-            // 1. Spaghetti Carbonara
-            RecipeFull carbonara = new RecipeFull();
-            carbonara.setTitle("Spaghetti Carbonara");
-            carbonara.setCharacteristic("20 mins | Medium");
-            carbonara.addIngredient("Spaghetti");
-            carbonara.addIngredient("Eggs");
-            carbonara.addIngredient("Pancetta");
-            carbonara.addStep("Boil spaghetti");
-            carbonara.addStep("Fry pancetta");
-            carbonara.addTag("Italian");
-            carbonara.addTag("Pasta");
-            long id1 = dbHandler.addFullRecipe(carbonara, defaultBitmap);
-            dbHandler.updateRecipeFavoriteStatus((int)id1, true);
-
-
-            // 2. Greek Salad
-            RecipeFull salad = new RecipeFull();
-            salad.setTitle("Greek Salad");
-            salad.setCharacteristic("15 mins | Easy");
-            salad.addIngredient("Tomatoes");
-            salad.addIngredient("Cucumber");
-            salad.addIngredient("Feta Cheese");
-            salad.addStep("Chop vegetables");
-            salad.addStep("Combine ingredients");
-            salad.addTag("Greek");
-            salad.addTag("Vegetarian");
-            long id2 = dbHandler.addFullRecipe(salad, defaultBitmap);
-            dbHandler.updateRecipeFavoriteStatus((int)id2, false);
-
-            // 3. Salad
-            RecipeFull salad2 = new RecipeFull();
-            salad2.setTitle("Salad");
-            salad2.setCharacteristic("15 mins | Easy");
-            salad2.addIngredient("Tomatoes");
-            salad2.addIngredient("Cucumber");
-            salad2.addIngredient("Feta Cheese");
-            salad2.addStep("Chop vegetables");
-            salad2.addStep("Combine ingredients");
-            salad2.addTag("Greek");
-            salad2.addTag("Vegetarian");
-            long id3 = dbHandler.addFullRecipe(salad2, defaultBitmap);
-            dbHandler.updateRecipeFavoriteStatus((int)id3, true);
-
-            Log.d("SAMPLE_DATA", "Added Carbonara with ID: " + id1);
-            Log.d("SAMPLE_DATA", "Added Salad with ID: " + id2);
-
-            // Επιβεβαίωση ότι οι συνταγές προστέθηκαν
-            List<MyRecipes> allRecipes = dbHandler.getAllRecipes();
-            Log.d("DB_DEBUG", "Total recipes after insertion: " + allRecipes.size());
-            for (MyRecipes r : allRecipes) {
-                Log.d("DB_DEBUG", "Recipe: " + r.getTitle() + " ID: " + r.getRecipeId());
-            }
-
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error adding sample recipes", e);
-        }
-    }
     private void setupBottomNavigation() {
         BottomNavigationView navView = findViewById(R.id.bottom_navigation);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(

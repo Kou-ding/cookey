@@ -1,5 +1,7 @@
 package com.example.cookey.ui.MyRecipes;
 
+import com.example.cookey.RecipeModel;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,15 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cookey.AIRecipeActivity;
-import com.example.cookey.AddRecipeActivity;
+import com.example.cookey.AddOrEditActivity;
 import com.example.cookey.DBHandler;
-import com.example.cookey.MyRecipes;
 import com.example.cookey.R;
 import com.example.cookey.RecipeDetailsActivity;
 import com.example.cookey.SearchRecipeActivity;
+import com.example.cookey.ViewRecipeActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.List;
 public class MyRecipesFragment extends Fragment {
     private MyRecipesAdapter adapter;
@@ -37,18 +38,18 @@ public class MyRecipesFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_my_recipes, container, false);
         // Initialize DB
         dbHandler = new DBHandler(getContext());
-        List<MyRecipes> recipes = dbHandler.getAllRecipes();
+        List<RecipeModel> recipes = dbHandler.getAllRecipes();
         adapter = new MyRecipesAdapter(recipes, new MyRecipesAdapter.OnRecipeClickListener() {
             @Override
-            public void onRecipeClick(MyRecipes recipe) {
+            public void onRecipeClick(RecipeModel recipe) {
                 // Open recipe details
                 openRecipeDetails(recipe);
             }
             @Override
-            public void onFavoriteClick(MyRecipes recipe, boolean isFavorite) {
+            public void onFavoriteClick(RecipeModel recipe, boolean isFavorite) {
                 try {
-                    Log.d("FAVORITE", "Updating recipe ID: " + recipe.getRecipeId() + " to: " + isFavorite);
-                    dbHandler.updateRecipeFavoriteStatus(recipe.getRecipeId(), isFavorite);
+                    Log.d("FAVORITE", "Updating recipe ID: " + recipe.getId() + " to: " + isFavorite);
+                    dbHandler.updateRecipeFavoriteStatus(recipe.getId(), isFavorite);
                 } catch (Exception e) {
                     Log.e("FAVORITE", "Error updating favorite", e);
                     e.printStackTrace();
@@ -65,7 +66,15 @@ public class MyRecipesFragment extends Fragment {
         fabSearchRecipe = root.findViewById(R.id.fabSearchRecipe);
         // Set click listeners for FABs
         fabAIRecipe.setOnClickListener(v -> openAIRecipeActivity());
-        fabAddRecipe.setOnClickListener(v -> openAddRecipeActivity());
+
+        fabAddRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AddOrEditActivity.class);
+                startActivity(intent);
+            }
+        });
+
         fabSearchRecipe.setOnClickListener(v -> openSearchRecipeActivity());
         return root;
     }
@@ -79,7 +88,7 @@ public class MyRecipesFragment extends Fragment {
 
     private void openAddRecipeActivity(){
         try{
-            startActivity(new Intent(getActivity(), AddRecipeActivity.class));
+            startActivity(new Intent(getActivity(), AddOrEditActivity.class));
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -93,15 +102,17 @@ public class MyRecipesFragment extends Fragment {
             Toast.makeText(requireContext(), "Error opening search", Toast.LENGTH_SHORT).show();
         }
     }
-    private void openRecipeDetails(MyRecipes recipe){
-        Intent intent = new Intent(getActivity(), RecipeDetailsActivity.class);
-        intent.putExtra("recipe_id", recipe.getRecipeId());
+    private void openRecipeDetails(RecipeModel recipe){
+        if (recipe == null) return;
+
+        Intent intent = new Intent(getActivity(), ViewRecipeActivity.class);
+        intent.putExtra("RECIPE_ID", recipe.getId());
         startActivity(intent);
     }
     @Override
     public void onResume() {
         super.onResume();
-        List<MyRecipes> recipes = dbHandler.getAllRecipes();
+        List<RecipeModel> recipes = dbHandler.getAllRecipes();
         if (recipes != null) {
             adapter.updateData(recipes);
         }

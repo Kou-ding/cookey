@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteIngredient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/select_ingredient_text"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:paddingVertical="8dp"
+        android:completionThreshold="1"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextQuantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:minHeight="48dp"
+        android:paddingVertical="8dp"
+        android:hint="@string/quantity_text"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="16dp" />
+</LinearLayout>

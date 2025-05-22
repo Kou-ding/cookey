@@ -1,7 +1,6 @@
 package com.example.cookey.ui.MyRecipes;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,18 +10,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.cookey.MyRecipes;
-import com.example.cookey.R;
 
+import com.example.cookey.R;
+import com.example.cookey.RecipeModel;
+
+import java.io.File;
 import java.util.List;
 public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.RecipeViewHolder> {
-    private List<MyRecipes> recipes;
-    private OnRecipeClickListener listener;
+
     public interface OnRecipeClickListener {
-        void onRecipeClick(MyRecipes recipe);
-        void onFavoriteClick(MyRecipes recipe, boolean isFavorite);
+        void onRecipeClick(RecipeModel recipe);
+
+        void onFavoriteClick(RecipeModel recipe, boolean isFavorite);
+
     }
-    public MyRecipesAdapter(List<MyRecipes> recipes, OnRecipeClickListener listener) {
+
+    private List<RecipeModel> recipes;
+    private OnRecipeClickListener listener;
+
+    public MyRecipesAdapter(List<RecipeModel> recipes, OnRecipeClickListener listener) {
         this.recipes = recipes;
         this.listener = listener;
     }
@@ -36,72 +42,73 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.Reci
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        MyRecipes recipe = recipes.get(position);
+        RecipeModel recipe = recipes.get(position);
         if (recipe == null) return;
-        holder.recipeTitle.setText(recipe.getTitle());
-        holder.recipeCharacteristic.setText(recipe.getCharacteristic());
+
+        //Title
+        holder.titleTv.setText(recipe.getName());
+
+        //Time + Difficulty
+        holder.characteristicTv.setText(recipe.getTimeToMake() + " mins | " + recipe.getDifficulty());
+
         // Φόρτωση εικόνας
-        if (recipe.getImageBytes() != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(
-                    recipe.getImageBytes(),
-                    0,
-                    recipe.getImageBytes().length
-            );
-            holder.recipeImage.setImageBitmap(bitmap);
+        String path = recipe.getPhotoPath();
+        if (path != null && !path.isEmpty()) {
+            File f = new File(path);
+            if (f.exists()) {
+                Bitmap bmp = BitmapFactory.decodeFile(path);
+                holder.imageIv.setImageBitmap(bmp);
+            } else {
+                holder.imageIv.setImageResource(R.drawable.ic_placeholder);
+            }
         } else {
-            holder.recipeImage.setImageResource(recipe.getImageResId());
+            holder.imageIv.setImageResource(R.drawable.ic_placeholder);
         }
 
         // Χειρισμός favorites
-        int iconRes = recipe.isFavorite() ?
-                R.drawable.favorite_24px : R.drawable.heart_check_24px;
-        holder.favoriteButton.setImageResource(iconRes);
+        setFavIcon(holder.favBtn, recipe.isFavorite());
 
-        holder.favoriteButton.setOnClickListener(v -> {
-            try {
-                boolean newState = !recipe.isFavorite();
-                recipe.setFavorite(newState);
-                holder.favoriteButton.setImageResource(
-                        newState ? R.drawable.favorite_24px : R.drawable.heart_check_24px
-                );
-                if (listener != null) {
-                    listener.onFavoriteClick(recipe, newState);
-                }
-            } catch (Exception e) {
-                Log.e("ADAPTER", "Favorite click error", e);
-            }
+        /* ----- LISTENERS ----- */
+        holder.favBtn.setOnClickListener(v -> {
+            boolean newFav = !recipe.isFavorite();
+            recipe.setFavorite(newFav);           // ενημέρωσε το αντικείμενο
+            setFavIcon(holder.favBtn, newFav);
+            if (listener != null) listener.onFavoriteClick(recipe, newFav);  // => Fragment → DB
         });
 
-        // Χειρισμός κλικ στη συνταγή
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onRecipeClick(recipe);
-            }
+            if (listener != null) listener.onRecipeClick(recipe);
         });
     }
 
 
-    private void updateFavoriteIcon(ImageButton button, boolean isFavorite) {
-        button.setImageResource(
-                isFavorite ? R.drawable.favorite_24px : R.drawable.heart_check_24px
-        );
-    }
     @Override
-    public int getItemCount() { return recipes.size(); }
-    public static class RecipeViewHolder extends RecyclerView.ViewHolder {
-        ImageView recipeImage;
-        TextView recipeTitle, recipeCharacteristic;
-        ImageButton favoriteButton;
-        public RecipeViewHolder(@NonNull View itemView) {
-            super(itemView);
-            recipeImage = itemView.findViewById(R.id.recipeImage);
-            recipeTitle = itemView.findViewById(R.id.recipeTitle);
-            recipeCharacteristic = itemView.findViewById(R.id.recipeCharacteristic);
-            favoriteButton = itemView.findViewById(R.id.favoriteButton);
-        }
+    public int getItemCount() {
+        return (recipes == null) ? 0 : recipes.size();
     }
-    public void updateData(List<MyRecipes> newRecipes) {
+
+    //Δημόσια μέθοδος ανανέωσης λίστας
+    public void updateData(List<RecipeModel> newRecipes) {
         this.recipes = newRecipes;
-        notifyDataSetChanged(); // Ενημέρωση RecyclerView
+        notifyDataSetChanged();
+    }
+
+    private void setFavIcon(ImageButton btn, boolean fav) {
+        btn.setImageResource(fav ? R.drawable.heart_check_24px     // γεμάτη καρδιά
+                : R.drawable.favorite_24px); // κενή καρδιά
+    }
+
+    static class RecipeViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageIv;
+        TextView  titleTv, characteristicTv;
+        ImageButton favBtn;
+
+        RecipeViewHolder(@NonNull View v) {
+            super(v);
+            imageIv          = v.findViewById(R.id.recipeImage);
+            titleTv          = v.findViewById(R.id.recipeTitle);
+            characteristicTv = v.findViewById(R.id.recipeCharacteristic);
+            favBtn           = v.findViewById(R.id.favoriteButton);
+        }
     }
 }

@@ -1,4 +1,5 @@
 package com.example.cookey;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -43,19 +44,19 @@ public class SearchRecipeActivity extends AppCompatActivity {
         resultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
         // Setup RecyclerView
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<MyRecipes> initialRecipes=dbHandler.getAllRecipes();
+        List<RecipeModel> initialRecipes=dbHandler.getAllRecipes();
         adapter = new MyRecipesAdapter(initialRecipes, new MyRecipesAdapter.OnRecipeClickListener() {
             @Override
-            public void onRecipeClick(MyRecipes recipe) {
+            public void onRecipeClick(RecipeModel recipe) {
                 if (recipe != null) {
                     openRecipeDetails(recipe);
                 }
             }
             @Override
-            public void onFavoriteClick(MyRecipes recipe, boolean isFavorite) {
+            public void onFavoriteClick(RecipeModel recipe, boolean isFavorite) {
                 try {
                     if (recipe != null && dbHandler != null) {
-                        dbHandler.updateRecipeFavoriteStatus(recipe.getRecipeId(), isFavorite);
+                        dbHandler.updateRecipeFavoriteStatus(recipe.getId(), isFavorite);
                     }
                 } catch (Exception e) {
                     Log.e("SEARCH_ACTIVITY", "Error updating favorite", e);
@@ -83,12 +84,12 @@ public class SearchRecipeActivity extends AppCompatActivity {
         });
     }
 
-    private void openRecipeDetails(MyRecipes recipe) {
+    private void openRecipeDetails(RecipeModel recipe) {
         if (recipe == null) return;
 
         try {
-            Intent intent = new Intent(this, RecipeDetailsActivity.class);
-            intent.putExtra("recipe_id", recipe.getRecipeId());
+            Intent intent = new Intent(this, ViewRecipeActivity.class);
+            intent.putExtra("RECIPE_ID", recipe.getId());
             startActivity(intent);
         } catch (Exception e) {
             Log.e("SEARCH_ACTIVITY", "Error opening recipe details", e);
@@ -103,9 +104,9 @@ public class SearchRecipeActivity extends AppCompatActivity {
         filters.add(getString(R.string.all_filter));
         // Προσθήκη επιλογών για αγαπημένα και δυσκολία
         filters.add(getString(R.string.favorites_only));
-        filters.add(getString(R.string.easy_difficulty));
-        filters.add(getString(R.string.medium_difficulty));
-        filters.add(getString(R.string.hard_difficulty));
+        filters.add(getString(R.string.filter_difficulty_easy));
+        filters.add(getString(R.string.filter_difficulty_medium));
+        filters.add(getString(R.string.filter_difficulty_hard));
         // Προσθήκη separator για tags
         filters.add("--- Tags ---");
         // Προσθήκη tags από τη βάση
@@ -126,7 +127,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
         if (searchInput == null || filterSpinner == null || dbHandler == null || adapter == null) return;
         String query = searchInput.getText().toString().trim();
         String selectedOption = filterSpinner.getSelectedItem().toString();
-        List<MyRecipes> results = new ArrayList<>();
+        List<RecipeModel> results = new ArrayList<>();
         try {
             if (selectedOption.equals(getString(R.string.all_filter))) {
                 results = dbHandler.searchRecipes(query);
@@ -137,8 +138,8 @@ public class SearchRecipeActivity extends AppCompatActivity {
                 // Εφαρμογή επιπλέον φίλτρου αναζήτησης αν υπάρχει query
                 if (!query.isEmpty() && results != null) {
                     results = results.stream()
-                            .filter(recipe -> recipe != null && recipe.getTitle() != null &&
-                                    recipe.getTitle().toLowerCase().contains(query.toLowerCase()))
+                            .filter(recipe -> recipe != null && recipe.getName() != null &&
+                                    recipe.getName().toLowerCase().contains(query.toLowerCase()))
                             .collect(Collectors.toList());
                 }
             } else {
@@ -163,15 +164,15 @@ public class SearchRecipeActivity extends AppCompatActivity {
     private void applyFilters() {
         String selectedFilter = filterSpinner.getSelectedItem().toString();
         String query = searchInput.getText().toString().trim();
-        List<MyRecipes> filteredResults = new ArrayList<>();
+        List<RecipeModel> filteredResults = new ArrayList<>();
         try {
             if (selectedFilter.equals(getString(R.string.favorites_only))) {
                 filteredResults = dbHandler.getFavoriteRecipes();
-            } else if (selectedFilter.equals(getString(R.string.easy_difficulty))) {
+            } else if (selectedFilter.equals(getString(R.string.filter_difficulty_easy))) {
                 filteredResults = dbHandler.getRecipesByDifficulty("Easy");
-            } else if (selectedFilter.equals(getString(R.string.medium_difficulty))) {
+            } else if (selectedFilter.equals(getString(R.string.filter_difficulty_medium))) {
                 filteredResults = dbHandler.getRecipesByDifficulty("Medium");
-            } else if (selectedFilter.equals(getString(R.string.hard_difficulty))) {
+            } else if (selectedFilter.equals(getString(R.string.filter_difficulty_hard))) {
                 filteredResults = dbHandler.getRecipesByDifficulty("Hard");
             } else if (dbHandler.getAllTags().contains(selectedFilter)) {
                 filteredResults = dbHandler.getRecipesByTag(selectedFilter);
@@ -181,8 +182,8 @@ public class SearchRecipeActivity extends AppCompatActivity {
             // Εφαρμογή αναζήτησης αν υπάρχει query
             if (!query.isEmpty()) {
                 filteredResults = filteredResults.stream()
-                        .filter(recipe -> recipe != null && recipe.getTitle() != null &&
-                                recipe.getTitle().toLowerCase().contains(query.toLowerCase()))
+                        .filter(recipe -> recipe != null && recipe.getName() != null &&
+                                recipe.getName().toLowerCase().contains(query.toLowerCase()))
                         .collect(Collectors.toList());
             }
             adapter.updateData(filteredResults);

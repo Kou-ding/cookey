@@ -31,13 +31,14 @@ public class SettingsFragment extends Fragment {
     }
 
     private void changeLanguage() {
-        String[] languages = {"English", "Ελληνικά"};
+        String[] languages = {"English", "Ελληνικά", "Korean"};
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Choose Language");
         builder.setItems(languages, (dialog, which) -> {
             switch (which) {
                 case 0: setLocale("en"); break;
                 case 1: setLocale("el"); break;
+                case 2: setLocale("kr"); break;
             }
         });
         builder.show();
