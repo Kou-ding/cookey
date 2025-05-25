@@ -59,10 +59,10 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.Reci
                 Bitmap bmp = BitmapFactory.decodeFile(path);
                 holder.imageIv.setImageBitmap(bmp);
             } else {
-                holder.imageIv.setImageResource(R.drawable.ic_cookie);
+                holder.imageIv.setImageResource(R.drawable.placeholder_view_recipe);
             }
         } else {
-            holder.imageIv.setImageResource(R.drawable.ic_cookie);
+            holder.imageIv.setImageResource(R.drawable.placeholder_view_recipe);
         }
 
         // Χειρισμός favorites

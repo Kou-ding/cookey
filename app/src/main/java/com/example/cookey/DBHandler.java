@@ -808,6 +808,33 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+//    public void consumeIngredients(long recipeID){
+//        SQLiteDatabase db = this.getWritableDatabase();
+//
+//        String query = "SELECT ingredient_id, quantity FROM RecipeIngredients WHERE recipe_id = " + recipeID + ";";
+//        Cursor cursor = db.rawQuery(query, null);
+//        if (cursor.moveToFirst()) {
+//            do {
+//                int ingredientId = cursor.getInt(0);
+//                float quantity = cursor.getFloat(1);
+//                // Fetch quantity from Ingredient table to check if the ingredient.quantity - recipe.ingredients.quantity < 0
+//                String selectQuery = "SELECT quantity FROM Ingredient WHERE ingredientId = " + ingredientId + ";";
+//                cursor = db.rawQuery(selectQuery, null);
+//                if (!cursor.moveToFirst()) continue;
+//                float ingredientQuantity = cursor.getFloat(0);
+//                if (ingredientQuantity - quantity < 0) continue;
+//
+//                cursor = db.rawQuery(selectQuery, null);
+//
+//                String updateQuery = "UPDATE Ingredient SET quantity = quantity - " + quantity + " WHERE ingredientId = " + ingredientId + ";";
+//                db.execSQL(updateQuery);
+//            } while (cursor.moveToNext());
+//        }
+//        cursor.close();
+//
+//    }
+
+
     public void setNewItemNameAndQuantity(int id, String name, float quantity){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE ShoppingList SET shoppingListItemName = '" + name + "', purchasedQuantity = " + quantity + " WHERE shoppingListItemId = " + id + ";";
@@ -1119,16 +1146,6 @@ public class DBHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT ingredientId FROM Ingredient WHERE ingredientName = ?", new String[]{ingredientName});
         if (cursor.moveToFirst()) {
             ingredientId = cursor.getLong(0);
-        } else {
-            // If it doesnt exist, add it
-            ContentValues values = new ContentValues();
-            values.put("ingredientName", ingredientName);
-            values.put("quantity", 0); // placeholder
-            values.put("unitSystem", unit);
-            values.put("daysToSpoil", 0);
-            values.put("checkIfSpoiledArray", "");
-
-            ingredientId = db.insert("Ingredient", null, values);
         }
         cursor.close();
 
