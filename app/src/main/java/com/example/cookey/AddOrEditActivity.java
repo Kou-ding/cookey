@@ -75,7 +75,7 @@ public class AddOrEditActivity extends AppCompatActivity {
         if (getIntent().hasExtra("RECIPE_ID")) {
             isEditMode = true;
             editRecipeId = getIntent().getLongExtra("RECIPE_ID", -1); //
-            Toast.makeText(this, "RECIPE_ID received: " + editRecipeId, Toast.LENGTH_SHORT).show();
+      //      Toast.makeText(this, "RECIPE_ID received: " + editRecipeId, Toast.LENGTH_SHORT).show();
 
         }
 
@@ -360,7 +360,7 @@ public class AddOrEditActivity extends AppCompatActivity {
                 existingRecipe.getId(),
                 existingRecipe.getCountryName(),
                 existingRecipe.getCountryCode(),
-                0
+                null
         );
 
         btnSelectCountry.setText(country.getName());
