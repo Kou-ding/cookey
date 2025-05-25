@@ -3,23 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_MyRecipes">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.cookey.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
+        android:id="@+id/navigation_MyRecipes"
+        android:name="com.example.cookey.ui.MyRecipes.MyRecipesFragment"
+        android:label="@string/title_MyRecipes"
+        tools:layout="@layout/fragment_my_recipes" />
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.cookey.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
+        android:id="@+id/navigation_MyIngredients"
+        android:name="com.example.cookey.ui.MyIngredients.MyIngredientsFragment"
+        android:label="@string/title_MyIngredients"
+        tools:layout="@layout/fragment_my_ingredients" />
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.cookey.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_AI"
+        android:name="com.example.cookey.ui.Ai.AIFragment"
+        android:label="@string/title_AI"
+        tools:layout="@layout/fragment_ai" />
+    <fragment
+        android:id="@+id/navigation_MyShoppingList"
+        android:name="com.example.cookey.ui.MyShoppingList.MyShoppingListFragment"
+        android:label="@string/title_MyShoppingList"
+        tools:layout="@layout/fragment_my_shopping_list" />
+    <fragment
+        android:id="@+id/navigation_Settings"
+        android:name="com.example.cookey.ui.Settings.SettingsFragment"
+        android:label="@string/title_Settings"
+        tools:layout="@layout/fragment_settings" />
+
 </navigation>

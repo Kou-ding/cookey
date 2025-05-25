@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/nav_item1"
-        android:icon="@drawable/chef_hat_24px"
-        android:iconTint="#FFFFFF"
-        android:title="Recipes"/>
+        android:id="@+id/navigation_MyRecipes"
+        android:icon="@drawable/ic_chef_hat"
+        android:title="@string/shortened_title_my_recipes" />
+
     <item
-        android:id="@+id/nav_item2"
-        android:icon="@drawable/grocery_24px"
-        android:title="Groceries"/>
+        android:id="@+id/navigation_MyIngredients"
+        android:icon="@drawable/ic_grocery"
+        android:title="@string/shortened_title_my_ingredients" />
     <item
-        android:id="@+id/nav_item3"
-        android:icon="@drawable/wand_shine_24px"
-        android:title="AI"/>
+        android:id="@+id/navigation_AI"
+        android:icon="@drawable/ic_wand_shine"
+        android:title="@string/title_AI" />
     <item
-        android:id="@+id/nav_item4"
-        android:icon="@drawable/checklist_24px"
-        android:title="Shopping List"/>
+        android:id="@+id/navigation_MyShoppingList"
+        android:icon="@drawable/ic_checklist"
+        android:title="@string/shortened_title_my_shopping_list" />
     <item
-        android:id="@+id/nav_item5"
-        android:icon="@drawable/settings_24px"
-        android:title="Settings"/>
+        android:id="@+id/navigation_Settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/title_Settings" />
 
 </menu>

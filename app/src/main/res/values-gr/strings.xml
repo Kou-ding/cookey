@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">cookey</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_MyRecipes">Συνταγές</string>
+    <string name="title_MyIngredients">Υλικά</string>
+    <string name="title_AI">AI</string>
+    <string name="title_MyShoppingList">Ψώνια</string>
+    <string name="title_Settings">Ρυθμίσεις</string>
+    <string name="title_Search"> </string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="ai_prompt">Τι θα ήθελες να μαγειρέψεις σήμερα;</string>
+    <string name="chef_hat_logo">Chef Hat logo</string>
+    <string name="ai_recipe">AI συνταγή</string>
+    <string name="cook">Cook</string>
+    <string name="add_ingredients">Add Ingredients</string>
+    <string name="set_ingredient_quantity_to_0">Set ingredient quantity to 0</string>
+    <string name="edit">Edit</string>
+    <string name="view_all_ingredients">View all ingredients</string>
+    <string name="ingredient_recycle_view">Ingredient recycle view</string>
+    <string name="done">Done</string>
+    <string name="save">Save</string>
+    <string name="discard">Discard</string>
+    <string name="food">Food</string>
+    <string name="non_food">Non-Food</string>
+    <string name="all">All</string>
+    <string name="shortened_title_my_shopping_list">Shopping List</string>
+    <string name="no_expiration_dates">No expiration dates</string>
+    <string name="error_displaying_dates">Error displaying dates</string>
+</resources>
