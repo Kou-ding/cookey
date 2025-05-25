@@ -72,7 +72,7 @@ public class CountrySelectDialog extends Dialog {
                 String code = obj.getString("code");
 
                 @SuppressLint("DiscouragedApi")
-                int flagResID = context.getResources().getIdentifier(code.toLowerCase(), "drawable", context.getPackageName());
+                int flagResID = context.getResources().getIdentifier(code.toLowerCase(), "assets/Flags", context.getPackageName());
 
                 //if there is not such flag, replace with placeholder
                 if(flagResID == 0){
