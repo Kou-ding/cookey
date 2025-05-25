@@ -95,4 +95,7 @@
     <string name="delete_recipe_title">레시피 삭제</string>
     <string name="delete_recipe_message">이 레시피를 삭제하시겠습니까?</string>
     <string name="recipe_deleted">레시피가 삭제되었습니다!</string>
+    <string name="add">add</string>
+    <string name="new_list">New List</string>
+    <string name="refill_ingredients">Refill Ingredients</string>
 </resources>

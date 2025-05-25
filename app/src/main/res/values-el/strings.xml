@@ -2,10 +2,10 @@
 <resources>
     <string name="app_name">Μπισκότο</string>
     <string name="title_home">Σπίτι</string>
-    <string name="title_MyRecipes">Συνταγές</string>
-    <string name="title_MyIngredients">Υλικά</string>
+    <string name="title_MyRecipes">Οι Συνταγές μου</string>
+    <string name="title_MyIngredients">Τα Υλικά μου</string>
     <string name="title_AI">A.I.</string>
-    <string name="title_MyShoppingList">Λίστα για τα Ψώνια</string>
+    <string name="title_MyShoppingList">Λίστα για Ψώνια</string>
     <string name="title_Settings">Ρυθμίσεις</string>
     <string name="title_Search">Αναζήτηση</string>
     <string name="ai_prompt">Τι θα ήθελες να μαγειρέψεις σήμερα;</string>
@@ -23,7 +23,7 @@
     <string name="food">Βρώσιμα</string>
     <string name="non_food">Μη Βρώσιμα</string>
     <string name="all">Όλα</string>
-    <string name="shortened_title_my_shopping_list">Λίστα για Ψώνια</string>
+    <string name="shortened_title_my_shopping_list">Λίστα</string>
     <string name="shortened_title_my_ingredients">Υλικά</string>
     <string name="shortened_title_my_recipes">Συνταγές</string>
     <string name="no_expiration_dates">Μη υππάρχουσες ημερομηνίες λήξης</string>
@@ -121,4 +121,7 @@
     <string name="delete_recipe_title">Διαγραφή Συνταγής</string>
     <string name="delete_recipe_message">Είστε σίγουρος ότι θέλετε να διαγράψετε αυτή τη συνταγή;</string>
     <string name="recipe_deleted">Η συνταγή διαγράφηκε με επιτυχία!</string>
+    <string name="add">Προσθήκη</string>
+    <string name="new_list">Νέα Λίστα</string>
+    <string name="refill_ingredients">Αναπλήρωση Υλικών</string>
 </resources>

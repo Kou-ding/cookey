@@ -27,4 +27,7 @@
     <string name="shortened_title_my_recipes">Recipes</string>
     <string name="no_expiration_dates">No expiration dates</string>
     <string name="error_displaying_dates">Error displaying dates</string>
+    <string name="add">add</string>
+    <string name="new_list">New List</string>
+    <string name="refill_ingredients">Refill Ingredients</string>
 </resources>
