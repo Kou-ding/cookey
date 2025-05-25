@@ -392,7 +392,18 @@ public class DBHandler extends SQLiteOpenHelper {
                 // Frozen
                 "INSERT INTO Ingredient VALUES (215, 'Pizza', 0, 'gr', 90, '[]');\n" +
                 "INSERT INTO Ingredient VALUES (216, 'Frozen Shrimp', 0, 'gr', 180, '[]');\n" +
-                "INSERT INTO Ingredient VALUES (217, 'Frozen Vegetables', 0, 'gr', 180, '[]');\n";
+                "INSERT INTO Ingredient VALUES (217, 'Frozen Vegetables', 0, 'gr', 180, '[]');\n" +
+
+                // Tags
+                "INSERT INTO Tags VALUES (1, 'Italian');\n" +
+                "INSERT INTO Tags VALUES (2, 'Quick');\n" +
+                "INSERT INTO Tags VALUES (3, 'Vegan');\n" +
+                "INSERT INTO Tags VALUES (4, 'Healthy');\n" +
+                "INSERT INTO Tags VALUES (5, 'Gluten-Free');\n" +
+                "INSERT INTO Tags VALUES (6, 'Breakfast');\n" +
+                "INSERT INTO Tags VALUES (7, 'Sweet');\n" +
+                "INSERT INTO Tags VALUES (8, 'Spicy');\n" +
+                "INSERT INTO Tags VALUES (9, 'Low-Carb')";
         // Split and run each statement
         for (String statement : DATABASE_CREATE_SCRIPT.split(";")) {
             statement = statement.trim();
@@ -839,30 +850,6 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     // ---------------- NIKOS TIME -------------------- //
-    public void populateDefaultIngredients(SQLiteDatabase db) {
-        String[] defaultIngredients = new String[]{
-                "Rice", "Salt", "Water", "Flour", "Sugar", "Butter", "Egg",
-                "Garlic", "Olive Oil", "Potato", "Celery", "Carrot",
-                "Mushroom", "Lemon", "Parmesan", "Cheddar"
-        };
-        String[] units = new String[]{
-                "kg", "g", "ml", "kg", "g", "g", "piece",
-                "g", "ml", "kg", "g", "g",
-                "kg", "ml", "g", "g"
-        };
-
-        for (int i = 0; i < defaultIngredients.length; i++) {
-            ContentValues values = new ContentValues();
-            values.put("ingredientName", defaultIngredients[i]);
-            values.put("quantity", 0); // default value
-            values.put("unitSystem", units[i]);
-            values.put("daysToSpoil", 10); // default value
-            values.put("checkIfSpoiledArray", ""); // optional
-
-            db.insert("Ingredient", null, values);
-        }
-    }
-
     public void populateDefaultTags(SQLiteDatabase db) {
         String[] defaultTags = new String[]{
                 "Italian", "Quick", "Vegan", "Healthy", "Gluten-Free", "Breakfast", "Sweet", "Spicy", "Low Carb"
