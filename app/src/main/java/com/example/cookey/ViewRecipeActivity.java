@@ -1,10 +1,12 @@
 package com.example.cookey;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -19,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,9 +53,22 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> editRecipeLauncher;
 
-
+    private void applyTheme() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String theme = prefs.getString("app_theme", "light");
+        if ("dark".equals(theme)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Cookey_Dark);
+            Log.d("Theme!", "Dark theme applied");
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Cookey_Light);
+            Log.d("Theme!", "Light theme applied");
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstance){
+        applyTheme();
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_recipe_details);
 
@@ -179,9 +195,11 @@ public class ViewRecipeActivity extends AppCompatActivity {
                     .setTitle(R.string.consume_question_mark)
                     .setMessage(R.string.consume_recipe_warning_msg)
                     .setPositiveButton(R.string.consume_recipe_yes_msg, (dialog, which) -> {
-                        dbHandler.consumeIngredients(recipeID);
-                        Toast.makeText(this, R.string.recipe_consumed_msg,
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, R.string.recipe_consumed_msg, Toast.LENGTH_SHORT).show();
+//                        try(DBHandler db = new DBHandler(this, null, null, 1)){
+//                            // Create a list
+//                            db.consumeIngredient(recipe.getIngredients());
+//                        }
                     })
                     .setNegativeButton(R.string.consume_recipe_no_msg, null)
                     .show();

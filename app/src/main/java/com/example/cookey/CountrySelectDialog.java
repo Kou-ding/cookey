@@ -1,5 +1,6 @@
 package com.example.cookey;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class CountrySelectDialog extends Dialog {
 
     private RecyclerView recyclerView;
     private CountryAdapter adapter;
-    private final OnCountrySelectedListener listener;
+    private OnCountrySelectedListener listener;
 
     public interface OnCountrySelectedListener {
         void onCountrySelected(CountryModel country);
@@ -40,48 +40,50 @@ public class CountrySelectDialog extends Dialog {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
-        List<CountryModel> countryModels = loadCountriesFromJson();
-
-        adapter = new CountryAdapter(getContext(), countryModels, country -> {
-            if (listener != null) listener.onCountrySelected(country);
-            dismiss();
+        List<CountryModel> countryList = loadCountriesFromJson(getContext());
+        adapter = new CountryAdapter(countryList, country -> {
+            if (listener != null) {
+                listener.onCountrySelected(country);
+                dismiss();
+            }
         });
-
 
         recyclerView.setAdapter(adapter);
     }
 
-    private List<CountryModel> loadCountriesFromJson(){
+    private List<CountryModel> loadCountriesFromJson(Context context){
         List<CountryModel> countries = new ArrayList<>();
 
-        //Json loading
-        try (InputStream is = getContext().getAssets().open("countries.json")) {
-            byte[] buf = new byte[is.available()];
-            is.read(buf);
-            JSONArray arr = new JSONArray(new String(buf, StandardCharsets.UTF_8));
+        //Typical json loading
+        try{
+            InputStream is = context.getAssets().open("countries.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            String json = new String(buffer, StandardCharsets.UTF_8);
 
-            long idCounter = 1;
+            JSONArray jsonArray = new JSONArray(json);
+            int idCounter = 1;
 
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject o      = arr.getJSONObject(i);
-                String     name   = o.getString("name");
-                String     code   = o.getString("code").toLowerCase();
-                String path     = "Flags/" + code + ".png";              // assets/flags/us.png
+            for(int i=0; i < jsonArray.length(); i++){
+                JSONObject obj = jsonArray.getJSONObject(i);
+                String name = obj.getString("name");
+                String code = obj.getString("code");
 
-            /* Verify that the PNG actually exists in assets.
-               If it doesn't, we'll fall back to the placeholder later. */
-                try (InputStream test = getContext().getAssets().open(path)) {
-                    /* OK – file exists. Nothing to do. */
-                } catch (IOException e) {                  // file missing then...
-                    path = null;                           // --> adapter shows placeholder
+                @SuppressLint("DiscouragedApi")
+                int flagResID = context.getResources().getIdentifier(code.toLowerCase(), "drawable", context.getPackageName());
+
+                //if there is not such flag, replace with placeholder
+                if(flagResID == 0){
+                    flagResID = R.drawable.ic_flag_placeholder;
                 }
 
-                countries.add(new CountryModel(idCounter++, name, code, path));
+                countries.add(new CountryModel(idCounter++,name,code, flagResID));
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
-
         return countries;
     }
 }

@@ -54,10 +54,10 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@drawable/circle_background"
-            android:backgroundTint="@color/vampireGray"
+            android:backgroundTint="?attr/colorPrimary"
             android:contentDescription="@string/consumeBtnDescription"
             android:src="@drawable/ic_cookie_40px"
-            app:tint="@color/white"/>
+            app:tint="?attr/colorOnPrimary" />
 
 
         <ImageButton
@@ -81,7 +81,7 @@
             android:background="@drawable/circle_background"
             android:contentDescription="@string/deleteBtnDescription"
             android:src="@drawable/ic_delete"
-            app:tint="@color/white"/>
+            app:tint="@color/darkGray" />
 
 
     </FrameLayout>

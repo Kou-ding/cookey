@@ -1,22 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Cookey" parent="Theme.Material3.Dark">
-
-        <!-- Background color -->
-        <item name="colorBackgroundFloating">@color/black</item>
-
-        <!-- Primary brand color (Black) -->
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryVariant">#282828</item>
-        <item name="colorOnPrimary">@color/white</item>
-
-        <!-- Secondary brand color (Cookie Dough Light Brown) -->
-        <item name="colorSecondary">@color/lightBrownCookie</item>
-        <item name="colorSecondaryVariant">@color/pastelChocolate</item>
-        <item name="colorOnSecondary">@color/darkBrownCookie</item>
-
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">@color/black</item>
+    <style name="Theme.Cookey.Dark" parent="Theme.Material3.Dark">
+        <!-- Primary colors -->
 
         <!-- Customize your theme here -->
     </style>

@@ -25,7 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 public class MyRecipesFragment extends Fragment {
     private MyRecipesAdapter adapter;
-    private FloatingActionButton fabAddRecipe, fabSearchRecipe, fabAIRecipe;
+    private FloatingActionButton fabAddRecipe, fabSearchRecipe;
     private DBHandler dbHandler;
 
     @Override
@@ -58,30 +58,15 @@ public class MyRecipesFragment extends Fragment {
         RecyclerView recyclerView = root.findViewById(R.id.recipesRecyclerView);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         // Initialize FABs
-        fabAIRecipe = root.findViewById(R.id.fabAIRecipe);
         fabAddRecipe = root.findViewById(R.id.fabAddRecipe);
         fabSearchRecipe = root.findViewById(R.id.fabSearchRecipe);
+
         // Set click listeners for FABs
-        fabAIRecipe.setOnClickListener(v -> openAIRecipeActivity());
-
-        fabAddRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddOrEditActivity.class);
-                startActivity(intent);
-            }
-        });
-
+        fabAddRecipe.setOnClickListener(v -> openAddRecipeActivity());
         fabSearchRecipe.setOnClickListener(v -> openSearchRecipeActivity());
         return root;
-    }
-    private void openAIRecipeActivity(){
-        try{
-            startActivity(new Intent(getActivity(), AIRecipeViewActivity.class));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
     }
 
     private void openAddRecipeActivity(){

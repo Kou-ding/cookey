@@ -33,53 +33,44 @@ public class SettingsFragment extends Fragment {
     }
 
     private void changeLanguage() {
-        String[] languages = {"English", "Ελληνικά", "한국어"};
+        String[] languages = {"English", "Ελληνικά", "Korean"};
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Choose Language");
         builder.setItems(languages, (dialog, which) -> {
             switch (which) {
                 case 0: setLocale("en"); break;
                 case 1: setLocale("el"); break;
-                case 2: setLocale("ko"); break;
+                case 2: setLocale("kr"); break;
             }
         });
         builder.show();
     }
-
-    private void saveLanguagePreference(String langCode) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        prefs.edit().putString("app_lang", langCode).apply();
-    }
     private void setLocale(String languageCode) {
-        // Save for the next launches
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(requireContext());
-        prefs.edit().putString("app_lang", languageCode).apply();
-
-        // Apply it right now
         Locale locale = new Locale(languageCode);
         Locale.setDefault(locale);
-
         Configuration config = new Configuration();
-        config.setLocale(locale);
-
-        requireContext()
-                .getResources()
-                .updateConfiguration(config,
-                        requireContext().getResources().getDisplayMetrics());
-
-        // Restart MainActivity
+        config.locale = locale;
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
         Intent refresh = new Intent(getActivity(), MainActivity.class);
         startActivity(refresh);
         requireActivity().finish();
     }
     private void changeTheme() {
-        int currentTheme = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        if (currentTheme == Configuration.UI_MODE_NIGHT_YES){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        String currentTheme = prefs.getString("app_theme", "light");
+
+        if ("dark".equals(currentTheme)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }else{
+            editor.putString("app_theme", "light");
+        } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            editor.putString("app_theme", "dark");
         }
+
+        editor.apply();
+        // Recreate the activity to apply the theme
         requireActivity().recreate();
     }
+
 }

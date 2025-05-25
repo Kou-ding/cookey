@@ -17,7 +17,7 @@
         <CheckBox
             android:id="@+id/ingredientCheckbox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:text=""
             android:textSize="20sp"
             android:textStyle="bold"
@@ -29,7 +29,7 @@
         <AutoCompleteTextView
             android:id="@+id/autoCompleteIngredient"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginStart="40dp"
             android:text=""
             android:textSize="20sp"
@@ -44,6 +44,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="8dp"
+            android:background="@color/darkGray"
             android:contentDescription="Converts the autocomplete text into a checkbox"
             android:visibility="visible"
             card_view:layout_constraintBottom_toBottomOf="parent"
@@ -54,7 +55,7 @@
         <EditText
             android:id="@+id/itemQuantityEdit"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:hint="quantity"
             android:inputType="numberDecimal"
@@ -80,6 +81,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="8dp"
+            android:background="@color/darkGray"
             android:contentDescription="Converts the autocomplete text into a checkbox"
             android:visibility="visible"
             card_view:layout_constraintBottom_toBottomOf="parent"

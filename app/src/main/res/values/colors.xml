@@ -11,5 +11,7 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="vampireGray">#565051</color>
+    <color name="darkGray">#303030</color>
+    <color name="intensePurple">#664ea3</color>
 
 </resources>

@@ -39,6 +39,12 @@
             android:name=".IngredientActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".AIRecipesActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+
         <!-- Νέες Activities -->
         <activity
             android:screenOrientation="portrait"

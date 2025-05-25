@@ -109,12 +109,12 @@
     <string name="all_filter">Φίλτρα</string>
     <string name="favorites_only">Αγαπημένα</string>
     <string name="title_ai_recipe">Συνταγή AI</string>
-    <string name="please_enter_a_recipe_name">Παρακαλώ εισάγετε όνομα συνταγής</string>
-    <string name="please_enter_the_number_of_servings">Παρακαλώ εισάγετε τον αριθμό των μερίδων</string>
-    <string name="please_select_difficulty">Παρακαλώ επιλέξτε βαθμό δυσκολίας</string>
-    <string name="please_enter_the_preparation_time">Παρακαλώ εισάγετε τον χρόνο προετοιμασίας</string>
-    <string name="please_add_at_least_one_ingredient">Παρακαλώ προσθέστε τουλάχιστον ένα υλικό</string>
-    <string name="please_add_at_least_one_step">Παρακαλώ προσθέστε τουλάχιστον ένα βήμα</string>
+    <string name="please_enter_a_recipe_name">Please enter a recipe name</string>
+    <string name="please_enter_the_number_of_servings">Please enter the number of servings</string>
+    <string name="please_select_difficulty">Please select difficulty</string>
+    <string name="please_enter_the_preparation_time">Please enter the preparation time</string>
+    <string name="please_add_at_least_one_ingredient">Please add at least one ingredient</string>
+    <string name="please_add_at_least_one_step">Please add at least one step</string>
     <string name="consume_question_mark">Να καταναλωθεί;</string>
 
     <string name="deleteBtnDescription">delete_recipe_btn_desc</string>
@@ -124,4 +124,6 @@
     <string name="add">Προσθήκη</string>
     <string name="new_list">Νέα Λίστα</string>
     <string name="refill_ingredients">Αναπλήρωση Υλικών</string>
+    <string name="ai_recipes">AI Συνταγές</string>
+    <string name="decor">decor</string>
 </resources>

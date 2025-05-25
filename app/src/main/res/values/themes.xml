@@ -1,26 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Cookey" parent="Theme.Material3.Dark">
+    <style name="Theme.Cookey.Light" parent="Theme.Material3.Light">
+        <!-- Container color -->
+        <item name="colorPrimaryContainer">@color/intensePurple</item>
 
-        <!-- Background color -->
-        <item name="colorBackgroundFloating">@color/white</item>
-
-        <!-- Primary brand color (Black) -->
-        <item name="colorPrimary">@color/lightBrownCookie</item>
-        <item name="colorPrimaryVariant">@color/lightBrownCookie</item>
-        <item name="colorOnPrimary">@color/darkBrownCookie</item>
-
-        <!-- Secondary brand color (Cookie Dough Light Brown) -->
-        <item name="colorSecondary">@color/pastelChocolate</item>
-        <item name="colorSecondaryVariant">@color/pastelChocolate</item>
-        <item name="colorOnSecondary">@color/white</item>
-
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">@color/lightBrownCookie</item>
-
-        <!-- Customize your theme here -->
+        <!-- Title color -->
+        <item name="colorOnSurface">@color/intensePurple</item>
 
     </style>
+
     <style name="CircularImage">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
