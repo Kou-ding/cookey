@@ -1,13 +1,11 @@
 <resources>
     <string name="app_name">쿠키</string>
     <string name="title_MyRecipes">내 레시피</string>
-    <string name="title_MyList">내 목록</string>
     <string name="title_AI">AI</string>
     <string name="AIRecipeButton">AI 레시피 버튼</string>
     <string name="title_MyShoppingList">내 장보기 목록</string>
     <string name="title_Settings">설정</string>
     <string name="title_Search">검색</string>
-    <string name="hello_blank_fragment">안녕하세요, 블랭크 프래그먼트입니다</string>
     <string name="change_language">언어 변경</string>
     <string name="change_theme">테마 변경</string>
     <string name="favorite">즐겨찾기</string>
