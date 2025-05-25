@@ -179,11 +179,9 @@ public class ViewRecipeActivity extends AppCompatActivity {
                     .setTitle(R.string.consume_question_mark)
                     .setMessage(R.string.consume_recipe_warning_msg)
                     .setPositiveButton(R.string.consume_recipe_yes_msg, (dialog, which) -> {
-                        Toast.makeText(this, R.string.recipe_consumed_msg, Toast.LENGTH_SHORT).show();
-//                        try(DBHandler db = new DBHandler(this, null, null, 1)){
-//                            // Create a list
-//                            db.consumeIngredient(recipe.getIngredients());
-//                        }
+                        dbHandler.consumeIngredients(recipeID);
+                        Toast.makeText(this, R.string.recipe_consumed_msg,
+                                Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton(R.string.consume_recipe_no_msg, null)
                     .show();

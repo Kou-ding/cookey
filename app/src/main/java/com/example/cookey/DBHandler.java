@@ -808,31 +808,47 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-//    public void consumeIngredients(long recipeID){
-//        SQLiteDatabase db = this.getWritableDatabase();
-//
-//        String query = "SELECT ingredient_id, quantity FROM RecipeIngredients WHERE recipe_id = " + recipeID + ";";
-//        Cursor cursor = db.rawQuery(query, null);
-//        if (cursor.moveToFirst()) {
-//            do {
-//                int ingredientId = cursor.getInt(0);
-//                float quantity = cursor.getFloat(1);
-//                // Fetch quantity from Ingredient table to check if the ingredient.quantity - recipe.ingredients.quantity < 0
-//                String selectQuery = "SELECT quantity FROM Ingredient WHERE ingredientId = " + ingredientId + ";";
-//                cursor = db.rawQuery(selectQuery, null);
-//                if (!cursor.moveToFirst()) continue;
-//                float ingredientQuantity = cursor.getFloat(0);
-//                if (ingredientQuantity - quantity < 0) continue;
-//
-//                cursor = db.rawQuery(selectQuery, null);
-//
-//                String updateQuery = "UPDATE Ingredient SET quantity = quantity - " + quantity + " WHERE ingredientId = " + ingredientId + ";";
-//                db.execSQL(updateQuery);
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//
-//    }
+    public void consumeIngredients(long recipeID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+
+        try {
+            // Get the (ingredientId, quantity) pairs that this recipe needs
+            Cursor c = db.rawQuery(
+                    "SELECT ingredient_id, quantity " +
+                            "FROM   RecipeIngredients " +
+                            "WHERE  recipe_id = ?",
+                    new String[]{String.valueOf(recipeID)});
+
+            while (c.moveToNext()) {
+                long ingId = c.getLong(0);
+                float needQty = c.getFloat(1);
+
+                // Find how much we currently have available
+                Cursor cur = db.rawQuery(
+                        "SELECT quantity FROM Ingredient WHERE ingredientId = ?",
+                        new String[]{String.valueOf(ingId)});
+
+                if (cur.moveToFirst()) {
+                    float have = cur.getFloat(0);
+                    float newQty = Math.max(0f, have - needQty);
+
+                    // Write the new quantity back
+                    ContentValues cv = new ContentValues();
+                    cv.put("quantity", newQty);
+                    db.update("Ingredient", cv, "ingredientId = ?",
+                            new String[]{String.valueOf(ingId)});
+                }
+                cur.close();
+            }
+            c.close();
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
 
 
     public void setNewItemNameAndQuantity(int id, String name, float quantity){

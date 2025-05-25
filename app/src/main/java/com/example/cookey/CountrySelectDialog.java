@@ -1,6 +1,5 @@
 package com.example.cookey;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -21,7 +20,7 @@ public class CountrySelectDialog extends Dialog {
 
     private RecyclerView recyclerView;
     private CountryAdapter adapter;
-    private OnCountrySelectedListener listener;
+    private final OnCountrySelectedListener listener;
 
     public interface OnCountrySelectedListener {
         void onCountrySelected(CountryModel country);
