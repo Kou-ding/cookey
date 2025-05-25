@@ -1,36 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".ui.MyRecipes.MyRecipesFragment"
-    >
-    <TextView
+    android:padding="12dp">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recipesRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Database Management"
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-         />
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:contentDescription="@string/search_results_desc"
+        tools:listitem="@layout/item_recipe" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        android:gravity="center">
 
-        <Button
-            android:id="@+id/dropDB"
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabSearchRecipe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Drop" />
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/search_recipe_button"
+            android:src="@drawable/ic_search"
+            app:elevation="0dp"
+            app:tint="@android:color/white" />
 
-        <Button
-            android:id="@+id/executeCMD"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddRecipe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Exe" />
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/add_recipe_button"
+            android:src="@drawable/ic_add"
+            app:elevation="0dp"
+            app:tint="@android:color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAIRecipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/AIRecipeButton"
+            android:src="@drawable/ic_wand_shine"
+            app:elevation="0dp"
+            app:tint="@android:color/white" />
+
     </LinearLayout>
 
-
-</LinearLayout>
+</RelativeLayout>

@@ -40,7 +40,27 @@
             android:name=".IngredientActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
+        <!-- Νέες Activities -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".AddOrEditActivity"
+            android:label="@string/title_add_recipe"
+            android:exported="true"
+            android:parentActivityName=".MainActivity"  />
 
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".SearchRecipeActivity"
+            android:label="@string/title_search_recipe"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".ViewRecipeActivity"
+            android:label="@string/title_recipe_details"
+            android:exported="true"
+            android:parentActivityName=".MainActivity"  />
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
