@@ -44,8 +44,8 @@ import java.util.concurrent.Executors;
 
 public class AIFragment extends Fragment {
 
-    private static final String API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large";
-    private static final String API_TOKEN = "your api_key_here"; // Replace with your token
+    private static final String API_URL = " https://router.huggingface.co/cohere/compatibility/v1/chat/completions";
+    private static final String API_TOKEN = "your_api_key"; // Replace with your token
     private AIAdapter adapter;
     private boolean useIngredientsMode = false;
 
@@ -150,18 +150,20 @@ public class AIFragment extends Fragment {
 
     public String generateAPIResponse(String prompt) {
         try {
-            // Prepare JSON request
+            // Create the message JSON array
+            JSONArray messagesArray = new JSONArray();
+            JSONObject userMessage = new JSONObject();
+            userMessage.put("role", "user");
+            userMessage.put("content", prompt);
+            messagesArray.put(userMessage);
+
+            // Build the full request body
             JSONObject requestBody = new JSONObject();
-            requestBody.put("inputs", prompt);
+            requestBody.put("messages", messagesArray);
+            requestBody.put("model", "c4ai-aya-expanse-8b");
+            requestBody.put("stream", false);
 
-            JSONObject parameters = new JSONObject();
-            parameters.put("max_new_tokens", 250);
-            parameters.put("temperature", 0.9);
-            parameters.put("top_p", 0.95);
-            parameters.put("do_sample", true);
-            requestBody.put("parameters", parameters);
-
-            // Create connection
+            // Setup the HTTP connection
             URL url = new URL(API_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -171,13 +173,13 @@ public class AIFragment extends Fragment {
             connection.setRequestProperty("Authorization", "Bearer " + API_TOKEN);
             connection.setRequestProperty("Content-Type", "application/json");
 
-            // Send request
+            // Write the JSON payload
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = requestBody.toString().getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
 
-            // Read response
+            // Read the response
             int status = connection.getResponseCode();
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
@@ -191,21 +193,20 @@ public class AIFragment extends Fragment {
             }
             reader.close();
 
-            // Parse JSON response
-            String responseBody = response.toString();
-            if (responseBody.startsWith("[")) {
-                JSONArray jsonArray = new JSONArray(responseBody);
-                return jsonArray.getJSONObject(0).getString("generated_text");
-            } else if (responseBody.startsWith("{")) {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                return jsonObject.optString("generated_text", "No generated text found.");
+            // Parse the response JSON
+            JSONObject responseObject = new JSONObject(response.toString());
+            JSONArray choicesArray = responseObject.optJSONArray("choices");
+
+            if (choicesArray != null && choicesArray.length() > 0) {
+                JSONObject messageObject = choicesArray.getJSONObject(0).getJSONObject("message");
+                return messageObject.optString("content", "No content returned.");
             }
 
-            return "Unexpected response format.";
+            return "Unexpected response format or empty result.";
 
         } catch (Exception e) {
             Log.e("API Error", e.toString());
-            return "API Error: " + e.toString(); // Gives more helpful error info than e.getMessage()
+            return "API Error: " + e.toString();
         }
 
     }

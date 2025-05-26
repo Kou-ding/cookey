@@ -580,8 +580,11 @@ public class DBHandler extends SQLiteOpenHelper {
     // Add an AI recipe to the database
     public void registerAIRecipe(AIRecipe recipe){
         SQLiteDatabase db = this.getWritableDatabase();
+        // Avoid single quotes in the text
+        String safeText = recipe.getAIRecipeText().replace("'", "''");
+
         String registration_query = "INSERT INTO AIRecipe (AIRecipeId, AIRecipeText)" +
-                "VALUES ('" + recipe.getAIRecipeId() + "', '" + recipe.getAIRecipeText() + "');";
+                "VALUES ('" + recipe.getAIRecipeId() + "', '" + safeText + "');";
 
         db.execSQL(registration_query);
         db.close();
