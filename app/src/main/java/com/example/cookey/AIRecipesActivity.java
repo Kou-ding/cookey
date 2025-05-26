@@ -68,4 +68,13 @@ public class AIRecipesActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try (DBHandler db = new DBHandler(this, null, null, 1)) {
+            ai_recipes = db.getAllAIRecipes();
+            adapter = new AIRecipesAdapter(ai_recipes);
+            recyclerView.setAdapter(adapter);
+        }
+    }
 }
