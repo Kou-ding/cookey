@@ -33,24 +33,41 @@ public class SettingsFragment extends Fragment {
     }
 
     private void changeLanguage() {
-        String[] languages = {"English", "Ελληνικά", "Korean"};
+        String[] languages = {"English", "Ελληνικά", "한국어"};
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Choose Language");
         builder.setItems(languages, (dialog, which) -> {
             switch (which) {
                 case 0: setLocale("en"); break;
                 case 1: setLocale("el"); break;
-                case 2: setLocale("kr"); break;
+                case 2: setLocale("ko"); break;
             }
         });
         builder.show();
     }
+    private void saveLanguagePreference(String langCode) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        prefs.edit().putString("app_lang", langCode).apply();
+    }
     private void setLocale(String languageCode) {
+        // Save for the next launches
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(requireContext());
+        prefs.edit().putString("app_lang", languageCode).apply();
+
+        // Apply it right now
         Locale locale = new Locale(languageCode);
         Locale.setDefault(locale);
+
         Configuration config = new Configuration();
-        config.locale = locale;
-        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+        config.setLocale(locale);
+
+        requireContext()
+                .getResources()
+                .updateConfiguration(config,
+                        requireContext().getResources().getDisplayMetrics());
+
+        // Restart MainActivity
         Intent refresh = new Intent(getActivity(), MainActivity.class);
         startActivity(refresh);
         requireActivity().finish();

@@ -1,4 +1,28 @@
 <resources>
+    <string name="title_home">홈</string>
+    <string name="title_MyIngredients">내 재료</string>
+    <string name="ai_prompt">오늘 무엇을 요리하고 싶으신가요?</string>
+    <string name="chef_hat_logo">셰프 모자 로고</string>
+    <string name="ai_recipe">AI 레시피</string>
+    <string name="cook">요리하기</string>
+    <string name="add_ingredients">재료 추가</string>
+    <string name="set_ingredient_quantity_to_0">재료 수량을 0으로 설정</string>
+    <string name="edit">편집</string>
+    <string name="view_all_ingredients">모든 재료 보기</string>
+    <string name="ingredient_recycle_view">재료 리사이클 뷰</string>
+    <string name="done">완료</string>
+    <string name="save">저장</string>
+    <string name="discard">취소</string>
+    <string name="food">식품</string>
+    <string name="non_food">비식품</string>
+    <string name="all">전체</string>
+    <string name="shortened_title_my_shopping_list">장보기</string>
+    <string name="shortened_title_my_ingredients">재료</string>
+    <string name="shortened_title_my_recipes">레시피</string>
+    <string name="no_expiration_dates">유통기한 없음</string>
+    <string name="error_displaying_dates">날짜 표시 오류</string>
+
+
     <string name="app_name">쿠키</string>
     <string name="title_MyRecipes">내 레시피</string>
     <string name="title_AI">AI</string>
@@ -98,5 +122,4 @@
     <string name="add">add</string>
     <string name="new_list">New List</string>
     <string name="refill_ingredients">Refill Ingredients</string>
-    <string name="decor">decor</string>
 </resources>

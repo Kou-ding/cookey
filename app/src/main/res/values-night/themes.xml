@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Cookey.Dark" parent="Theme.Material3.Dark">
         <!-- Primary colors -->
-
+        <item name="colorPrimaryContainer">@color/darkGray</item>
         <!-- Customize your theme here -->
     </style>
     <style name="CircularImage">
