@@ -28,12 +28,12 @@
             android:screenOrientation="portrait"
             android:name=".AIRecipeEditActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".AIRecipesActivity" />
         <activity
             android:screenOrientation="portrait"
             android:name=".AIRecipeViewActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".AIRecipesActivity" />
         <activity
             android:screenOrientation="portrait"
             android:name=".IngredientActivity"

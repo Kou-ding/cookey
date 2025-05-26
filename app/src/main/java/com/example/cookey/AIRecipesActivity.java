@@ -1,7 +1,14 @@
 package com.example.cookey;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,9 +19,30 @@ public class AIRecipesActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter<AIRecipesAdapter.ViewHolder> adapter;
+    private void applyTheme() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String theme = prefs.getString("app_theme", "light");
+        if ("dark".equals(theme)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.Theme_Cookey_Dark);
+            Log.d("Theme!", "Dark theme applied");
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setTheme(R.style.Theme_Cookey_Light);
+            Log.d("Theme!", "Light theme applied");
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
+
+        // Enable the back button in the action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("My AI Recipes");
+        }
+
         setContentView(R.layout.activity_ai_recipes);
         recyclerView = findViewById(R.id.ai_recipe_recycler);
 
@@ -28,6 +56,16 @@ public class AIRecipesActivity extends AppCompatActivity {
         //Set my Adapter for the RecyclerView
         adapter = new AIRecipesAdapter(ai_recipes);
         recyclerView.setAdapter(adapter);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Handle menu item selection here
+        if (item.getItemId() == android.R.id.home) {
+            // Handle the back button press
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

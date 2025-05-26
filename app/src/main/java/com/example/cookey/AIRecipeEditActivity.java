@@ -63,7 +63,7 @@ public class AIRecipeEditActivity extends AppCompatActivity {
             }
 
             // Handle save button click here
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, AIRecipesActivity.class);
             startActivity(intent);
         });
         Button discardButton = findViewById(R.id.discard_button);

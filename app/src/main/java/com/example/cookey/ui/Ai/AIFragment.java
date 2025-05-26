@@ -45,7 +45,7 @@ import java.util.concurrent.Executors;
 public class AIFragment extends Fragment {
 
     private static final String API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large";
-    private static final String API_TOKEN = "your_api_here"; // Replace with your token
+    private static final String API_TOKEN = "your api_key_here"; // Replace with your token
     private AIAdapter adapter;
     private boolean useIngredientsMode = false;
 
@@ -65,7 +65,7 @@ public class AIFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
+        if (item.getItemId() == R.id.all_ai_recipes) {
             // Handle button click
             Intent intent = new Intent(getContext(), AIRecipesActivity.class);
             startActivity(intent);

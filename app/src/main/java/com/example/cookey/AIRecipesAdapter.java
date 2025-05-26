@@ -27,14 +27,11 @@ public class AIRecipesAdapter extends RecyclerView.Adapter<AIRecipesAdapter.View
             AIRecipeId = view.findViewById(R.id.AIRecipeId);
             AIRecipeDesc = view.findViewById(R.id.AIRecipeDesc);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                // Open AI Recipe View Activity
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), AIRecipeViewActivity.class);
-                    intent.putExtra("AIRecipeId", AIRecipeId.getText());
-                    v.getContext().startActivity(intent);
-                }
+            // Open AI Recipe View Activity
+            view.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), AIRecipeViewActivity.class);
+                intent.putExtra("AIRecipeId", AIRecipeId.getText());
+                v.getContext().startActivity(intent);
             });
         }
     }
@@ -51,7 +48,7 @@ public class AIRecipesAdapter extends RecyclerView.Adapter<AIRecipesAdapter.View
     public void onBindViewHolder(AIRecipesAdapter.ViewHolder holder, int position) {
         AIRecipe ai_recipe = ai_recipes.get(position);
 
-        holder.AIRecipeId.setText(String.format("Recipe%s", String.valueOf(ai_recipe.getAIRecipeId())));
+        holder.AIRecipeId.setText(String.valueOf(ai_recipe.getAIRecipeId()));
         holder.AIRecipeDesc.setText(ai_recipe.getAIRecipeText());
     }
 
