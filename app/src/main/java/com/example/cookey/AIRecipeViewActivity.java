@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +41,7 @@ public class AIRecipeViewActivity extends AppCompatActivity {
         if (AIRecipeIdString != null && !AIRecipeIdString.isEmpty()) {
             AIRecipeId = Integer.parseInt(AIRecipeIdString);
         }
+        final int finalAIRecipeId = AIRecipeId;
         try(DBHandler db = new DBHandler(this,null,null,1)){
             AIRecipe recipe = db.getAIRecipe(AIRecipeId);
             TextView recipeTextView = findViewById(R.id.recipe_text);
@@ -51,8 +53,20 @@ public class AIRecipeViewActivity extends AppCompatActivity {
                 recipeTextView.setText("No recipe found.");
             }
         }
+        // Set the AI Recipe Id in the title
         TextView AiRecipeIdTitle = findViewById(R.id.AiRecipeIdTitle);
         AiRecipeIdTitle.setText(AIRecipeIdString);
 
+        ImageButton deleteAIRecipe = findViewById(R.id.deleteAIRecipe);
+        deleteAIRecipe.setOnClickListener(v -> {
+            // Delete the AI recipe
+            try(DBHandler db = new DBHandler(this,null,null,1)){
+                db.deleteAIRecipe(finalAIRecipeId);
+            }
+            finish();
+        });
+
+        // TODO: Editable AI recipes. Not a priority since it is more like an index for ai recipes
+        ImageButton editAIRecipe = findViewById(R.id.editAIRecipe);
     }
 }
