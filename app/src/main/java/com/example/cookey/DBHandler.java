@@ -243,7 +243,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 "INSERT INTO Ingredient VALUES (87, 'Sweet Potatoes', 0, 'count', 30, '[]');\n" +
                 "INSERT INTO Ingredient VALUES (88, 'Spinach', 0, 'gr', 5, '[]');\n" +
                 "INSERT INTO Ingredient VALUES (89, 'Olives', 0, 'gr', 180, '[]');\n" +
-                "INSERT INTO Ingredient VALUES (90, 'Peas', 0, 'gr', 7, '[]');\n" +
+                "INSERT INTO Ingredient VALUES (90, 'Mushrooms', 0, 'gr', 7, '[]');\n" +
                 "INSERT INTO Ingredient VALUES (91, 'Corn', 0, 'gr', 7, '[]');\n" +
                 "INSERT INTO Ingredient VALUES (92, 'Cauliflower', 0, 'heads', 7, '[]');\n" +
                 "INSERT INTO Ingredient VALUES (93, 'Asparagus', 0, 'spears', 5, '[]');\n" +

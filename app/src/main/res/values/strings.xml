@@ -33,7 +33,7 @@
     <string name="change_language">Change Language</string>
     <string name="change_theme">Change Theme</string>
     <string name="favorite">Favourite</string>
-    <string name="title_add_recipe">Add Recipe</string>
+    <string name="title_add_recipe">Recipe Management</string>
     <string name="title_search_recipe">Search Recipes</string>
     <string name="title_recipe_details">Recipe Details</string>
     <string name="search_hint">Search recipes…</string>

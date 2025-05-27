@@ -15,7 +15,7 @@
     <color name="intensePurple">#664ea3</color>
     <color name="recycleGray">#4B4B4B</color>
 
-    <color name="icon_tint">#3C3C3C</color>
+    <color name="icon_tint">#FFFFFF</color>
 
 
 </resources>

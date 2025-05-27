@@ -45,7 +45,7 @@ import java.util.concurrent.Executors;
 public class AIFragment extends Fragment {
 
     private static final String API_URL = " https://router.huggingface.co/cohere/compatibility/v1/chat/completions";
-    private static final String API_TOKEN = "your_api_key"; // Replace with your token
+    private static final String API_TOKEN = ""; // Replace with your token
     private AIAdapter adapter;
     private boolean useIngredientsMode = false;
 

@@ -33,7 +33,7 @@
     <string name="change_language">언어 변경</string>
     <string name="change_theme">테마 변경</string>
     <string name="favorite">즐겨찾기</string>
-    <string name="title_add_recipe">레시피 추가</string>
+    <string name="title_add_recipe">레시피 관리</string>
     <string name="title_search_recipe">레시피 검색</string>
     <string name="title_recipe_details">레시피 상세정보</string>
     <string name="search_hint">레시피 검색...</string>
