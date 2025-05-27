@@ -122,4 +122,7 @@
     <string name="add">add</string>
     <string name="new_list">New List</string>
     <string name="refill_ingredients">Refill Ingredients</string>
+    <string name="my_ai_recipes">My AI Recipes</string>
+    <string name="view_ai_recipe">View AI Recipe</string>
+    <string name="ingredient_info">Ingredient Info</string>
 </resources>

@@ -49,6 +49,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.title_search_recipe);
         setContentView(R.layout.activity_search_recipe);
         // Initialize database handler first
         dbHandler = new DBHandler(this,null ,null,1);

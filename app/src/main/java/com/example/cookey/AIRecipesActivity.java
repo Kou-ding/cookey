@@ -40,7 +40,7 @@ public class AIRecipesActivity extends AppCompatActivity {
         // Enable the back button in the action bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("My AI Recipes");
+            getSupportActionBar().setTitle(R.string.my_ai_recipes);
         }
 
         setContentView(R.layout.activity_ai_recipes);

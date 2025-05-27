@@ -36,7 +36,7 @@ public class IngredientActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             // Enable the back button and set the title
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Ingredient Info");
+            getSupportActionBar().setTitle(R.string.ingredient_info);
         }
         // Get the ingredient name from the intent
         String ingredientName = getIntent().getStringExtra("ingredientName");

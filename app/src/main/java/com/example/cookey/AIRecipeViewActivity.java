@@ -33,7 +33,7 @@ public class AIRecipeViewActivity extends AppCompatActivity {
         // Enable the back button in the action bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("View AI Recipe");
+            getSupportActionBar().setTitle(R.string.view_ai_recipe);
         }
         // Get the ai recipe id from the intent
         String AIRecipeIdString = getIntent().getStringExtra("AIRecipeId");
