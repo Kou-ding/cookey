@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -27,6 +28,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -427,7 +430,11 @@ public class AddOrEditActivity extends AppCompatActivity {
         ImageButton btnRemove = new ImageButton(this);
         btnRemove.setImageResource(R.drawable.ic_delete);
         btnRemove.setBackground(null);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(60, 60);
+        ImageViewCompat.setImageTintList(btnRemove, ColorStateList.valueOf(
+                ContextCompat.getColor(this, R.color.icon_tint)
+        ));
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(60, 60);
         params.setMargins(16, 0, 0, 0);
         btnRemove.setLayoutParams(params);
 
@@ -450,6 +457,10 @@ public class AddOrEditActivity extends AppCompatActivity {
             ImageButton btnEdit = new ImageButton(this);
             btnEdit.setImageResource(R.drawable.ic_edit);
             btnEdit.setBackground(null);
+            ImageViewCompat.setImageTintList(btnEdit, ColorStateList.valueOf(
+                    ContextCompat.getColor(this, R.color.icon_tint)
+            ));
+
             LinearLayout.LayoutParams editParams = new LinearLayout.LayoutParams(60, 60);
             editParams.setMargins(16, 0, 0, 0);
             btnEdit.setLayoutParams(editParams);
@@ -514,6 +525,10 @@ public class AddOrEditActivity extends AppCompatActivity {
         ImageButton btnRemove = new ImageButton(this);
         btnRemove.setImageResource(R.drawable.ic_delete);
         btnRemove.setBackground(null);
+        ImageViewCompat.setImageTintList(btnRemove, ColorStateList.valueOf(
+                ContextCompat.getColor(this, R.color.icon_tint)
+        ));
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(60, 60);
         params.setMargins(16, 0, 0, 0);
         btnRemove.setLayoutParams(params);

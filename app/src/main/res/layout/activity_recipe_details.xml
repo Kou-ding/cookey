@@ -80,8 +80,7 @@
             android:layout_margin="16dp"
             android:background="@drawable/circle_background"
             android:contentDescription="@string/deleteBtnDescription"
-            android:src="@drawable/ic_delete"
-            app:tint="@color/darkGray" />
+            android:src="@drawable/ic_delete" />
 
 
     </FrameLayout>

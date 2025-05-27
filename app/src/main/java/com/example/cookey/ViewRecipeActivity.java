@@ -255,9 +255,9 @@ public class ViewRecipeActivity extends AppCompatActivity {
         @ColorInt int bgSelected  = MaterialColors.getColor(
                 selected,           // any view whose context has the theme
                 com.google.android.material.R.attr.colorPrimaryContainer);
-        @ColorInt int txtSelected = MaterialColors.getColor(
-                selected,
-                com.google.android.material.R.attr.colorOnPrimaryContainer);
+        String selectedColor = "#FFFFFF";
+        @ColorInt int txtSelected = Color.parseColor(selectedColor);
+
         @ColorInt int txtUnselect = MaterialColors.getColor(
                 unselected,
                 com.google.android.material.R.attr.colorOnSurface);

@@ -34,7 +34,7 @@
     <string name="change_language">Αλλαγή Γλώσσας</string>
     <string name="change_theme">Αλλαγή Θέματος</string>
     <string name="favorite">Αγαπημένα</string>
-    <string name="title_add_recipe">Προσθήκη Συνταγής</string>
+    <string name="title_add_recipe">Διαχείριση Συνταγής</string>
     <string name="title_search_recipe">Αναζήτηση Συνταγής</string>
     <string name="title_recipe_details">Στοιχεία Συνταγής</string>
     <string name="search_hint">Αναζήτηση συνταγών…</string>
