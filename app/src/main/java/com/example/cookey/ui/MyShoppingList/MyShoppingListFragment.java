@@ -194,12 +194,28 @@ public class MyShoppingListFragment extends Fragment {
             }
         }
     }
-    public void addItem(boolean foodMode){
+    public void addItem(boolean foodMode) {
+        // First save any pending text in unfinished items
+        discardPendingItems();
+
         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
             if(foodMode) {
                 db.addFoodItem(db.getNextUnusedShoppingListItemId());
             } else {
                 db.addNonFoodItem(db.getNextUnusedShoppingListItemId());
+            }
+        }
+        loadItemsFromDB();
+    }
+
+    private void discardPendingItems() {
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            ShoppingListItem item = adapter.getItems().get(i);
+            if (item.getShoppingListItemName() == null || item.getShoppingListItemName().isEmpty()) {
+                // This is an unfinished item - remove it
+                try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                    db.deleteShoppingListItem(item.getShoppingListItemId());
+                }
             }
         }
     }
