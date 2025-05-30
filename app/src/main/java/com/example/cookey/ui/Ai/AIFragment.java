@@ -21,16 +21,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cookey.AIRecipeEditActivity;
 import com.example.cookey.AIRecipesActivity;
 import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
+import com.example.cookey.NarratorHelper;
+import com.example.cookey.NarratorManager;
 import com.example.cookey.R;
 import com.example.cookey.ShoppingListItem;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -143,6 +148,11 @@ public class AIFragment extends Fragment {
             // Hide the recycler view and the add ingredient button
             recyclerView.setVisibility(isChecked ? View.GONE : View.VISIBLE);
             addIngredientButton.setVisibility(isChecked ? View.GONE : View.VISIBLE);
+        });
+
+        //ACCESSIBILITY
+        promptEditText.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(this.getContext(),getString(R.string.ai_prompt));
         });
 
         return view;

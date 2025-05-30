@@ -1,6 +1,5 @@
 package com.example.cookey.ui.MyRecipes;
 
-import com.example.cookey.AIRecipeViewActivity;
 import com.example.cookey.RecipeModel;
 
 import android.content.Intent;
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cookey.AddOrEditActivity;
 import com.example.cookey.DBHandler;
 import com.example.cookey.R;
-import com.example.cookey.RecipeDetailsActivity;
 import com.example.cookey.SearchRecipeActivity;
 import com.example.cookey.ViewRecipeActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

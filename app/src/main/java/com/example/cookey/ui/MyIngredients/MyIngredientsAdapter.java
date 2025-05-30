@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
 import com.example.cookey.IngredientActivity;
+import com.example.cookey.NarratorManager;
 import com.example.cookey.R;
 import java.util.List;
 
@@ -77,6 +78,8 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
         holder.nameTextView.setText(ingredient.getIngredientName());
         holder.unitSystemTextView.setText(ingredient.getUnitSystem());
 
+
+
         // Remove existing text watcher
         if (holder.quantityEditText.getTag() instanceof TextWatcher) {
             holder.quantityEditText.removeTextChangedListener((TextWatcher) holder.quantityEditText.getTag());
@@ -126,6 +129,11 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
                     Ingredient ing = ingredients.get(pos);
                     Intent intent = new Intent(v.getContext(), IngredientActivity.class);
                     intent.putExtra("ingredientName", ing.getIngredientName());
+
+                    //ACCESSIBILITY
+                    NarratorManager.speakIfEnabled(v.getContext(),
+                            ing.getQuantity() + " " + ing.getUnitSystem() + " " + ing.getIngredientName());
+
                     v.getContext().startActivity(intent);
                     ((Activity) v.getContext()).overridePendingTransition(
                             android.R.anim.fade_in, android.R.anim.fade_out);

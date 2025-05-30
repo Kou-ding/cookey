@@ -26,4 +26,14 @@
         android:text="@string/change_theme"
         app:cornerRadius="4dp" />
 
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchNarrator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/narrator_btn"
+        android:checked="false"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        />
+
 </LinearLayout>

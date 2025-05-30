@@ -28,6 +28,10 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
     public void onBindViewHolder(StepViewHolder holder, int position) {
         holder.textViewStepNumber.setText(String.format("%02d", position + 1));
         holder.textViewStepDescription.setText(steps.get(position).getDescription());
+
+        //Accessibility
+        holder.textViewStepDescription.setOnClickListener(v ->
+                NarratorManager.speakIfEnabled(v.getContext(), steps.get(position).getDescription()));
     }
 
     @Override

@@ -26,9 +26,14 @@ public class MainActivity extends AppCompatActivity {
         applySavedLanguage();
         super.onCreate(savedInstanceState);
 
+        //Accessibility
+    //    NarratorManager.speakIfEnabled(this, getString(R.string.title_MyRecipes));
+
         // Set up the binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        NarratorManager.init(this);
 
         // Bottom Navigation
         BottomNavigationView navView = findViewById(R.id.bottom_navigation);

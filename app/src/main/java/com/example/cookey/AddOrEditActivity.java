@@ -89,6 +89,9 @@ public class AddOrEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_recipe);
 
+        //Accessibility
+        NarratorManager.speakIfEnabled(this, getString(R.string.title_add_recipe));
+
         //   Toast.makeText(this, "AddOrEditActivity opened", Toast.LENGTH_SHORT).show();
 
         //Check if editing
@@ -105,6 +108,8 @@ public class AddOrEditActivity extends AppCompatActivity {
 
         setupTagAdapter();
 
+
+
         if(isEditMode && editRecipeId != -1){
             existingRecipe = dbHandler.getRecipeId(editRecipeId);
 
@@ -120,6 +125,33 @@ public class AddOrEditActivity extends AppCompatActivity {
 
         setupImagePicker();
         setupButtons();
+
+        TextInputEditText editTextInputField = findViewById(R.id.editTextRecipeName);
+        editTextInputField.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.recipe_name_hint));
+        });
+
+        LinearLayout ingredientContainer = findViewById(R.id.ingredients_container);
+        ingredientContainer.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.ingredients_title_add));
+        });
+
+        LinearLayout stepContainer = findViewById(R.id.steps_container);
+        stepContainer.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.steps_title_add));
+        });
+
+        LinearLayout tagsContainer = findViewById(R.id.tags_container);
+        tagsContainer.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.tags_title_add));
+        });
+
+        editTextMealNumber.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.servings_description));
+        });
+
+
+
     }
 
     private void initViews() {
@@ -146,6 +178,7 @@ public class AddOrEditActivity extends AppCompatActivity {
         autoCompleteDifficulty.setFocusable(false); //don't focus on keyboard
         autoCompleteDifficulty.setOnTouchListener((v, event) -> {
             autoCompleteDifficulty.showDropDown();
+            NarratorManager.speakIfEnabled(v.getContext(),getString(R.string.dif__name_detail));
             return false;
         });
     }
@@ -183,9 +216,13 @@ public class AddOrEditActivity extends AppCompatActivity {
                 addSelectedIngredient(ingredient, quantity);
             });
             dialog.show();
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.add_ingredient_desc));
         });
 
-        findViewById(R.id.btnAddStep).setOnClickListener(v -> showAddStepDialog());
+        findViewById(R.id.btnAddStep).setOnClickListener(v -> {
+            showAddStepDialog();
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.add_step_desc));
+        });
 
         btnSelectCountry.setOnClickListener(v -> {
             CountrySelectDialog dialog = new CountrySelectDialog(this, country -> {
@@ -194,9 +231,13 @@ public class AddOrEditActivity extends AppCompatActivity {
                 selectedCountryId = country.getId();
             });
             dialog.show();
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.select_a_country_help_text));
         });
 
-        btnSelectTime.setOnClickListener(v -> showTimeDialog());
+        btnSelectTime.setOnClickListener(v -> {
+                showTimeDialog();
+                NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.enter_minutes_hint_text));
+        });
     }
 
     private void openImageChooser() {
@@ -414,6 +455,7 @@ public class AddOrEditActivity extends AppCompatActivity {
         container.setOrientation(LinearLayout.HORIZONTAL);
         container.setPadding(8, 8, 8, 8);
         container.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
 
         TextView textViewNumber = new TextView(this);
         textViewNumber.setText(String.format("%02d.", selectedSteps.size() + 1));

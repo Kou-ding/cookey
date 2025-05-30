@@ -403,7 +403,32 @@ public class DBHandler extends SQLiteOpenHelper {
                 "INSERT INTO Tags VALUES (6, 'Breakfast');\n" +
                 "INSERT INTO Tags VALUES (7, 'Sweet');\n" +
                 "INSERT INTO Tags VALUES (8, 'Spicy');\n" +
-                "INSERT INTO Tags VALUES (9, 'Low-Carb')";
+                "INSERT INTO Tags VALUES (9, 'Pasta');\n" +
+                "INSERT INTO Tags VALUES (10, 'Fruit');\n" +
+                "INSERT INTO Tags VALUES (11, 'Family');\n" +
+                "INSERT INTO Tags VALUES (12, 'Beef');\n" +
+                "INSERT INTO Tags VALUES (13, 'Chicken');\n" +
+                "INSERT INTO Tags VALUES (14, 'Dinner');\n" +
+                "INSERT INTO Tags VALUES (15, 'BBQ');\n" +
+                "INSERT INTO Tags VALUES (16, 'Seafood');\n" +
+                "INSERT INTO Tags VALUES (17, 'Chocolate');\n" +
+                "INSERT INTO Tags VALUES (18, 'Summer');\n" +
+                "INSERT INTO Tags VALUES (19, 'Winter');\n" +
+                "INSERT INTO Tags VALUES (20, 'Kids');\n" +
+                "INSERT INTO Tags VALUES (21, 'Christmas');\n" +
+                "INSERT INTO Tags VALUES (22, 'Cake');\n" +
+                "INSERT INTO Tags VALUES (23, 'Pie');\n" +
+                "INSERT INTO Tags VALUES (24, 'Lamb');\n" +
+                "INSERT INTO Tags VALUES (25, 'Egg');\n" +
+                "INSERT INTO Tags VALUES (26, 'Salad');\n" +
+                "INSERT INTO Tags VALUES (27, 'Asian');\n" +
+                "INSERT INTO Tags VALUES (28, 'Greek');\n" +
+                "INSERT INTO Tags VALUES (29, 'Sugar');\n" +
+                "INSERT INTO Tags VALUES (30, 'Budget-Friendly');\n" +
+                "INSERT INTO Tags VALUES (31, 'Lemon');\n" +
+                "INSERT INTO Tags VALUES (32, 'Canned');\n" +
+                "INSERT INTO Tags VALUES (33, 'Baking');\n" +
+                "INSERT INTO Tags VALUES (34, 'Low-Carb')";
         // Split and run each statement
         for (String statement : DATABASE_CREATE_SCRIPT.split(";")) {
             statement = statement.trim();

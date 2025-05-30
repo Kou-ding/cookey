@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import com.example.cookey.DBHandler;
+import com.example.cookey.NarratorManager;
 import com.example.cookey.R;
 import com.example.cookey.ShoppingListItem;
 import com.google.android.material.button.MaterialButton;
@@ -73,6 +74,9 @@ public class MyShoppingListFragment extends Fragment {
                 refillIngredientsButton.setVisibility(View.VISIBLE);
                 adapter.setFoodMode(true);
                 loadItemsFromDB();
+
+                //ACCESSIBILITY
+                NarratorManager.speakIfEnabled(this.getContext(), getString(R.string.food));
             } else {
                 foodType.setText(R.string.non_food);
                 foodMode = false;
@@ -80,25 +84,30 @@ public class MyShoppingListFragment extends Fragment {
                 refillIngredientsButton.setVisibility(View.INVISIBLE);
                 adapter.setFoodMode(false);
                 loadItemsFromDB();
+
+                //ACCESSIBILITY
+                NarratorManager.speakIfEnabled(this.getContext(), getString(R.string.non_food));
             }
         });
 
         // New List Button Listener
         newListButton.setOnClickListener(v -> {
             new AlertDialog.Builder(getContext())
-                    .setTitle("New List?")
-                    .setMessage("Are you sure that you want create a new Shopping List? (All the items in your current Shopping List will be deleted!)")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        Toast.makeText(requireContext(), "New List created!", Toast.LENGTH_SHORT).show();
+                    .setTitle(getString(R.string.new_list_dialog_title))
+                    .setMessage(getString(R.string.new_list_dialog_message))
+                    .setPositiveButton(getString(R.string.new_list_confirm), (dialog, which) -> {
+                        Toast.makeText(requireContext(), getString(R.string.new_list_created_toast), Toast.LENGTH_SHORT).show();
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
                             db.newShoppingList();
                             loadItemsFromDB();
                         }
                     })
-                    .setNegativeButton("No", (dialog, which) -> {
-                        Toast.makeText(requireContext(), "No changes made", Toast.LENGTH_SHORT).show();
+                    .setNegativeButton(getString(R.string.new_list_cancel), (dialog, which) -> {
+                        Toast.makeText(requireContext(), getString(R.string.new_list_no_changes_toast), Toast.LENGTH_SHORT).show();
                     })
                     .show();
+            //ACCESSIBILITY
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.new_list_dialog_message));
         });
 
         // Check if all are checked and use the correct initial icon
@@ -143,6 +152,9 @@ public class MyShoppingListFragment extends Fragment {
 
             // Change the state of the button
             checkAll = !checkAll;
+
+            //ACCESSIBILITY
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.all));
         });
 
         // Add Item Button Listener
@@ -150,15 +162,18 @@ public class MyShoppingListFragment extends Fragment {
             addItem(foodMode);
             recyclerView.smoothScrollToPosition(adapter.getItemCount());
             loadItemsFromDB();
+
+            //ACCESSIBILITY
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.add));
         });
 
         // Refill Ingredients Button Listener
         refillIngredientsButton.setOnClickListener(v -> {
             new AlertDialog.Builder(getContext())
-                    .setTitle("Refill Ingredients?")
-                    .setMessage("Are you sure that you want to add all the checked items in your Ingredients?")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        Toast.makeText(requireContext(), "Ingredients Refilled!", Toast.LENGTH_SHORT).show();
+                    .setTitle(getString(R.string.refill_dialog_title))
+                    .setMessage(getString(R.string.refill_dialog_message))
+                    .setPositiveButton(getString(R.string.new_list_confirm), (dialog, which) -> {
+                        Toast.makeText(requireContext(), getString(R.string.refill_success_toast), Toast.LENGTH_SHORT).show();
                         // Perform the refilling in the database
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
                             // Refill food items
@@ -167,10 +182,13 @@ public class MyShoppingListFragment extends Fragment {
                             loadItemsFromDB();
                         }
                     })
-                    .setNegativeButton("No", (dialog, which) -> {
-                        Toast.makeText(requireContext(), "No changes made", Toast.LENGTH_SHORT).show();
+                    .setNegativeButton(getString(R.string.new_list_cancel), (dialog, which) -> {
+                        Toast.makeText(requireContext(), getString(R.string.new_list_no_changes_toast), Toast.LENGTH_SHORT).show();
                     })
                     .show();
+
+            //ACCESSIBILITY
+            NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.refill_dialog_message));
         });
         return view;
     }
