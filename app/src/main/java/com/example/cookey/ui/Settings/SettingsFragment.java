@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -16,7 +17,10 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.example.cookey.MainActivity;
+import com.example.cookey.NarratorHelper;
+import com.example.cookey.NarratorManager;
 import com.example.cookey.R;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.Locale;
 
@@ -27,8 +31,34 @@ public class SettingsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
         Button changeLanguageBtn = root.findViewById(R.id.button);
         Button changeThemeBtn = root.findViewById(R.id.button2);
-        changeLanguageBtn.setOnClickListener(v -> changeLanguage());
-        changeThemeBtn.setOnClickListener(v -> changeTheme());
+
+        MaterialSwitch narratorSwitch = root.findViewById(R.id.switchNarrator);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+
+       // NarratorHelper.enableNarrationForAllTextViews(root);
+
+        //Init the switch according to saved key
+        narratorSwitch.setChecked(prefs.getBoolean("narrator_enabled", false));
+
+        // Saves the switch state
+        narratorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("narrator_enabled", isChecked).apply();
+        });
+
+        narratorSwitch.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(this.getContext(), getString(R.string.narrator_btn));
+        });
+
+
+        changeLanguageBtn.setOnClickListener(v -> {
+            NarratorManager.speakIfEnabled(this.getContext(), getString(R.string.change_language));
+            changeLanguage();
+        });
+
+        changeThemeBtn.setOnClickListener(v ->{
+                changeTheme();
+                NarratorManager.speakIfEnabled(this.getContext(), getString(R.string.change_theme));
+        });
         return root;
     }
 
@@ -38,16 +68,22 @@ public class SettingsFragment extends Fragment {
         builder.setTitle("Choose Language");
         builder.setItems(languages, (dialog, which) -> {
             switch (which) {
-                case 0: setLocale("en"); break;
-                case 1: setLocale("el"); break;
-                case 2: setLocale("ko"); break;
+                case 0:
+
+                    setLocale("en");
+                    break;
+                case 1:
+
+                    setLocale("el");
+                    break;
+                case 2:
+
+                    setLocale("ko");
+                    break;
             }
+            NarratorManager.speakIfEnabled(requireContext(), languages[which]);
         });
         builder.show();
-    }
-    private void saveLanguagePreference(String langCode) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        prefs.edit().putString("app_lang", langCode).apply();
     }
     private void setLocale(String languageCode) {
         // Save for the next launches
@@ -67,10 +103,9 @@ public class SettingsFragment extends Fragment {
                 .updateConfiguration(config,
                         requireContext().getResources().getDisplayMetrics());
 
-        // Restart MainActivity
-        Intent refresh = new Intent(getActivity(), MainActivity.class);
-        startActivity(refresh);
-        requireActivity().finish();
+        // Restart Activity
+        requireActivity().recreate();
+
     }
     private void changeTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());

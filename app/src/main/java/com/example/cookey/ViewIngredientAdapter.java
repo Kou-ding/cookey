@@ -30,6 +30,15 @@ public class ViewIngredientAdapter extends RecyclerView.Adapter<ViewIngredientAd
         holder.textViewQuantity.setText(String.valueOf(ingredient.getQuantity()));
         holder.textViewUnit.setText(ingredient.getUnit());
         holder.textViewName.setText(ingredient.getName());
+
+        // Accessibility - Narrator must read the full Ingredient description
+        String fullDescription = String.format("%.0f %s %s",
+                ingredient.getQuantity(),
+                ingredient.getUnit(),
+                ingredient.getName());
+
+        holder.itemView.setOnClickListener(v ->
+                NarratorManager.speakIfEnabled(v.getContext(), fullDescription));
     }
 
     @Override

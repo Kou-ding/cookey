@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.cookey.DBHandler;
 import com.example.cookey.Ingredient;
+import com.example.cookey.NarratorManager;
 import com.example.cookey.R;
 import com.google.android.material.button.MaterialButton;
 
@@ -69,6 +70,13 @@ public class MyIngredientsFragment extends Fragment {
                             : R.drawable.ic_edit
             );
             editButton.setIcon(newIcon);
+
+            //ACCESSIBILITY
+            String narrationText = editMode
+                    ? getString(R.string.edit_mode_enabled)
+                    : getString(R.string.edit_mode_disabled);
+            NarratorManager.speakIfEnabled(requireContext(), narrationText);
+
         });
 
         return view;

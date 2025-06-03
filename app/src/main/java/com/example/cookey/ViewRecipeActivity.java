@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -73,6 +74,9 @@ public class ViewRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_recipe_details);
 
+        View rootView = findViewById(android.R.id.content);
+        NarratorHelper.enableNarrationForAllTextViews(rootView);
+
         recipeID = getIntent().getLongExtra("RECIPE_ID", -1);
 
         if (recipeID == -1) {
@@ -129,8 +133,14 @@ public class ViewRecipeActivity extends AppCompatActivity {
                 imageViewRecipe.setImageResource(R.drawable.placeholder_view_recipe);
             }
 
+            // Accessibility
+            imageViewRecipe.setOnClickListener(v ->
+                    NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.recipe_image_desc)));
+
             // Name. If it cannot get a name, write unnamed. It was a bug that i cannot reproduce
             textViewRecipeName.setText((recipe.getName() != null && !recipe.getName().isEmpty()) ? recipe.getName() : getString(R.string.unnamed_recipe_text));
+
+         //   textViewRecipeName.setOnClickListener(v -> NarratorManager.speakIfEnabled(v.getContext(), textViewRecipeName.getText().toString()));
 
 
             // Tags
@@ -144,7 +154,14 @@ public class ViewRecipeActivity extends AppCompatActivity {
             textViewCountry.setText(recipe.getCountryName());
 
             // Added OnClick to display full country name if it is too big
-            textViewCountry.setOnClickListener(v -> Toast.makeText(this, recipe.getCountryName(), Toast.LENGTH_SHORT).show());
+            textViewCountry.setOnClickListener(v -> {
+                Toast.makeText(this, recipe.getCountryName(), Toast.LENGTH_SHORT).show();
+
+                // Accessibility
+                NarratorManager.speakIfEnabled(this, recipe.getCountryName());
+            });
+
+
             Log.d("CountryCheck!",recipe.getCountryName());
 
             // Time (minutes)
@@ -179,6 +196,15 @@ public class ViewRecipeActivity extends AppCompatActivity {
             recyclerViewIngredients.setVisibility(View.VISIBLE);
             recyclerViewSteps.setVisibility(View.GONE);
             highlightSelectedTab(tabIngredients, tabSteps);
+
+        });
+
+        //Αccessibility - Read it only when touched, not on activity enter
+        tabIngredients.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                NarratorManager.speakIfEnabled(v.getContext(), tabIngredients.getText().toString());
+            }
+            return false;
         });
 
         tabSteps.setOnClickListener(v -> {
@@ -187,12 +213,19 @@ public class ViewRecipeActivity extends AppCompatActivity {
             highlightSelectedTab(tabSteps, tabIngredients);
         });
 
+        tabSteps.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                NarratorManager.speakIfEnabled(v.getContext(), tabSteps.getText().toString());
+            }
+            return false;
+        });
+
         // Default tab
         tabIngredients.performClick();
 
 
         btnConsume.setOnClickListener(view -> {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.consume_question_mark)
                     .setMessage(R.string.consume_recipe_warning_msg)
                     .setPositiveButton(R.string.consume_recipe_yes_msg, (dialog, which) -> {
@@ -202,12 +235,18 @@ public class ViewRecipeActivity extends AppCompatActivity {
                     })
                     .setNegativeButton(R.string.consume_recipe_no_msg, null)
                     .show();
+
+            // Accessibility - speak the warning
+            NarratorManager.speakIfEnabled(this, getString(R.string.consume_recipe_warning_msg));
+
         });
 
         btnFavorite.setOnClickListener(view -> {
             assert recipe != null;
             boolean newFavStatus = !recipe.isFavorite(); // toggle
             dbHandler.setFavorite(recipeID, newFavStatus); // update dB
+
+            NarratorManager.speakIfEnabled(view.getContext(), getString(R.string.favBtnDescription));
 
             recipe.setFavorite(newFavStatus); // update obj
             btnFavorite.setImageResource(
@@ -217,11 +256,15 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
         btnDelete.setOnClickListener(view ->{
             new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.delete_recipe_title)        // π.χ.  «Διαγραφή»
-                    .setMessage(R.string.delete_recipe_message)    // «Σίγουρα;»
+                    .setTitle(R.string.delete_recipe_title)
+                    .setMessage(R.string.delete_recipe_message)
                     .setPositiveButton(R.string.consume_recipe_yes_msg, (d, w) -> deleteRecipe())
                     .setNegativeButton(R.string.consume_recipe_no_msg, null)
                     .show();
+
+            // Accessibility - speak the warning
+            NarratorManager.speakIfEnabled(this, getString(R.string.delete_recipe_message));
+
         });
 
 
@@ -237,9 +280,6 @@ public class ViewRecipeActivity extends AppCompatActivity {
         });
 
          */
-
-
-        // TODO: btnConsume
 
         btnEditRecipe.setOnClickListener(v -> {
             // Get recipeId and send it to AddOrEditActivity

@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,6 +63,21 @@ public class SearchRecipeActivity extends AppCompatActivity {
         // Setup RecyclerView
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         List<RecipeModel> initialRecipes=dbHandler.getAllRecipes();
+
+        //Accessibility
+        NarratorManager.speakIfEnabled(this, getString(R.string.title_search_recipe));
+
+
+
+        filterSpinner.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.all_filter));
+            }
+            return false;
+        });
+
+
+
         adapter = new MyRecipesAdapter(initialRecipes, new MyRecipesAdapter.OnRecipeClickListener() {
             @Override
             public void onRecipeClick(RecipeModel recipe) {

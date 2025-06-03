@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cookey.NarratorManager;
 import com.example.cookey.R;
 import com.example.cookey.RecipeModel;
 
@@ -73,11 +74,18 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.Reci
             boolean newFav = !recipe.isFavorite();
             recipe.setFavorite(newFav);           // ενημέρωσε το αντικείμενο
             setFavIcon(holder.favBtn, newFav);
+
+            NarratorManager.speakIfEnabled(v.getContext(), v.getContext().getString(R.string.favBtnDescription));
+
+
             if (listener != null) listener.onFavoriteClick(recipe, newFav);  // => Fragment → DB
         });
 
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onRecipeClick(recipe);
+            if (listener != null){
+                NarratorManager.speakIfEnabled(v.getContext(), recipe.getName());
+                listener.onRecipeClick(recipe);
+            }
         });
     }
 
