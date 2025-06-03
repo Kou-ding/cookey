@@ -86,9 +86,16 @@ public class AddOrEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         applyTheme();
-        getSupportActionBar().setTitle(R.string.title_add_recipe);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_recipe);
+
+        // Enable the back button in the action bar
+        if (getSupportActionBar() != null) {
+            // Enable the back button and set the title
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.title_add_recipe);
+        }
 
         //Accessibility
         NarratorManager.speakIfEnabled(this, getString(R.string.title_add_recipe));

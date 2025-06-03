@@ -69,10 +69,17 @@ public class ViewRecipeActivity extends AppCompatActivity {
     }
     @Override
     protected void onCreate(Bundle savedInstance){
+
         applyTheme();
-        getSupportActionBar().setTitle(R.string.title_recipe_details);
+
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_recipe_details);
+
+        // Enable the back button in the action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.title_recipe_details);
+        }
 
         View rootView = findViewById(android.R.id.content);
         NarratorHelper.enableNarrationForAllTextViews(rootView);
