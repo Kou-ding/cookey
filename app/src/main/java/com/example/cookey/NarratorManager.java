@@ -7,7 +7,7 @@ import android.speech.tts.TextToSpeech;
 
 import java.util.Locale;
 
-//THIS WAS A REQUEST MADE BY PERSON WITH VISION IMPAIRMENT. SHE'S AWESOME ✨
+// THIS WAS A REQUEST MADE BY A PERSON WITH VISION IMPAIRMENT. SHE'S AWESOME ✨
 public class NarratorManager {
     private static boolean enabled;
     private static TextToSpeech tts;
