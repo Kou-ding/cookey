@@ -20,7 +20,7 @@ import java.util.Objects;
 public class AIRecipeEditActivity extends AppCompatActivity {
     private void applyTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String theme = prefs.getString("app_theme", "light");
+        String theme = prefs.getString("app_theme", "dark");
         if ("dark".equals(theme)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             setTheme(R.style.Theme_Cookey_Dark);

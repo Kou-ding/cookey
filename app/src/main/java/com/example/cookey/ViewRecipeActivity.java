@@ -70,6 +70,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstance){
         applyTheme();
+        getSupportActionBar().setTitle(R.string.title_recipe_details);
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_recipe_details);
 

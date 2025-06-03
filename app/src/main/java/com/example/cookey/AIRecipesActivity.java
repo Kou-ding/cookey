@@ -21,7 +21,7 @@ public class AIRecipesActivity extends AppCompatActivity {
     RecyclerView.Adapter<AIRecipesAdapter.ViewHolder> adapter;
     private void applyTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String theme = prefs.getString("app_theme", "light");
+        String theme = prefs.getString("app_theme", "dark");
         if ("dark".equals(theme)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             setTheme(R.style.Theme_Cookey_Dark);
@@ -40,7 +40,7 @@ public class AIRecipesActivity extends AppCompatActivity {
         // Enable the back button in the action bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("My AI Recipes");
+            getSupportActionBar().setTitle(R.string.my_ai_recipes);
         }
 
         setContentView(R.layout.activity_ai_recipes);

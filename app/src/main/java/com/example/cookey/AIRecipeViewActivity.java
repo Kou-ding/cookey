@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 public class AIRecipeViewActivity extends AppCompatActivity {
     private void applyTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String theme = prefs.getString("app_theme", "light");
+        String theme = prefs.getString("app_theme", "dark");
         if ("dark".equals(theme)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             setTheme(R.style.Theme_Cookey_Dark);
@@ -33,7 +33,7 @@ public class AIRecipeViewActivity extends AppCompatActivity {
         // Enable the back button in the action bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("View AI Recipe");
+            getSupportActionBar().setTitle(R.string.view_ai_recipe);
         }
         // Get the ai recipe id from the intent
         String AIRecipeIdString = getIntent().getStringExtra("AIRecipeId");

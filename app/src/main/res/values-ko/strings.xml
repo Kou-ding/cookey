@@ -119,30 +119,4 @@
     <string name="delete_recipe_title">레시피 삭제</string>
     <string name="delete_recipe_message">이 레시피를 삭제하시겠습니까?</string>
     <string name="recipe_deleted">레시피가 삭제되었습니다!</string>
-    <string name="add">추가</string>
-    <string name="new_list">새 목록</string>
-    <string name="refill_ingredients">재료 다시 채우기</string>
-    <string name="narrator_btn">내레이터</string>
-    <string name="lang_eng">English</string>
-    <string name="lang_el">Ελληνικά</string>
-    <string name="lang_ko">한국어</string>
-    <string name="add_ingredient_desc">재료 추가</string>
-    <string name="add_step_desc">단계 추가</string>
-    <string name="edit_mode_enabled">편집 모드 활성화됨</string>
-    <string name="edit_mode_disabled">편집 모드 비활성화됨</string>
-    <string name="servings_description">레시피 인분 수</string>
-    <string name="ai_recipes">AI 레시피들</string>
-    <string name="decor">꾸미기</string>
-    <string name="use_my_ingredients">내 재료 사용하기</string>
-
-    <string name="new_list_dialog_title">새 목록?</string>
-    <string name="new_list_dialog_message">새로운 장보기 목록을 생성하시겠습니까? (현재 목록의 모든 항목이 삭제됩니다!)</string>
-    <string name="new_list_confirm">예</string>
-    <string name="new_list_cancel">아니오</string>
-    <string name="new_list_created_toast">새 목록이 생성되었습니다!</string>
-    <string name="new_list_no_changes_toast">변경사항이 없습니다</string>
-
-    <string name="refill_dialog_title">재료 다시 채우기?</string>
-    <string name="refill_dialog_message">선택한 모든 항목을 재료 목록에 추가하시겠습니까?</string>
-    <string name="refill_success_toast">재료가 다시 채워졌습니다!</string>
 </resources>

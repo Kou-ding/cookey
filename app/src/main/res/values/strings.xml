@@ -125,25 +125,4 @@
     <string name="refill_ingredients">Refill Ingredients</string>
     <string name="ai_recipes">AI Recipes</string>
     <string name="decor">decor</string>
-    <string name="narrator_btn">Narrator</string>
-    <string name="lang_eng">English</string>
-    <string name="lang_el">Ελληνικά</string>
-    <string name="lang_ko">한국어</string>
-    <string name="add_ingredient_desc">Add Ingredient</string>
-    <string name="add_step_desc">Add Step</string>
-    <string name="edit_mode_enabled">Edit Mode Enabled</string>
-    <string name="edit_mode_disabled">Edit Mode Disabled</string>
-    <string name="servings_description">Recipe Servings</string>
-    <string name="use_my_ingredients">Use my Ingredients</string>
-
-    <string name="new_list_dialog_title">New List?</string>
-    <string name="new_list_dialog_message">Are you sure that you want create a new Shopping List? (All the items in your current Shopping List will be deleted!)</string>
-    <string name="new_list_confirm">Yes</string>
-    <string name="new_list_cancel">No</string>
-    <string name="new_list_created_toast">New List created!</string>
-    <string name="new_list_no_changes_toast">No changes made</string>
-
-    <string name="refill_dialog_title">Refill Ingredients?</string>
-    <string name="refill_dialog_message">Are you sure that you want to add all the checked items in your Ingredients?</string>
-    <string name="refill_success_toast">Ingredients Refilled!</string>
 </resources>

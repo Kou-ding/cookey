@@ -35,7 +35,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
     private DBHandler dbHandler;
     private void applyTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String theme = prefs.getString("app_theme", "light");
+        String theme = prefs.getString("app_theme", "dark");
         if ("dark".equals(theme)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             setTheme(R.style.Theme_Cookey_Dark);
@@ -50,6 +50,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.title_search_recipe);
         setContentView(R.layout.activity_search_recipe);
         // Initialize database handler first
         dbHandler = new DBHandler(this,null ,null,1);

@@ -72,7 +72,7 @@ public class AddOrEditActivity extends AppCompatActivity {
 
     private void applyTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String theme = prefs.getString("app_theme", "light");
+        String theme = prefs.getString("app_theme", "dark");
         if ("dark".equals(theme)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             setTheme(R.style.Theme_Cookey_Dark);
@@ -86,6 +86,7 @@ public class AddOrEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         applyTheme();
+        getSupportActionBar().setTitle(R.string.title_add_recipe);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_recipe);
 

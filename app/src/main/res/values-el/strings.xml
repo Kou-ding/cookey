@@ -126,25 +126,4 @@
     <string name="refill_ingredients">Αναπλήρωση Υλικών</string>
     <string name="ai_recipes">AI Συνταγές</string>
     <string name="decor">decor</string>
-    <string name="narrator_btn">Αφηγητής</string>
-    <string name="lang_eng">English</string>
-    <string name="lang_el">Ελληνικά</string>
-    <string name="lang_ko">한국어</string>
-    <string name="add_ingredient_desc">Προσθήκη Υλικού</string>
-    <string name="add_step_desc">Προσθήκη Βήματος</string>
-    <string name="edit_mode_enabled">Λειτουργία Επεξεργασίας Ενεργοποιήθηκε</string>
-    <string name="edit_mode_disabled">Λειτουργία Επεξεργασίας Απενεργοποιήθηκε</string>
-    <string name="servings_description">Μερίδες Συνταγής</string>
-    <string name="use_my_ingredients">Χρήση των Υλικών μου</string>
-
-    <string name="new_list_dialog_title">Νέα Λίστα;</string>
-    <string name="new_list_dialog_message">Είστε σίγουρος ότι θέλετε να δημιουργήσετε νέα λίστα αγορών; (Όλα τα προϊόντα της τρέχουσας λίστας θα διαγραφούν!)</string>
-    <string name="new_list_confirm">Ναι</string>
-    <string name="new_list_cancel">Όχι</string>
-    <string name="new_list_created_toast">Η νέα λίστα δημιουργήθηκε!</string>
-    <string name="new_list_no_changes_toast">Δεν έγιναν αλλαγές</string>
-
-    <string name="refill_dialog_title">Να ξαναπροσθέσω τα υλικά;</string>
-    <string name="refill_dialog_message">Είστε σίγουρος ότι θέλετε να προσθέσετε όλα τα επιλεγμένα προϊόντα στα Υλικά σας;</string>
-    <string name="refill_success_toast">Τα υλικά προστέθηκαν ξανά!</string>
 </resources>
