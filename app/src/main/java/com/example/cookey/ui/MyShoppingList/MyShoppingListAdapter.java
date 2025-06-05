@@ -29,254 +29,196 @@
 
     public class MyShoppingListAdapter extends RecyclerView.Adapter<MyShoppingListAdapter.ViewHolder>{
         private List<ShoppingListItem> items;
-        private ArrayAdapter<String> autoCompleteAdapter;
-
+        private List<ShoppingListItem> displayedItems;
+        private ArrayAdapter<String> foodAutoCompleteAdapter;
+        private ArrayAdapter<String> nonFoodAutoCompleteAdapter;
         private boolean foodMode = true;
+        Context context;
 
         public MyShoppingListAdapter(List<ShoppingListItem> items, Context context) {
-            this.items = items;
-            this.autoCompleteAdapter = createAutoCompleteAdapter(context);
+            this.context = context;
+            this.items = new ArrayList<>(items);
+            this.displayedItems = new ArrayList<>();
+            this.foodAutoCompleteAdapter = createFoodAutoCompleteAdapter(context);
+            this.nonFoodAutoCompleteAdapter = createNonFoodAutoCompleteAdapter(context);
+            setDisplayedItems();
         }
-        private ArrayAdapter<String> createAutoCompleteAdapter(Context context) {
-            List<String> suggestions = new ArrayList<>();
+        public void setDisplayedItems() {
+            displayedItems.clear();
+            for (ShoppingListItem item : items) {
+                if (foodMode && item.getIsFood() || !foodMode && !item.getIsFood()) {
+                    displayedItems.add(item);
+                }
+            }
+            notifyDataSetChanged();
+        }
+        private ArrayAdapter<String> createFoodAutoCompleteAdapter(Context context) {
+            List<String> foodSuggestions = new ArrayList<>();
             try (DBHandler db = new DBHandler(context, null, null, 1)) {
                 for (Ingredient ingredient : db.getAllIngredients()) {
-                    suggestions.add(ingredient.getIngredientName());
+                    foodSuggestions.add(ingredient.getIngredientName());
                 }
             }
             return new ArrayAdapter<>(
                     context,
                     android.R.layout.simple_dropdown_item_1line,
-                    suggestions
+                    foodSuggestions
             );
         }
-        private TextWatcher nameTextWatcher;
-        private TextWatcher quantityTextWatcher;
+
+        private ArrayAdapter<String> createNonFoodAutoCompleteAdapter(Context context) {
+            List<String> nonFoodSuggestions = new ArrayList<>();
+
+            // Add common non-food shopping items
+            nonFoodSuggestions.add("Paper towels");
+            nonFoodSuggestions.add("Toilet paper");
+            nonFoodSuggestions.add("Laundry detergent");
+            nonFoodSuggestions.add("Dish soap");
+            nonFoodSuggestions.add("Trash bags");
+            nonFoodSuggestions.add("Batteries");
+            nonFoodSuggestions.add("Light bulbs");
+            nonFoodSuggestions.add("Aluminum foil");
+            nonFoodSuggestions.add("Plastic wrap");
+            nonFoodSuggestions.add("Ziploc bags");
+            nonFoodSuggestions.add("Sponges");
+            nonFoodSuggestions.add("Cleaning supplies");
+            nonFoodSuggestions.add("Shampoo");
+            nonFoodSuggestions.add("Conditioner");
+            nonFoodSuggestions.add("Body wash");
+            nonFoodSuggestions.add("Toothpaste");
+            nonFoodSuggestions.add("Deodorant");
+            nonFoodSuggestions.add("Razors");
+            nonFoodSuggestions.add("Shaving cream");
+            nonFoodSuggestions.add("Band-aids");
+            nonFoodSuggestions.add("Vitamins");
+            nonFoodSuggestions.add("Cotton swabs");
+            nonFoodSuggestions.add("Tissues");
+            nonFoodSuggestions.add("Napkins");
+            nonFoodSuggestions.add("Parchment paper");
+            nonFoodSuggestions.add("Plastic containers");
+            nonFoodSuggestions.add("Aluminum pans");
+            nonFoodSuggestions.add("Matches");
+            nonFoodSuggestions.add("Candles");
+            nonFoodSuggestions.add("Air freshener");
+
+            return new ArrayAdapter<>(
+                    context,
+                    android.R.layout.simple_dropdown_item_1line,
+                    nonFoodSuggestions
+            );
+        }
         class ViewHolder extends RecyclerView.ViewHolder {
             CheckBox ingredientCheckbox;
             AutoCompleteTextView autoCompleteIngredient;
             ImageButton deleteItem;
-            ImageButton editItem;
             TextView itemUnitSystem;
             EditText itemQuantityEdit;
+
 
             public ViewHolder(View view) {
                 super(view);
                 ingredientCheckbox = itemView.findViewById(R.id.ingredientCheckbox);
                 autoCompleteIngredient = itemView.findViewById(R.id.autoCompleteIngredient);
                 deleteItem = itemView.findViewById(R.id.deleteItem);
-                editItem = itemView.findViewById(R.id.editItem);
                 itemUnitSystem = itemView.findViewById(R.id.itemUnitSystem);
                 itemQuantityEdit = itemView.findViewById(R.id.itemQuantityEdit);
 
                 // Set it to the AutoCompleteTextView
                 autoCompleteIngredient.setThreshold(1);
+                // Single line input and no suggestions
+                autoCompleteIngredient.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_FILTER);
+                autoCompleteIngredient.setSingleLine(true);
 
                 // Listen for when an item is selected from dropdown
                 autoCompleteIngredient.setOnItemClickListener((parent, dropdownView, position, id) -> {
                     // When an item is selected from dropdown:
-                    autoCompleteIngredient.setEnabled(false);  // Make text uneditable
-                    itemQuantityEdit.setEnabled(true);         // Enable quantity field
-                    itemQuantityEdit.setText("");              // Clear quantity field
-                    itemQuantityEdit.requestFocus();           // Move focus to quantity
-                    // Show the keyboard
-                    InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.showSoftInput(itemQuantityEdit, InputMethodManager.SHOW_IMPLICIT);
-                    }
-
                     autoCompleteIngredient.setVisibility(View.GONE);  // Hide the auto complete text
-                    ingredientCheckbox.setVisibility(View.VISIBLE);  // Show the prettier checkbox text
                     ingredientCheckbox.setText((String) parent.getItemAtPosition(position));  // Set the checkbox text to the selected item
 
-                    // Save the item name immediately on the list
-                    String selectedItem = (String) parent.getItemAtPosition(position);
-                    int adapterPos = getAdapterPosition();
-                    if (adapterPos != RecyclerView.NO_POSITION) {
-                        items.get(adapterPos).setShoppingListItemName(selectedItem);
-                    }
-                    // Save the item name to the database
-                    try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
-                        db.setShoppingListItemName(items.get(adapterPos).getShoppingListItemId(), selectedItem);
-                    }
+                    // Get the current displayed item
+                    int displayPos = getAdapterPosition();
+                    if (displayPos != RecyclerView.NO_POSITION) {
+                        ShoppingListItem currentItem = displayedItems.get(displayPos);
+                        currentItem.setShoppingListItemName((String) parent.getItemAtPosition(position));
 
-                    // Fetch the correct unit system
-                    String unitSystem;
-                    try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
-                        unitSystem = db.getUnitSystem((String) parent.getItemAtPosition(position));
-                    }
-                    itemUnitSystem.setText(unitSystem);
-                });
-
-                // Make "enter" viable for non food entries
-                autoCompleteIngredient.setOnEditorActionListener((v, actionId, event) -> {
-                    // Handle both soft keyboard "Done" action and physical Enter key
-                    if (actionId == EditorInfo.IME_ACTION_DONE ||
-                            (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
-                                    event.getAction() == KeyEvent.ACTION_DOWN)) {
-
-                        String selectedText = autoCompleteIngredient.getText().toString().trim();
-                        if (!selectedText.isEmpty()) {
-                            // 1. First clear focus from current view
-                            autoCompleteIngredient.clearFocus();
-
-                            // 2. Prevent new line from being created
-                            autoCompleteIngredient.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-
-                            // 3. Execute the focus change after a small delay
-                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                                // Hide the AutoCompleteTextView
-                                autoCompleteIngredient.setVisibility(View.GONE);
-
-                                // Show the checkbox with selected text
-                                ingredientCheckbox.setVisibility(View.VISIBLE);
-                                ingredientCheckbox.setText(selectedText);
-
-                                // Prepare quantity field
-                                itemQuantityEdit.setText("");
-                                itemQuantityEdit.setEnabled(true);
-
-                                // Force focus to quantity field
-                                itemQuantityEdit.requestFocusFromTouch();
-
-                                // Show keyboard for quantity field
-                                InputMethodManager imm = (InputMethodManager) itemView.getContext()
-                                        .getSystemService(Context.INPUT_METHOD_SERVICE);
-                                if (imm != null) {
-                                    imm.showSoftInput(itemQuantityEdit, InputMethodManager.SHOW_IMPLICIT);
-                                }
-
-                                // Save to list and database
-                                int adapterPos = getAdapterPosition();
-                                if (adapterPos != RecyclerView.NO_POSITION) {
-                                    items.get(adapterPos).setShoppingListItemName(selectedText);
-                                    try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
-                                        db.setShoppingListItemName(items.get(adapterPos).getShoppingListItemId(), selectedText);
-
-                                        // Fetch unit system
-                                        String unitSystem = db.getUnitSystem(selectedText);
-                                        itemUnitSystem.setText(unitSystem);
-                                    }
-                                }
-                            }, 50); // Small delay to ensure smooth transition
-
-                            return true; // Consume the event
-                        }
-                    }
-                    return false;
-                });
-
-                // Also add this to your AutoCompleteTextView setup to prevent multi-line input
-                autoCompleteIngredient.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
-                        InputType.TYPE_TEXT_VARIATION_FILTER);
-                autoCompleteIngredient.setSingleLine(true);
-
-                // Handle "enter" during editing the quantity
-                itemQuantityEdit.setOnEditorActionListener((v, actionId, event) -> {
-                    // Handle "Done" or "Enter" key press
-                    if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                        int adapterPos = getAdapterPosition();
-                        if (adapterPos != RecyclerView.NO_POSITION) {
-                            // Get the entered quantity (default to 0 if empty)
-                            String quantityStr = itemQuantityEdit.getText().toString();
-                            float quantity = quantityStr.isEmpty() ? 0 : Float.parseFloat(quantityStr);
-
-                            // If quantity is 0, clear the field to allow re-entry
-                            if (quantity == 0) {
-                                itemQuantityEdit.setText(""); // Clear the field
-                                itemQuantityEdit.requestFocus(); // Keep focus for new input
-                                return true; // Do not proceed with saving
+                        // Update the corresponding item in the main list
+                        for (ShoppingListItem item : items) {
+                            if (item.getShoppingListItemId() == currentItem.getShoppingListItemId()) {
+                                item.setShoppingListItemName(currentItem.getShoppingListItemName());
+                                break;
                             }
-
-                            // Save the quantity to the list
-                            items.get(adapterPos).setPurchasedQuantity(quantity);
-
-                            // Save to database
-                            try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
-                                db.setShoppingListItemQuantity(
-                                        items.get(adapterPos).getShoppingListItemId(),
-                                        quantity
-                                );
-                            }
-
-                            // Disable editing and switch UI states
-                            itemQuantityEdit.setEnabled(false);
-                            deleteItem.setVisibility(View.GONE);
-                            editItem.setVisibility(View.VISIBLE);
                         }
-                        return true;
-                    }
-                    return false;
-                });
 
-                // Handle edit button click
-                editItem.setOnClickListener(v -> {
-                    deleteItem.setVisibility(View.VISIBLE);
-                    editItem.setVisibility(View.GONE);
-                    itemQuantityEdit.setEnabled(true);
-                    // Move focus to quantity
-                    itemQuantityEdit.requestFocus();
-                    // Move cursor to end
-                    itemQuantityEdit.setSelection(itemQuantityEdit.getText().length());
-                    // Show the keyboard
-                    InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.showSoftInput(itemQuantityEdit, InputMethodManager.SHOW_IMPLICIT);
+                        // Update unit system
+                        String unitSystem;
+                        try (DBHandler db = new DBHandler(itemView.getContext(), null, null, 1)) {
+                            unitSystem = db.getUnitSystem(currentItem.getShoppingListItemName());
+                        }
+                        itemUnitSystem.setText(unitSystem);
                     }
                 });
 
                 // Handle delete button click
                 deleteItem.setOnClickListener(v -> {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        // Store the name before removing
-                        int itemId = items.get(position).getShoppingListItemId();
+                    int displayPosition = getAdapterPosition();
+                    if (displayPosition != RecyclerView.NO_POSITION) {
+                        ShoppingListItem itemToRemove = displayedItems.get(displayPosition);
 
-                        // Remove from list and notify adapter
-                        items.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, items.size());
-
-                        // Delete from DB
-                        try (DBHandler db = new DBHandler(v.getContext(), null, null, 1)) {
-                            db.deleteShoppingListItem(itemId);
+                        // Remove from both lists by ID
+                        int idToRemove = itemToRemove.getShoppingListItemId();
+                        for (int i = 0; i < items.size(); i++) {
+                            if (items.get(i).getShoppingListItemId() == idToRemove) {
+                                items.remove(i);
+                                break;
+                            }
                         }
+                        displayedItems.remove(displayPosition);
+
+                        notifyItemRemoved(displayPosition);
+                        notifyItemRangeChanged(displayPosition, displayedItems.size());
                     }
                 });
 
                 // Handle checkbox state change
                 ingredientCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     // Update the checked status of the item
-                    items.get(getAdapterPosition()).setIsChecked(isChecked);
-
-                    // Update the database
-                    try (DBHandler db = new DBHandler(buttonView.getContext(), null, null, 1)) {
-                        db.setShoppingListItemChecked(items.get(getAdapterPosition()).getShoppingListItemId(), isChecked);
+                    int displayPosition = getAdapterPosition();
+                    if (displayPosition != RecyclerView.NO_POSITION) {
+                        displayedItems.get(displayPosition).setIsChecked(isChecked);
                     }
                 });
 
-                // Initialize TextWatchers once
-                nameTextWatcher = new TextWatcher() {
-                    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                    @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
-                    @Override public void afterTextChanged(Editable s) {
-                        int pos = getAdapterPosition();
-                        if (pos != RecyclerView.NO_POSITION) {
-                            items.get(pos).setShoppingListItemName(s.toString());
+                // TextWatcher for the edit text
+                itemQuantityEdit.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            try {
+                                float quantity = s.toString().isEmpty() ? 0 : Float.parseFloat(s.toString());
+                                ShoppingListItem currentItem = displayedItems.get(position);
+                                currentItem.setPurchasedQuantity(quantity);
+
+                                // Update main list
+                                for (ShoppingListItem item : items) {
+                                    if (item.getShoppingListItemId() == currentItem.getShoppingListItemId()) {
+                                        item.setPurchasedQuantity(quantity);
+                                        break;
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                // Handle invalid number input
+                                itemQuantityEdit.setError("Invalid number");
+                            }
                         }
                     }
-                };
-                quantityTextWatcher = new TextWatcher() {
-                    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                    @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
-                    @Override public void afterTextChanged(Editable s) {
-                        int pos = getAdapterPosition();
-                        if (pos != RecyclerView.NO_POSITION) {
-                            float quantity = s.toString().isEmpty() ? 0 : Float.parseFloat(s.toString());
-                            items.get(pos).setPurchasedQuantity(quantity);
-                        }
-                    }
-                };
+                });
             }
         }
 
@@ -289,56 +231,56 @@
 
         @Override
         public void onBindViewHolder(MyShoppingListAdapter.ViewHolder holder, int position) {
-            ShoppingListItem item = items.get(position);
+
+            // Get the position of the item in the displayed list
+            ShoppingListItem displayedItem = displayedItems.get(position);
 
             // Set the checkbox state based on the item 'checked' property
-            holder.ingredientCheckbox.setChecked(item.getIsChecked());
+            holder.ingredientCheckbox.setChecked(displayedItem.getIsChecked());
 
             // Set different app behaviour for new items based on the fact that they start with null text
-            if (item.getShoppingListItemName() == null || item.getShoppingListItemName().isEmpty()) {
+            if (displayedItem.getShoppingListItemName() == null || displayedItem.getShoppingListItemName().isEmpty()) {
                 holder.autoCompleteIngredient.setVisibility(View.VISIBLE);
                 holder.ingredientCheckbox.setText("");
-                holder.autoCompleteIngredient.requestFocus(); // optionally focus it
+                holder.autoCompleteIngredient.setText("");
             } else {
                 holder.autoCompleteIngredient.setVisibility(View.GONE);
                 holder.ingredientCheckbox.setVisibility(View.VISIBLE);
-                holder.ingredientCheckbox.setText(item.getShoppingListItemName());
+                holder.ingredientCheckbox.setText(displayedItem.getShoppingListItemName());
             }
 
             // Quantity edit text
-            holder.itemQuantityEdit.setText(String.valueOf(item.getPurchasedQuantity()));
-            holder.itemQuantityEdit.setEnabled(false);
+            float quantity = displayedItem.getPurchasedQuantity();
+            holder.itemQuantityEdit.setText(quantity == 0 ? "" : String.valueOf(quantity));
 
-            // Edit and Delete Item buttons
-            holder.editItem.setVisibility(View.VISIBLE);
-            holder.deleteItem.setVisibility(View.GONE);
+            // Delete Item button
+            holder.deleteItem.setVisibility(View.VISIBLE);
 
             // Unit system
             String unitSystem;
             try (DBHandler db = new DBHandler(holder.itemView.getContext(), null, null, 1)) {
-                unitSystem = db.getUnitSystem(item.getShoppingListItemName());
+                unitSystem = db.getUnitSystem(displayedItem.getShoppingListItemName());
             }
             holder.itemUnitSystem.setText(unitSystem);
 
-            // Text watchers for quantity and ingredient name
-            holder.autoCompleteIngredient.addTextChangedListener(nameTextWatcher);
-            holder.itemQuantityEdit.addTextChangedListener(quantityTextWatcher);
-
-            // Adapter for auto complete
+            // Enable autocomplete only when on food mode
             if (foodMode) {
-                holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
+                holder.autoCompleteIngredient.setAdapter(foodAutoCompleteAdapter);
             } else {
-                holder.autoCompleteIngredient.setAdapter(null);
-                holder.autoCompleteIngredient.setText(""); // Clear the previous food name
+                holder.autoCompleteIngredient.setAdapter(nonFoodAutoCompleteAdapter);
             }
         }
 
         @Override
         public int getItemCount() {
-            return items.size();
+            return displayedItems.size();
         }
         public void setFoodMode(boolean foodMode) {
             this.foodMode = foodMode;
+            setDisplayedItems();
+        }
+        public List<ShoppingListItem> getDisplayedItems() {
+            return displayedItems;
         }
         public List<ShoppingListItem> getItems() {
             return items;
@@ -357,4 +299,60 @@
             // Return the list of checked items
             return checkedItems;
         }
+        public void massCheck(){
+            for (ShoppingListItem item : items) {
+                item.setIsChecked(true);
+            }
+            notifyItemRangeChanged(0, items.size());
+        }
+        public void massUncheck(){
+            for (ShoppingListItem item : items) {
+                item.setIsChecked(false);
+            }
+            notifyItemRangeChanged(0, items.size());
+        }
+        public void addFoodItem() {
+            ShoppingListItem newItem = new ShoppingListItem();
+            newItem.setShoppingListItemId(getNextId()); // Use a proper ID generator
+            newItem.setShoppingListItemName("");
+            newItem.setIsFood(true);
+            newItem.setIsChecked(false);
+
+            items.add(newItem);
+            if (foodMode) {
+                int position = displayedItems.size();
+                displayedItems.add(newItem);
+                notifyItemInserted(position);
+            }
+        }
+        public void addNonFoodItem() {
+            ShoppingListItem newItem = new ShoppingListItem();
+            newItem.setShoppingListItemId(getNextId()); // Use a proper ID generator
+            newItem.setShoppingListItemName("");
+            newItem.setIsFood(false);
+            newItem.setIsChecked(false);
+
+            items.add(newItem);
+            if (!foodMode) {
+                int position = displayedItems.size();
+                displayedItems.add(newItem);
+                notifyItemInserted(position);
+            }
+        }
+
+        private int getNextId() {
+            int maxId = 0;
+            for (ShoppingListItem item : items) {
+                if (item.getShoppingListItemId() > maxId) {
+                    maxId = item.getShoppingListItemId();
+                }
+            }
+            return maxId + 1;
+        }
+        public void saveAllItemsToDB() {
+            try (DBHandler db = new DBHandler(context, null, null, 1)) {
+                db.storeItemsWhenExiting(items);
+            }
+        }
+
     }

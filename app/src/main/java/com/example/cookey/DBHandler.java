@@ -950,6 +950,39 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void storeItemsWhenExiting(List<ShoppingListItem> items) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.beginTransaction();
+
+            // Clear existing items
+            db.delete("ShoppingList", null, null);
+
+            // Insert only valid items
+            for (ShoppingListItem item : items) {
+                // Skip items with null names
+                if (item.getShoppingListItemName() == null) {
+                    continue;
+                }
+
+                ContentValues values = new ContentValues();
+                values.put("shoppingListItemId", item.getShoppingListItemId());
+                values.put("shoppingListItemName", item.getShoppingListItemName());
+                values.put("purchasedQuantity", item.getPurchasedQuantity());
+                values.put("isFood", item.getIsFood() ? 1 : 0);
+                values.put("isChecked", item.getIsChecked() ? 1 : 0);
+
+                db.insert("ShoppingList", null, values);
+            }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Error saving items", e);
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
     // ---------------- NIKOS TIME -------------------- //
     public void populateDefaultTags(SQLiteDatabase db) {
         String[] defaultTags = new String[]{

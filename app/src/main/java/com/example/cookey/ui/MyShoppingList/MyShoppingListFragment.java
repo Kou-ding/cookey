@@ -19,14 +19,14 @@ import com.example.cookey.NarratorManager;
 import com.example.cookey.R;
 import com.example.cookey.ShoppingListItem;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.List;
 
 public class MyShoppingListFragment extends Fragment {
 
     private MyShoppingListAdapter adapter;
-
     private boolean foodMode = true;
-    private boolean nonFoodMode = false;
     private boolean checkAll = true;
 
     @Override
@@ -55,7 +55,7 @@ public class MyShoppingListFragment extends Fragment {
         List<ShoppingListItem> listItems;
         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
             // Get the list of ingredients from the database
-            listItems = db.getAllFoodItems();
+            listItems = db.getAllShoppingListItems();
         }
 
         // Initialize the adapter
@@ -70,20 +70,16 @@ public class MyShoppingListFragment extends Fragment {
             if (isChecked) {
                 foodType.setText(R.string.food);
                 foodMode = true;
-                nonFoodMode = false;
                 refillIngredientsButton.setVisibility(View.VISIBLE);
                 adapter.setFoodMode(true);
-                loadItemsFromDB();
 
                 //ACCESSIBILITY
                 NarratorManager.speakIfEnabled(this.getContext(), getString(R.string.food));
             } else {
                 foodType.setText(R.string.non_food);
                 foodMode = false;
-                nonFoodMode = true;
                 refillIngredientsButton.setVisibility(View.INVISIBLE);
                 adapter.setFoodMode(false);
-                loadItemsFromDB();
 
                 //ACCESSIBILITY
                 NarratorManager.speakIfEnabled(this.getContext(), getString(R.string.non_food));
@@ -92,14 +88,17 @@ public class MyShoppingListFragment extends Fragment {
 
         // New List Button Listener
         newListButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(getContext())
+            new MaterialAlertDialogBuilder(getContext())
                     .setTitle(getString(R.string.new_list_dialog_title))
                     .setMessage(getString(R.string.new_list_dialog_message))
                     .setPositiveButton(getString(R.string.new_list_confirm), (dialog, which) -> {
                         Toast.makeText(requireContext(), getString(R.string.new_list_created_toast), Toast.LENGTH_SHORT).show();
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                            // Delete all items from the permanent database
                             db.newShoppingList();
-                            loadItemsFromDB();
+                            // Delete all items from the temporary array
+                            adapter.getItems().clear();
+                            adapter.setDisplayedItems();
                         }
                     })
                     .setNegativeButton(getString(R.string.new_list_cancel), (dialog, which) -> {
@@ -143,11 +142,9 @@ public class MyShoppingListFragment extends Fragment {
             // Implement the checking/unchecking logic
             if (checkAll) {
                 checkAllItems();
-                loadItemsFromDB();
             }
             if (!checkAll) {
                 uncheckAllItems();
-                loadItemsFromDB();
             }
 
             // Change the state of the button
@@ -161,7 +158,6 @@ public class MyShoppingListFragment extends Fragment {
         addItemButton.setOnClickListener(v -> {
             addItem(foodMode);
             recyclerView.smoothScrollToPosition(adapter.getItemCount());
-            loadItemsFromDB();
 
             //ACCESSIBILITY
             NarratorManager.speakIfEnabled(v.getContext(), getString(R.string.add));
@@ -169,17 +165,20 @@ public class MyShoppingListFragment extends Fragment {
 
         // Refill Ingredients Button Listener
         refillIngredientsButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(getContext())
+            new MaterialAlertDialogBuilder(getContext())
                     .setTitle(getString(R.string.refill_dialog_title))
                     .setMessage(getString(R.string.refill_dialog_message))
                     .setPositiveButton(getString(R.string.new_list_confirm), (dialog, which) -> {
                         Toast.makeText(requireContext(), getString(R.string.refill_success_toast), Toast.LENGTH_SHORT).show();
                         // Perform the refilling in the database
                         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
+                            // Save items to the database
+                            db.storeItemsWhenExiting(adapter.getItems());
                             // Refill food items
                             db.refillIngredients(adapter.getCheckedItems());
-                            // Reload the items from the database to reflect the changes
-                            loadItemsFromDB();
+                            // Clear the checked items for the main list
+                            adapter.getItems().removeAll(adapter.getCheckedItems()); // Remove from main list
+                            adapter.setDisplayedItems();
                         }
                     })
                     .setNegativeButton(getString(R.string.new_list_cancel), (dialog, which) -> {
@@ -196,14 +195,7 @@ public class MyShoppingListFragment extends Fragment {
     public void loadItemsFromDB() {
         try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
             List<ShoppingListItem> listItems = null;
-            if (foodMode) {
-                // Get the list of all food items from the database
-                listItems = db.getAllFoodItems();
-            }
-            if (nonFoodMode) {
-                // Get the list of all non-food items from the database
-                listItems = db.getAllNonFoodItems();
-            }
+            listItems = db.getAllShoppingListItems();
             if (listItems != null){
                 // Update the adapter with the new data
                 adapter.getItems().clear();
@@ -213,27 +205,36 @@ public class MyShoppingListFragment extends Fragment {
         }
     }
     public void addItem(boolean foodMode) {
-        try (DBHandler db = new DBHandler(requireContext(), null, null, 1)) {
-            if(foodMode) {
-                db.addFoodItem(db.getNextUnusedShoppingListItemId());
-            } else {
-                db.addNonFoodItem(db.getNextUnusedShoppingListItemId());
-            }
+        if(foodMode) {
+            adapter.addFoodItem();
+        } else {
+            adapter.addNonFoodItem();
         }
-        loadItemsFromDB();
     }
 
     public void checkAllItems(){
-        // Save on the database
-        try (DBHandler db = new DBHandler(getContext(), null, null, 1)) {
-            db.massCheck();
-        }
+        adapter.massCheck();
     }
     public void uncheckAllItems(){
-        // Save on the database
-        try (DBHandler db = new DBHandler(getContext(), null, null, 1)) {
-            db.massUncheck();
+        adapter.massUncheck();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (adapter != null) {
+            // Save synchronously to ensure completion before pause finishes
+            new Thread(() -> {
+                adapter.saveAllItemsToDB();
+            }).run();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Load items on UI thread
+        requireActivity().runOnUiThread(this::loadItemsFromDB);
+        adapter.setDisplayedItems();
     }
 
 }
