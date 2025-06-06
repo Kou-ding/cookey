@@ -53,7 +53,6 @@ public class AIFragment extends Fragment {
     private static final String API_TOKEN = ""; // Replace with your token
     private AIAdapter adapter;
     private boolean useIngredientsMode = false;
-
     private ProgressBar progressBar; // Class-level variable
 
     @Override

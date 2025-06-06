@@ -78,8 +78,6 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
         holder.nameTextView.setText(ingredient.getIngredientName());
         holder.unitSystemTextView.setText(ingredient.getUnitSystem());
 
-
-
         // Remove existing text watcher
         if (holder.quantityEditText.getTag() instanceof TextWatcher) {
             holder.quantityEditText.removeTextChangedListener((TextWatcher) holder.quantityEditText.getTag());
@@ -122,7 +120,7 @@ public class MyIngredientsAdapter extends RecyclerView.Adapter<MyIngredientsAdap
             holder.quantityEditText.setEnabled(false);
             holder.deleteButton.setVisibility(View.GONE);
 
-            // 🔓 Allow navigation when NOT in edit mode
+            // Allow navigation when NOT in edit mode
             holder.itemView.setOnClickListener(v -> {
                 int pos = holder.getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {

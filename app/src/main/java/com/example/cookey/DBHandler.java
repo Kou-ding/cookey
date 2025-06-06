@@ -139,6 +139,11 @@ public class DBHandler extends SQLiteOpenHelper {
                 "  daysToSpoil INTEGER,\n" +
                 "  checkIfSpoiledArray VARCHAR,\n" +
                 "  PRIMARY KEY(ingredientId)\n" +
+                ");\n\n" +
+
+                "CREATE TABLE API (\n" +
+                "  APIKey INTEGER NOT NULL,\n" +
+                "  PRIMARY KEY(aiAPIKey)\n" +
                 ");" +
                 // ingredientId, ingredientName, ingredientQuantity, ingredientUnitSystem, daysToRot, checkIfRottenArray
                 // Basic
@@ -697,117 +702,6 @@ public class DBHandler extends SQLiteOpenHelper {
 
         return items;
     }
-
-    public void deleteShoppingListItem(int shoppingListItemId){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM ShoppingList WHERE shoppingListItemId = '" + shoppingListItemId + "';";
-        db.execSQL(query);
-        db.close();
-    }
-
-    public List<ShoppingListItem> getAllFoodItems(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        List<ShoppingListItem> items = new ArrayList<>();
-        Cursor cursor = null;
-
-        try {
-            String query = "SELECT * FROM ShoppingList WHERE isFood = 1";
-            cursor = db.rawQuery(query, null);
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    ShoppingListItem item = new ShoppingListItem();
-                    item.setShoppingListItemId(cursor.getInt(0));
-                    item.setShoppingListItemName(cursor.getString(1));
-                    item.setPurchasedQuantity(cursor.getFloat(2));
-                    item.setIsFood(cursor.getInt(3) != 0);
-                    item.setIsChecked(cursor.getInt(4) != 0);
-
-                    items.add(item);
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
-
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-
-        return items;
-    }
-
-    public List<ShoppingListItem> getAllNonFoodItems(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        List<ShoppingListItem> items = new ArrayList<>();
-        Cursor cursor = null;
-
-        try {
-            String query = "SELECT * FROM ShoppingList WHERE isFood = 0";
-            cursor = db.rawQuery(query, null);
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    ShoppingListItem item = new ShoppingListItem();
-                    item.setShoppingListItemId(cursor.getInt(0));
-                    item.setShoppingListItemName(cursor.getString(1));
-                    item.setPurchasedQuantity(cursor.getFloat(2));
-                    item.setIsFood(cursor.getInt(3) != 0);
-                    item.setIsChecked(cursor.getInt(4) != 0);
-
-                    items.add(item);
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
-
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-
-        return items;
-    }
-
-    public void newShoppingList(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM ShoppingList;";
-        db.execSQL(query);
-        db.close();
-    }
-
-    public void addFoodItem(int Id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', NULL, 1, 0);";
-        db.execSQL(query);
-        db.close();
-    }
-    public void addNonFoodItem(int Id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', NULL, 0, 0);";
-        db.execSQL(query);
-        db.close();
-    }
-    public int getNextUnusedShoppingListItemId(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        int nextId = 1; // Default if table is empty
-
-        try {
-            Cursor cursor = db.rawQuery("SELECT MAX(shoppingListItemId) FROM ShoppingList", null);
-            if (cursor.moveToFirst() && !cursor.isNull(0)) {
-                nextId = cursor.getInt(0) + 1;
-            }
-            cursor.close();
-        } finally {
-            db.close();
-        }
-        return nextId;
-    }
-
     public String getUnitSystem(String ingredientName){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT unitSystem FROM Ingredient WHERE ingredientName = '" + ingredientName + "';";
@@ -819,6 +713,12 @@ public class DBHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return unitSystem;
+    }
+    public void newShoppingList(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM ShoppingList;";
+        db.execSQL(query);
+        db.close();
     }
     public void refillIngredients(List<ShoppingListItem> items) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -866,8 +766,6 @@ public class DBHandler extends SQLiteOpenHelper {
 
         db.close();
     }
-
-
     public void consumeIngredients(long recipeID) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
@@ -907,8 +805,140 @@ public class DBHandler extends SQLiteOpenHelper {
             db.close();
         }
     }
+    public void storeItemsWhenExiting(List<ShoppingListItem> items) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.beginTransaction();
 
+            // Clear existing items
+            db.delete("ShoppingList", null, null);
 
+            // Insert only valid items
+            for (ShoppingListItem item : items) {
+                // Skip items with null names
+                if (item.getShoppingListItemName() == null) {
+                    continue;
+                }
+
+                ContentValues values = new ContentValues();
+                values.put("shoppingListItemId", item.getShoppingListItemId());
+                values.put("shoppingListItemName", item.getShoppingListItemName());
+                values.put("purchasedQuantity", item.getPurchasedQuantity());
+                values.put("isFood", item.getIsFood() ? 1 : 0);
+                values.put("isChecked", item.getIsChecked() ? 1 : 0);
+
+                db.insert("ShoppingList", null, values);
+            }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Error saving items", e);
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
+    // ---------------- Replaced by more efficient code ---------------- //
+    public void deleteShoppingListItem(int shoppingListItemId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM ShoppingList WHERE shoppingListItemId = '" + shoppingListItemId + "';";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public List<ShoppingListItem> getAllFoodItems(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<ShoppingListItem> items = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM ShoppingList WHERE isFood = 1";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ShoppingListItem item = new ShoppingListItem();
+                    item.setShoppingListItemId(cursor.getInt(0));
+                    item.setShoppingListItemName(cursor.getString(1));
+                    item.setPurchasedQuantity(cursor.getFloat(2));
+                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setIsChecked(cursor.getInt(4) != 0);
+
+                    items.add(item);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return items;
+    }
+    public List<ShoppingListItem> getAllNonFoodItems(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<ShoppingListItem> items = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM ShoppingList WHERE isFood = 0";
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ShoppingListItem item = new ShoppingListItem();
+                    item.setShoppingListItemId(cursor.getInt(0));
+                    item.setShoppingListItemName(cursor.getString(1));
+                    item.setPurchasedQuantity(cursor.getFloat(2));
+                    item.setIsFood(cursor.getInt(3) != 0);
+                    item.setIsChecked(cursor.getInt(4) != 0);
+
+                    items.add(item);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("MyIngredientsViewModel", "Error loading ingredients", e);
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return items;
+    }
+    public void addFoodItem(int Id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', NULL, 1, 0);";
+        db.execSQL(query);
+        db.close();
+    }
+    public void addNonFoodItem(int Id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "INSERT INTO ShoppingList VALUES ("+Id+",'', NULL, 0, 0);";
+        db.execSQL(query);
+        db.close();
+    }
+    public int getNextUnusedShoppingListItemId(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        int nextId = 1; // Default if table is empty
+
+        try {
+            Cursor cursor = db.rawQuery("SELECT MAX(shoppingListItemId) FROM ShoppingList", null);
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                nextId = cursor.getInt(0) + 1;
+            }
+            cursor.close();
+        } finally {
+            db.close();
+        }
+        return nextId;
+    }
     public void setNewItemNameAndQuantity(int id, String name, float quantity){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE ShoppingList SET shoppingListItemName = '" + name + "', purchasedQuantity = " + quantity + " WHERE shoppingListItemId = " + id + ";";
@@ -948,39 +978,6 @@ public class DBHandler extends SQLiteOpenHelper {
         String query = "UPDATE ShoppingList SET isChecked = 0;";
         db.execSQL(query);
         db.close();
-    }
-
-    public void storeItemsWhenExiting(List<ShoppingListItem> items) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        try {
-            db.beginTransaction();
-
-            // Clear existing items
-            db.delete("ShoppingList", null, null);
-
-            // Insert only valid items
-            for (ShoppingListItem item : items) {
-                // Skip items with null names
-                if (item.getShoppingListItemName() == null) {
-                    continue;
-                }
-
-                ContentValues values = new ContentValues();
-                values.put("shoppingListItemId", item.getShoppingListItemId());
-                values.put("shoppingListItemName", item.getShoppingListItemName());
-                values.put("purchasedQuantity", item.getPurchasedQuantity());
-                values.put("isFood", item.getIsFood() ? 1 : 0);
-                values.put("isChecked", item.getIsChecked() ? 1 : 0);
-
-                db.insert("ShoppingList", null, values);
-            }
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-            Log.e("DB_ERROR", "Error saving items", e);
-        } finally {
-            db.endTransaction();
-            db.close();
-        }
     }
 
     // ---------------- NIKOS TIME -------------------- //

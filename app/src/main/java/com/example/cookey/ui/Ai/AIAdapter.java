@@ -29,7 +29,6 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
     private ArrayAdapter<String> autoCompleteAdapter;
 
     public AIAdapter(Context context) {
-
         items = new ArrayList<>();
         this.autoCompleteAdapter = createAutoCompleteAdapter(context);
     }
@@ -79,7 +78,22 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
                     }
                 }
             };
+
+            // Handle delete button click
+            deleteItem.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    items.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, items.size());
+                }
+            });
+            // Give suggestions based on current text
             autoCompleteIngredient.addTextChangedListener(textWatcher);
+
+            // Auto complete adapter
+            autoCompleteIngredient.setAdapter(autoCompleteAdapter);
+
             // Set the auto complete threshold to 1
             autoCompleteIngredient.setThreshold(1);
         }
@@ -104,17 +118,6 @@ public class AIAdapter extends RecyclerView.Adapter<AIAdapter.ViewHolder>{
         holder.itemUnitSystem.setVisibility(View.GONE);
         holder.autoCompleteIngredient.setText(item.getShoppingListItemName());
         holder.autoCompleteIngredient.addTextChangedListener(holder.textWatcher);
-
-        // Handle delete button click
-        holder.deleteItem.setOnClickListener(v -> {
-            items.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, items.size());
-        });
-
-        // Auto complete adapter
-        holder.autoCompleteIngredient.setAdapter(autoCompleteAdapter);
-
     }
 
     @Override
