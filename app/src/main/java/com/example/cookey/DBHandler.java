@@ -143,7 +143,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
                 "CREATE TABLE API (\n" +
                 "  APIKey INTEGER NOT NULL,\n" +
-                "  PRIMARY KEY(aiAPIKey)\n" +
+                "  PRIMARY KEY(APIKey)\n" +
                 ");" +
                 // ingredientId, ingredientName, ingredientQuantity, ingredientUnitSystem, daysToRot, checkIfRottenArray
                 // Basic
