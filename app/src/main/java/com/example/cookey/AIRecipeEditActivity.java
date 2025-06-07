@@ -65,19 +65,13 @@ public class AIRecipeEditActivity extends AppCompatActivity {
             // Handle save button click here
             Intent intent = new Intent(this, AIRecipesActivity.class);
             startActivity(intent);
+            finish();
         });
         Button discardButton = findViewById(R.id.discard_button);
         discardButton.setOnClickListener(v -> {
             // Handle discard button click here
             finish();
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate menu here (if you have one, otherwise leave empty)
-        // getMenuInflater().inflate(R.menu.your_menu, menu);
-        return true;
     }
 
     @Override
